@@ -6,13 +6,14 @@ import equal from 'deep-equal'
 
 export type Atom<S> = {
   subscribe: (listener: (value: S) => void) => void
-  // TODO: add prisms/traversals
   focus: <A>(optic: Lens<S, any, A>) => Atom<A>
   update: (updater: S | ((oldValue: S) => S)) => void
 }
 
-export const atom = <S>(value: S): Atom<S> => {
-  const atom$ = new BehaviorSubject<S>(value)
+export const atom = <S>(
+  value: S,
+  atom$ = new BehaviorSubject<S>(value),
+): Atom<S> => {
   let latestValue = value
 
   atom$.pipe(
@@ -39,39 +40,12 @@ export const atom = <S>(value: S): Atom<S> => {
       newSub.subscribe(next => {
         atom$.next(set(optic)(next)(latestValue))
       })
-      return derivedAtom(newSub, getter(latestValue))
+      return atom(getter(latestValue), newSub)
     },
     update: updater => {
       const newValue =
         updater instanceof Function ? updater(latestValue) : updater
       atom$.next(newValue)
-    },
-  }
-}
-
-export const derivedAtom = <T>(
-  subject: BehaviorSubject<T>,
-  initialLatestValue: T,
-): Atom<T> => {
-  let latestValue = initialLatestValue
-
-  subject.pipe(
-    tap(next => {
-      latestValue = next
-    }),
-  )
-
-  return {
-    subscribe: listener => {
-      subject.subscribe(next => listener(next))
-    },
-    focus: <NewSub>(_newOptic: Lens<T, any, NewSub>): Atom<NewSub> => {
-      throw new Error('focus on derived atoms not implemented')
-    },
-    update: updater => {
-      const newValue =
-        updater instanceof Function ? updater(latestValue) : updater
-      subject.next(newValue)
     },
   }
 }
