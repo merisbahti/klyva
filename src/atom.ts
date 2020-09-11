@@ -1,14 +1,18 @@
-import { Lens, get, set } from 'optics-ts'
+import { Lens, get, set, Equivalence, Iso } from 'optics-ts'
 import { BehaviorSubject } from 'rxjs'
 import { map, distinctUntilChanged } from 'rxjs/operators'
 import equal from 'deep-equal'
 
 export type Atom<S> = {
   subscribe: (listener: (value: S) => void) => void
-  focus: <A>(optic: Lens<S, any, A>) => Atom<A>
+  focus: <A>(
+    optic: Lens<S, any, A> | Equivalence<S, any, A> | Iso<S, any, A>,
+  ) => Atom<A>
   update: (updater: S | ((oldValue: S) => S)) => void
   get: () => S
 }
+
+export type ReadOnlyAtom<S> = Omit<Atom<S>, 'update'>
 
 export const atom = <S>(
   value: S,
