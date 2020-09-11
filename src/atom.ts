@@ -1,6 +1,6 @@
 import { Lens, get, set } from 'optics-ts'
 import { BehaviorSubject } from 'rxjs'
-import { tap, map, distinctUntilChanged } from 'rxjs/operators'
+import { map, distinctUntilChanged } from 'rxjs/operators'
 import convertObservableToBehaviorSubject from './convert-observable-to-behavior-subject'
 import equal from 'deep-equal'
 
@@ -8,27 +8,20 @@ export type Atom<S> = {
   subscribe: (listener: (value: S) => void) => void
   focus: <A>(optic: Lens<S, any, A>) => Atom<A>
   update: (updater: S | ((oldValue: S) => S)) => void
+  get: () => S
 }
 
 export const atom = <S>(
   value: S,
   atom$ = new BehaviorSubject<S>(value),
 ): Atom<S> => {
-  let latestValue = value
-
-  atom$.pipe(
-    tap(next => {
-      latestValue = next
-    }),
-  )
-
   return {
     subscribe: listener => {
       atom$.subscribe(next => listener(next))
     },
     focus: <A>(optic: Lens<S, any, A>): Atom<A> => {
       const getter = get(optic)
-      const latestAValue = getter(latestValue)
+      const latestAValue = getter(atom$.value)
       const parentObserver = atom$.pipe(
         map(getter),
         distinctUntilChanged(equal),
@@ -38,14 +31,15 @@ export const atom = <S>(
         latestAValue,
       )
       newSub.subscribe(next => {
-        atom$.next(set(optic)(next)(latestValue))
+        atom$.next(set(optic)(next)(atom$.value))
       })
-      return atom(getter(latestValue), newSub)
+      return atom(getter(atom$.value), newSub)
     },
     update: updater => {
       const newValue =
-        updater instanceof Function ? updater(latestValue) : updater
+        updater instanceof Function ? updater(atom$.value) : updater
       atom$.next(newValue)
     },
+    get: () => atom$.value,
   }
 }

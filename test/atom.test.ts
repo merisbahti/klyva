@@ -17,6 +17,23 @@ test('the atom emits 1, 2, and 3', done => {
   done()
 })
 
+test('the atom emits 1, 2, and 3 (using updater function)', done => {
+  const myAtom = atom(0)
+  let latestValue = null
+  myAtom.subscribe(next => {
+    latestValue = next
+  })
+  const inc = (num: number) => num + 1
+  expect(latestValue).toEqual(0)
+  myAtom.update(inc)
+  expect(latestValue).toEqual(1)
+  myAtom.update(inc)
+  expect(latestValue).toEqual(2)
+  myAtom.update(inc)
+  expect(latestValue).toEqual(3)
+  done()
+})
+
 test('the focused atoms emit even though its the parent being nexted', done => {
   const myAtom = atom({ value: 0 })
   const focusedAtom = myAtom.focus(optic<{ value: number }>().prop('value'))
