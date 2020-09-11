@@ -1,9 +1,9 @@
 import { atom } from '../src/atom'
 import { optic } from 'optics-ts'
 
-test('the observable interval emits 100 then 200 then 300', done => {
+test('the atom emits 1, 2, and 3', done => {
   const myAtom = atom(0)
-  let latestValue = 0
+  let latestValue = null
   myAtom.subscribe(next => {
     latestValue = next
   })
@@ -20,7 +20,7 @@ test('the observable interval emits 100 then 200 then 300', done => {
 test('the focused atoms emit even though its the parent being nexted', done => {
   const myAtom = atom({ value: 0 })
   const focusedAtom = myAtom.focus(optic<{ value: number }>().prop('value'))
-  let latestValue = 0
+  let latestValue = null
   focusedAtom.subscribe(next => {
     latestValue = next
   })
@@ -36,7 +36,7 @@ test('the focused atoms emit even though its the parent being nexted', done => {
 test('the parent emits even though its the focused atom being nexted', done => {
   const myAtom = atom({ value: 0 })
   const focusedAtom = myAtom.focus(optic<{ value: number }>().prop('value'))
-  let latestValue = { value: 0 }
+  let latestValue = null
   myAtom.subscribe(next => {
     latestValue = next
   })
@@ -54,7 +54,7 @@ test("the parent emits even though its the focused atom's focused atom being nex
   const myAtom = atom(value)
   const firstFocus = myAtom.focus(optic<typeof value>().prop('a'))
   const secondFocus = firstFocus.focus(optic<typeof value['a']>().prop('b'))
-  let latestValue = value
+  let latestValue = null
   myAtom.subscribe(next => {
     latestValue = next
   })
