@@ -1,5 +1,5 @@
 import { Lens, get, set, Equivalence, Iso } from 'optics-ts'
-import { BehaviorSubject } from 'rxjs'
+import { BehaviorSubject, Observable } from 'rxjs'
 import { map, distinctUntilChanged } from 'rxjs/operators'
 import equal from 'deep-equal'
 
@@ -14,27 +14,20 @@ export type Atom<S> = {
 
 export type ReadOnlyAtom<S> = Omit<Atom<S>, 'update'>
 
-export const atom = <S>(
-  value: S,
-  atom$ = new BehaviorSubject<S>(value),
-): Atom<S> => {
+export const atom = <S>(value: S): Atom<S> => {
+  const atom$ = new BehaviorSubject<S>(value)
   return {
     subscribe: listener => atom$.subscribe(value => listener(value)),
-    focus: optic => {
-      const getter = get(optic)
-      const latestAValue = getter(atom$.value)
+    focus: <A>(
+      optic: Lens<S, any, A> | Equivalence<S, any, A> | Iso<S, any, A>,
+    ) => {
+      const newAtom$ = atom$.pipe(map(get(optic)), distinctUntilChanged(equal))
+      const newNext = (nextA: A) => {
+        atom$.next(set(optic)(nextA)(atom$.value))
+      }
+      const newValue = () => get(optic)(atom$.value)
 
-      const newSub = new BehaviorSubject(latestAValue)
-
-      newSub.pipe(distinctUntilChanged(equal)).subscribe(next => {
-        atom$.next(set(optic)(next)(atom$.value))
-      })
-
-      atom$
-        .pipe(map(getter), distinctUntilChanged(equal))
-        .subscribe(next => newSub.next(next))
-
-      return atom(getter(atom$.value), newSub)
+      return derivedAtom(newAtom$, newNext, newValue)
     },
     update: updater => {
       const newValue =
@@ -42,5 +35,33 @@ export const atom = <S>(
       atom$.next(newValue)
     },
     get: () => atom$.value,
+  }
+}
+
+const derivedAtom = <S>(
+  atom$: Observable<S>,
+  next: (next: S) => void,
+  value: () => S,
+): Atom<S> => {
+  return {
+    subscribe: listener => atom$.subscribe(value => listener(value)),
+    focus: <A>(
+      optic: Lens<S, any, A> | Equivalence<S, any, A> | Iso<S, any, A>,
+    ) => {
+      const getter = get(optic)
+
+      const newAtom$ = atom$.pipe(map(getter), distinctUntilChanged(equal))
+      const newNext = (nextA: A) => {
+        next(set(optic)(nextA)(value()))
+      }
+      const newValue = () => get(optic)(value())
+
+      return derivedAtom(newAtom$, newNext, newValue)
+    },
+    update: updater => {
+      const newValue = updater instanceof Function ? updater(value()) : updater
+      next(newValue)
+    },
+    get: value,
   }
 }

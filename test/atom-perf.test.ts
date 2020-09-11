@@ -11,8 +11,7 @@ test('two sibling atoms wont be updated when the other one is', () => {
   let atomAUpdates = 0
   let atomBUpdates = 0
 
-  baseAtom.subscribe(baseValue => {
-    console.log('baseAtom', baseValue)
+  baseAtom.subscribe(() => {
     baseAtomUpdates += 1
   })
   atomA.subscribe(() => {
@@ -28,13 +27,11 @@ test('two sibling atoms wont be updated when the other one is', () => {
 
   atomA.update(val => val + 1)
   expect(baseAtomUpdates).toBe(2)
-  // Why is this one updated twice?
-  expect(atomAUpdates).toBe(3)
+  expect(atomAUpdates).toBe(2)
   expect(atomBUpdates).toBe(1)
 
   atomB.update(val => val + 1)
   expect(baseAtomUpdates).toBe(3)
-  expect(atomAUpdates).toBe(3)
-  // Why is this one updated twice?
-  expect(atomBUpdates).toBe(3)
+  expect(atomAUpdates).toBe(2)
+  expect(atomBUpdates).toBe(2)
 })
