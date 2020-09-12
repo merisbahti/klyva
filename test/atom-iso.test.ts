@@ -10,7 +10,7 @@ test('isomorphisms work', done => {
   myFocus.subscribe(() => {})
 
   myAtom.update(1)
-  expect(myAtom.get()).toEqual(1)
-  expect(myFocus.get()).toEqual(2)
+  expect(myAtom.getValue()).toEqual(1)
+  expect(myFocus.getValue()).toEqual(2)
   done()
 })
