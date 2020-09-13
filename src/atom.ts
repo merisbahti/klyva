@@ -4,8 +4,7 @@ import { map, distinctUntilChanged } from 'rxjs/operators'
 import equal from 'deep-equal'
 
 export type Atom<S> = {
-  _tag: 'Atom'
-  subscribe: (listener: (value: S) => void) => void
+  subscribe: (listener: (value: S) => void) => () => void
 
   focus<A>(
     optic: Lens<S, any, A> | Equivalence<S, any, A> | Iso<S, any, A>,
@@ -17,18 +16,48 @@ export type Atom<S> = {
 }
 
 export type ReadOnlyAtom<S> = {
-  _tag: 'ReadOnlyAtom'
   subscribe: (listener: (value: S) => void) => void
   focus<A>(optic: Getter<S, A>): ReadOnlyAtom<A>
   getValue: () => S
 }
 
-export const atom = <S>(value: S): Atom<S> => {
+type AtomGetter = <Value>(atom: Atom<Value>) => Value
+export type DerivedAtomReader<S> = (read: AtomGetter) => S
+
+export function atom<S>(value: DerivedAtomReader<S>): ReadOnlyAtom<S>
+export function atom<S>(value: S): Atom<S>
+
+export function atom<S>(value: S | DerivedAtomReader<S>) {
+  if (value instanceof Function) {
+    return derivedAtom(value)
+  }
   const atom$ = new BehaviorSubject<S>(value)
   const next = (next: S) => atom$.next(next)
   const getValue = () => atom$.value
 
   return atomConstructor(atom$, getValue, next)
+}
+
+export const derivedAtom = <S>(read: DerivedAtomReader<S>): ReadOnlyAtom<S> => {
+  const dependencies = new WeakMap<Atom<any>, () => void>()
+
+  const getter: AtomGetter = <A>(a: Atom<A>) => {
+    if (!dependencies.get(a)) {
+      const unsubscribe = a.subscribe(() => {
+        behaviorSubject.next('signal')
+      })
+      dependencies.set(a, unsubscribe)
+    }
+    return a.getValue()
+  }
+
+  const behaviorSubject = new BehaviorSubject<'signal'>('signal')
+  const atom$ = behaviorSubject.pipe(
+    map(() => read(getter)),
+    distinctUntilChanged(equal),
+  )
+
+  return roAtomConstructor(atom$, () => read(getter))
 }
 
 const atomConstructor = <S>(
@@ -37,7 +66,6 @@ const atomConstructor = <S>(
   next: (value: S) => void,
 ): Atom<S> => {
   const atom: Atom<S> = {
-    _tag: 'Atom',
     subscribe: constructSubscribe(atom$),
     focus: constructFocus(atom$, getValue, next),
     update: constructUpdater(next, getValue),
@@ -51,7 +79,6 @@ const roAtomConstructor = <S>(
   getValue: () => S,
 ): ReadOnlyAtom<S> => {
   const readOnlyAtom: ReadOnlyAtom<S> = {
-    _tag: 'ReadOnlyAtom',
     subscribe: constructSubscribe(atom$),
     focus: constructReadOnlyFocus(atom$, getValue),
     getValue,
@@ -61,8 +88,9 @@ const roAtomConstructor = <S>(
 
 const constructSubscribe = <S>(atom$: Observable<S>) => (
   listener: (value: S) => void,
-): void => {
-  atom$.subscribe(next => listener(next))
+): (() => void) => {
+  const sub = atom$.subscribe(next => listener(next))
+  return sub.unsubscribe
 }
 
 type RwFocus<S> = {
