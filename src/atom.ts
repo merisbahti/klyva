@@ -39,7 +39,7 @@ export function atom<S>(value: S | DerivedAtomReader<S>) {
 }
 
 export const derivedAtom = <S>(read: DerivedAtomReader<S>): ReadOnlyAtom<S> => {
-  const dependencies = new WeakMap<Atom<any>, () => void>()
+  const dependencies = new Map<Atom<any>, () => void>()
 
   const getter: AtomGetter = <A>(a: Atom<A>) => {
     if (!dependencies.get(a)) {
@@ -57,7 +57,17 @@ export const derivedAtom = <S>(read: DerivedAtomReader<S>): ReadOnlyAtom<S> => {
     distinctUntilChanged(equal),
   )
 
-  return roAtomConstructor(atom$, () => read(getter))
+  const subscribe = (listener: (value: S) => void) => {
+    const subscription = atom$.subscribe(listener)
+    subscription.add(() => {
+      Object.values(dependencies).forEach(unsubscribe => {
+        unsubscribe()
+      })
+    })
+    return subscription.unsubscribe
+  }
+
+  return roAtomConstructor(atom$, () => read(getter), subscribe)
 }
 
 const atomConstructor = <S>(
@@ -77,9 +87,10 @@ const atomConstructor = <S>(
 const roAtomConstructor = <S>(
   atom$: Observable<S>,
   getValue: () => S,
+  subscribe: (listener: (value: S) => void) => () => void,
 ): ReadOnlyAtom<S> => {
   const readOnlyAtom: ReadOnlyAtom<S> = {
-    subscribe: constructSubscribe(atom$),
+    subscribe: subscribe,
     focus: constructReadOnlyFocus(atom$, getValue),
     getValue,
   }
@@ -135,7 +146,7 @@ const constructReadOnlyFocus = <S>(atom$: Observable<S>, getValue: () => S) => <
   const newAtom$ = atom$.pipe(map(getter), distinctUntilChanged(equal))
   const newValue = () => get(optic)(getValue())
 
-  return roAtomConstructor(newAtom$, newValue)
+  return roAtomConstructor(newAtom$, newValue, constructSubscribe(newAtom$))
 }
 
 const constructUpdater = <A>(next: (value: A) => void, getValue: () => A) => (
