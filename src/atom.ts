@@ -42,6 +42,7 @@ export const derivedAtom = <S>(read: DerivedAtomReader<S>): ReadOnlyAtom<S> => {
   const dependencies = new Map<Atom<any>, () => void>()
 
   const getter: AtomGetter = <A>(a: Atom<A>) => {
+    // clear all dependencies here and re-set them.
     if (!dependencies.get(a)) {
       const unsubscribe = a.subscribe(() => {
         behaviorSubject.next('signal')
