@@ -1,4 +1,12 @@
-import { Lens, get, set, Equivalence, Iso, Getter } from 'optics-ts'
+import {
+  Lens,
+  get,
+  set,
+  Equivalence,
+  Iso,
+  Getter,
+  optic as opticsTsOptic,
+} from 'optics-ts'
 import { BehaviorSubject, merge, Observable } from 'rxjs'
 import { map, distinctUntilChanged, mergeMap, take, tap } from 'rxjs/operators'
 import equal from 'deep-equal'
@@ -112,18 +120,20 @@ const constructFocus = <S>(
   getValue: () => S,
   next: (value: S) => void,
 ): RwFocus<S> => <A>(
-  optic:
-    | Lens<S, any, A>
-    | Equivalence<S, any, A>
-    | Iso<S, any, A>
-    | Getter<S, A>,
+  callback: (
+    optic: Equivalence<S, any, S>,
+  ) => Lens<S, any, A> | Equivalence<S, any, A> | Iso<S, any, A> | Getter<S, A>,
 ): any => {
+  const optic = callback(opticsTsOptic<S>())
   if (optic._tag === 'Getter') {
-    return constructReadOnlyFocus(atom$, getValue)(optic)
+    return constructReadOnlyFocus(atom$, getValue)(callback as any)
   }
   const getter = get(optic)
 
-  const newAtom$ = atom$.pipe(map(getter), distinctUntilChanged(equal))
+  const newAtom$: Observable<A> = atom$.pipe(
+    map(getter),
+    distinctUntilChanged(equal),
+  )
 
   const newValue = () => get(optic)(getValue())
 
@@ -138,10 +148,14 @@ const constructFocus = <S>(
 const constructReadOnlyFocus = <S>(atom$: Observable<S>, getValue: () => S) => <
   A
 >(
-  optic: Getter<S, A>,
-) => {
+  callback: (optic: Equivalence<S, any, S>) => Getter<S, A>,
+): ReadOnlyAtom<A> => {
+  const optic = callback(opticsTsOptic<S>())
   const getter = get(optic)
-  const newAtom$ = atom$.pipe(map(getter), distinctUntilChanged(equal))
+  const newAtom$: Observable<A> = atom$.pipe(
+    map(getter),
+    distinctUntilChanged(equal),
+  )
   const newValue = () => get(optic)(getValue())
 
   return roAtomConstructor(newAtom$, newValue, constructSubscribe(newAtom$))

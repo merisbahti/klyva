@@ -1,11 +1,10 @@
 import { atom } from '../src/atom'
-import { optic } from 'optics-ts'
 
 test('two sibling atoms wont be updated when the other one is', () => {
   const value = { a: 0, b: 10 }
   const baseAtom = atom(value)
-  const atomA = baseAtom.focus(optic<typeof value>().prop('a'))
-  const atomB = baseAtom.focus(optic<typeof value>().prop('b'))
+  const atomA = baseAtom.focus(optic => optic.prop('a'))
+  const atomB = baseAtom.focus(optic => optic.prop('b'))
 
   let baseAtomUpdates = 0
   let atomAUpdates = 0

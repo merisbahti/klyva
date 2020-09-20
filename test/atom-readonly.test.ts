@@ -1,11 +1,10 @@
 import { atom } from '../src/atom'
-import { optic } from 'optics-ts'
 
 test('getter optics work as expected', () => {
   const value = 10
   const baseAtom = atom(value)
-  const gt0Atom = baseAtom.focus(optic<typeof value>().to(value => value > 0))
-  const lt5Atom = baseAtom.focus(optic<typeof value>().to(value => value < 5))
+  const gt0Atom = baseAtom.focus(optic => optic.to(value => value > 0))
+  const lt5Atom = baseAtom.focus(optic => optic.to(value => value < 5))
 
   let baseAtomUpdates = 0
   let gt0Updates = 0
