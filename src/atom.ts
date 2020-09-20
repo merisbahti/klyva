@@ -1,6 +1,6 @@
 import { Lens, get, set, Equivalence, Iso, Getter } from 'optics-ts'
 import { BehaviorSubject, merge, Observable } from 'rxjs'
-import { map, distinctUntilChanged, mergeMap, take } from 'rxjs/operators'
+import { map, distinctUntilChanged, mergeMap, take, tap } from 'rxjs/operators'
 import equal from 'deep-equal'
 import { Atom, ReadOnlyAtom, DerivedAtomReader, RwFocus } from './types'
 import observeForOneValue from './observe-for-one-value'
@@ -45,29 +45,33 @@ export const derivedAtom = <S>(read: DerivedAtomReader<S>): ReadOnlyAtom<S> => {
     dependencyObserver,
   } = computeDerivedValue()
 
-  const latestValueRef = { value: initialValue }
-
-  const behaviorSubject = new BehaviorSubject(dependencyObserver)
-  const atom$ = behaviorSubject.pipe(
-    mergeMap(value => {
-      return value
-    }),
+  const dependencyObserverSubject = new BehaviorSubject(dependencyObserver)
+  const atom$ = dependencyObserverSubject.pipe(
+    mergeMap(dependencyObserver => dependencyObserver),
     map(_value => {
       const { computedValue, dependencyObserver } = computeDerivedValue()
-      behaviorSubject.next(dependencyObserver)
-      latestValueRef.value = computedValue
+      dependencyObserverSubject.next(dependencyObserver)
       return computedValue
     }),
     distinctUntilChanged(equal),
+    tap((newValue: S) => {
+      valueSubject.next(newValue)
+    }),
   )
 
+  const valueSubject = new BehaviorSubject(initialValue)
+
   const getValue = () => {
-    return latestValueRef.value
+    return valueSubject.getValue()
   }
 
   const subscribe = (listener: (value: S) => void) => {
-    const subscription = atom$.subscribe(listener)
-    return subscription.unsubscribe
+    const valueSubscription = valueSubject.subscribe(listener)
+    const dependencySubscription = atom$.subscribe()
+    valueSubscription.add(() => {
+      dependencySubscription.unsubscribe()
+    })
+    return valueSubscription.unsubscribe
   }
 
   return roAtomConstructor(atom$, getValue, subscribe)
