@@ -36,6 +36,22 @@ numberAtom.write(6)
 // my value is 6
 ```
 
+### Composition
+```typescript
+const atomOne = atom(10)
+const atomTwo = atom(20)
+const sumAtom = atom(get => get(atomOne) + get(atomTwo))
+
+sumAtom.subscribe((newValue) => console.log(`My new value is: ${newValue}`))
+
+sumAtom.value() // 30
+
+atomOne.update(value => value + 1)
+atomTwo.update(value => value + 1)
+
+sumAtom.value() // 32
+```
+
 
 ### Focus on properties on an atom (lenses, prisms, isos)
 
