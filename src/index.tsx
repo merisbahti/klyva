@@ -10,6 +10,6 @@
 //   return <div>{children || `the snozzberries taste like snozzberries`}</div>
 // }
 
-import { atom } from './atom'
+import { atom } from './atom.1'
 
 export default atom
