@@ -79,7 +79,7 @@ export const derivedAtom = <S>(read: DerivedAtomReader<S>): ReadOnlyAtom<S> => {
     valueSubscription.add(() => {
       dependencySubscription.unsubscribe()
     })
-    return valueSubscription.unsubscribe
+    return () => valueSubscription.unsubscribe()
   }
 
   return roAtomConstructor(atom$, getValue, subscribe)
@@ -113,7 +113,9 @@ const constructSubscribe = <S>(atom$: Observable<S>) => (
   listener: (value: S) => void,
 ): (() => void) => {
   const sub = atom$.subscribe(next => listener(next))
-  return sub.unsubscribe
+  return () => {
+    sub.unsubscribe()
+  }
 }
 const constructFocus = <S>(
   atom$: Observable<S>,

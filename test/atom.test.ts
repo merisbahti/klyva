@@ -3,7 +3,7 @@ import { atom } from '../src/atom'
 test('the atom emits 1, 2, and 3', done => {
   const myAtom = atom(0)
   let latestValue = null
-  myAtom.subscribe(next => {
+  const unsub = myAtom.subscribe(next => {
     latestValue = next
   })
   expect(latestValue).toEqual(0)
@@ -13,6 +13,7 @@ test('the atom emits 1, 2, and 3', done => {
   expect(latestValue).toEqual(2)
   myAtom.update(3)
   expect(latestValue).toEqual(3)
+  unsub()
   done()
 })
 

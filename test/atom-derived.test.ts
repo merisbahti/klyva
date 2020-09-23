@@ -5,7 +5,7 @@ test('simple derivation with 1 atom works', done => {
   const atomA = atom(10)
 
   const derived = atom(get => get(atomA) + 1)
-  derived.subscribe(noop)
+  const unsub = derived.subscribe(noop)
 
   expect(atomA.getValue()).toBe(10)
   expect(derived.getValue()).toBe(11)
@@ -13,6 +13,8 @@ test('simple derivation with 1 atom works', done => {
   atomA.update(1)
   expect(atomA.getValue()).toBe(1)
   expect(derived.getValue()).toBe(2)
+
+  unsub()
   done()
 })
 

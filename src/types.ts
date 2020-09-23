@@ -17,7 +17,7 @@ export type Atom<S> = {
 }
 
 export type ReadOnlyAtom<S> = {
-  subscribe: (listener: (value: S) => void) => void
+  subscribe: (listener: (value: S) => void) => () => void
   focus<A>(
     callback: (optic: Equivalence<S, any, S>) => Getter<S, A>,
   ): ReadOnlyAtom<A>
