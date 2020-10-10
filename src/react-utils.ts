@@ -1,26 +1,23 @@
 import React from 'react'
-import { useMemo } from 'react'
+import { useState } from 'react'
 import { atom } from './atom'
 import { DerivedAtomReader, ReadOnlyAtom, Atom } from './types'
 
 export function useNewAtom<S>(value: DerivedAtomReader<S>): ReadOnlyAtom<S>
 export function useNewAtom<S>(value: S): Atom<S>
 export function useNewAtom<S>(value: S | DerivedAtomReader<S>) {
-  const noDeps = [] as never[]
-  // We want it to behave like useState, where if the argument is updated, nothing changes.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  return useMemo(() => atom(value), noDeps)
+  return useState(() => atom(value))[0]
 }
 
-export const useAtom = <T>(atom: Atom<T>) => {
-  const [, setCache] = React.useState({})
+export const useAtom = <T>(atom: ReadOnlyAtom<T>) => {
+  const [cache, setCache] = React.useState(atom.getValue())
   React.useEffect(() => {
-    const unsub = atom.subscribe(() => {
-      setCache({})
+    const unsub = atom.subscribe(value => {
+      setCache(value)
     })
     return unsub
   }, [atom])
-  return atom.getValue()
+  return cache
 }
 
 /*
