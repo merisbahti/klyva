@@ -36,7 +36,6 @@ test('prisms work', done => {
   expect(focus0Updates).toEqual(2)
   expect(focus1Updates).toEqual(2)
   expect(focus3Updates).toEqual(1)
-  // TODO: This should be 3...
-  expect(myAtomUpdates).toEqual(4)
+  expect(myAtomUpdates).toEqual(3)
   done()
 })

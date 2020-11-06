@@ -1,5 +1,5 @@
 import { BehaviorSubject, merge, Observable } from 'rxjs'
-import { map, distinctUntilChanged, mergeMap, take, tap } from 'rxjs/operators'
+import { map, distinctUntilChanged, take, tap, switchMap } from 'rxjs/operators'
 import equal from 'deep-equal'
 import { Atom, ReadableAtom, DerivedAtomReader, SetState } from './types'
 import observeForOneValue from './observe-for-one-value'
@@ -60,8 +60,8 @@ export const derivedAtom = <Value, Update>(
   } = computeDerivedValue()
 
   const dependencyObserverSubject = new BehaviorSubject(dependencyObserver)
-  const atom$ = dependencyObserverSubject.pipe(
-    mergeMap(dependencyObserver => dependencyObserver),
+  const dependencyObserver$ = dependencyObserverSubject.pipe(
+    switchMap(dependencyObserver => dependencyObserver),
     map(_value => {
       const { computedValue, dependencyObserver } = computeDerivedValue()
       dependencyObserverSubject.next(dependencyObserver)
@@ -73,15 +73,15 @@ export const derivedAtom = <Value, Update>(
   )
 
   const valueSubject = new BehaviorSubject(initialValue)
-  const valueStream = valueSubject.pipe(distinctUntilChanged(equal))
+  const value$ = valueSubject.pipe(distinctUntilChanged(equal))
 
   const getValue = () => {
     return valueSubject.getValue()
   }
 
   const subscribe = (listener: (value: Value) => void) => {
-    const valueSubscription = valueStream.subscribe(listener)
-    const dependencySubscription = atom$.subscribe()
+    const valueSubscription = value$.subscribe(listener)
+    const dependencySubscription = dependencyObserver$.subscribe()
     valueSubscription.add(() => {
       dependencySubscription.unsubscribe()
     })
@@ -116,7 +116,9 @@ type Subscribe<S> = (listener: (value: S) => void) => () => void
 const constructSubscribe = <S>(
   atom$: Observable<S>,
 ): Subscribe<S> => listener => {
-  const sub = atom$.subscribe(next => listener(next))
+  const sub = atom$
+    .pipe(distinctUntilChanged(equal))
+    .subscribe(next => listener(next))
   return () => {
     sub.unsubscribe()
   }

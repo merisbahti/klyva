@@ -39,7 +39,7 @@ const TodoList = ({
   items: PrimitiveAtom<Array<{ checked: boolean; task: string }>>
 }) => {
   const slicedAtom = sliceAtomArray(items)
-  // const itemAtoms = useAtom(slicedAtom)
+  const itemAtoms = useAtom(slicedAtom)
 
   return (
     <div>

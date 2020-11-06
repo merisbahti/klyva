@@ -35,14 +35,14 @@ test('getter optics work as expected', () => {
   expect(lt5Atom.getValue()).toBe(true)
 
   baseAtom.update(-1)
-  expect(baseAtomUpdates).toBe(3)
+  expect(baseAtomUpdates).toBe(2)
   expect(gt0Updates).toBe(2)
   expect(lt5Updates).toBe(2)
   expect(gt0Atom.getValue()).toBe(false)
   expect(lt5Atom.getValue()).toBe(true)
 
   baseAtom.update(2)
-  expect(baseAtomUpdates).toBe(4)
+  expect(baseAtomUpdates).toBe(3)
   expect(gt0Updates).toBe(3)
   expect(lt5Updates).toBe(2)
   expect(gt0Atom.getValue()).toBe(true)
