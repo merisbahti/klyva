@@ -1,22 +1,23 @@
 import React from 'react'
 import * as rtl from '@testing-library/react'
 import { atom } from '../src'
-import { Atom } from '../src/types'
+import { PrimitiveAtom } from '../src/types'
 import { useAtom } from '../src/react-utils'
+import focusAtom from '../src/focus-atom'
 
 it('focus on an atom works', async () => {
   const anAtom = atom({ a: 5 })
-  const Counter = ({ myAtom }: { myAtom: Atom<{ a: number }> }) => {
+  const Counter = ({ myAtom }: { myAtom: PrimitiveAtom<{ a: number }> }) => {
     const myAtomValue = useAtom(myAtom)
     const focusedA = React.useMemo(
-      () => myAtom.focus(optic => optic.prop('a')),
+      () => focusAtom(myAtom, optic => optic.prop('a')),
       [myAtom],
     )
     const count = useAtom(focusedA)
     return (
       <div>
         <div>bigAtom: {JSON.stringify(myAtomValue)}</div>
-        <div>focusedAtom: {count}</div>
+        <div>focusedAtom: {JSON.stringify(count)}</div>
         <button onClick={() => focusedA.update(value => value + 1)}>
           small inc
         </button>
@@ -51,19 +52,19 @@ it('focus on a derived atom works', async () => {
   const anAtom = atom({ a: 5 })
   const derivedAtom = atom(get => get(anAtom).a + 1)
 
-  const Counter = ({ myAtom }: { myAtom: Atom<{ a: number }> }) => {
+  const Counter = ({ myAtom }: { myAtom: PrimitiveAtom<{ a: number }> }) => {
     const myAtomValue = useAtom(myAtom)
     const myDerivedAtomValue = useAtom(derivedAtom)
     const focusedA = React.useMemo(
-      () => myAtom.focus(optic => optic.prop('a')),
+      () => focusAtom(myAtom, optic => optic.prop('a')),
       [myAtom],
     )
     const count = useAtom(focusedA)
     return (
       <div>
         <div>bigAtom: {JSON.stringify(myAtomValue)}</div>
-        <div>focusedAtom: {count}</div>
-        <div>derivedAtom: {myDerivedAtomValue}</div>
+        <div>focusedAtom: {JSON.stringify(count)}</div>
+        <div>derivedAtom: {JSON.stringify(myDerivedAtomValue)}</div>
         <button onClick={() => focusedA.update(value => value + 1)}>
           small inc
         </button>

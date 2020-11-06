@@ -45,9 +45,7 @@ test('no unneccesary updates', done => {
 
   expect(updates.A).toBe(2)
   expect(updates.B).toBe(1)
-  // @TODO: unforunately this one is updated twice, since
-  // valueSubject provides an initial update, but atom$ provides another
-  expect(updates.derived).toBe(2)
+  expect(updates.derived).toBe(1)
   expect(atomA.getValue()).toBe(9)
   expect(atomB.getValue()).toBe(5)
   expect(derived.getValue()).toBe(false)
@@ -56,7 +54,7 @@ test('no unneccesary updates', done => {
 
   expect(updates.A).toBe(3)
   expect(updates.B).toBe(1)
-  expect(updates.derived).toBe(2)
+  expect(updates.derived).toBe(1)
   expect(atomA.getValue()).toBe(8)
   expect(atomB.getValue()).toBe(5)
   expect(derived.getValue()).toBe(false)
@@ -64,7 +62,7 @@ test('no unneccesary updates', done => {
   atomB.update(20)
   expect(updates.A).toBe(3)
   expect(updates.B).toBe(2)
-  expect(updates.derived).toBe(3)
+  expect(updates.derived).toBe(2)
   expect(atomA.getValue()).toBe(8)
   expect(atomB.getValue()).toBe(20)
   expect(derived.getValue()).toBe(true)

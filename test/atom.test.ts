@@ -1,4 +1,5 @@
 import { atom } from '../src/atom'
+import focusAtom from '../src/focus-atom'
 
 test('the atom emits 1, 2, and 3', done => {
   const myAtom = atom(0)
@@ -36,7 +37,7 @@ test('the atom emits 1, 2, and 3 (using updater function)', done => {
 
 test('the focused atoms emit even though its the parent being nexted', done => {
   const myAtom = atom({ value: 0 })
-  const focusedAtom = myAtom.focus(optic => optic.prop('value'))
+  const focusedAtom = focusAtom(myAtom, optic => optic.prop('value'))
   let latestValue = null
   focusedAtom.subscribe(next => {
     latestValue = next
@@ -52,7 +53,7 @@ test('the focused atoms emit even though its the parent being nexted', done => {
 
 test('the parent emits even though its the focused atom being nexted', done => {
   const myAtom = atom({ value: 0 })
-  const focusedAtom = myAtom.focus(optic => optic.prop('value'))
+  const focusedAtom = focusAtom(myAtom, optic => optic.prop('value'))
   let latestValue = null
   myAtom.subscribe(next => {
     latestValue = next
@@ -69,8 +70,8 @@ test('the parent emits even though its the focused atom being nexted', done => {
 test("the parent emits even though its the focused atom's focused atom being nexted", done => {
   const value = { a: { b: 0 } }
   const myAtom = atom(value)
-  const firstFocus = myAtom.focus(optic => optic.prop('a'))
-  const secondFocus = firstFocus.focus(optic => optic.prop('b'))
+  const firstFocus = focusAtom(myAtom, optic => optic.prop('a'))
+  const secondFocus = focusAtom(firstFocus, optic => optic.prop('b'))
   let latestValue = null
   myAtom.subscribe(next => {
     latestValue = next
