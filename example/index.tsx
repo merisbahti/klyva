@@ -63,9 +63,6 @@ const Form = React.memo(({
 
 const Field = React.memo(({field, onRemove}: {field: PrimitiveAtom<[string, string]>, onRemove: () => void}) => {
   const resovledAtom = useAtom(field)
-  if (!resovledAtom) {
-    return <div>unresolved</div>
-  }
   const [name, value] = resovledAtom
 
     return <li>

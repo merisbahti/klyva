@@ -1,8 +1,11 @@
 import { BehaviorSubject, merge, Observable } from 'rxjs'
 import { map, distinctUntilChanged, take, tap, switchMap } from 'rxjs/operators'
-import equal from 'deep-equal'
+import deepEqual from 'deep-equal'
 import { Atom, ReadableAtom, DerivedAtomReader, SetState } from './types'
 import observeForOneValue from './observe-for-one-value'
+const equal = (l1: any, l2: any) => {
+  return deepEqual(l1, l2, { strict: true })
+}
 
 export function atom<Value>(
   value: DerivedAtomReader<Value>,
@@ -90,6 +93,7 @@ export const derivedAtom = <Value, Update>(
 
   return atomConstructor(subscribe, getValue, write)
 }
+
 // Make this a better construcor, if update is set, it should be a RW atom, but if not, it should always return a ReadOnly atom
 const atomConstructor = <Value, Updater>(
   subscribe: Subscribe<Value>,
