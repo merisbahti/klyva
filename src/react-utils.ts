@@ -2,7 +2,7 @@ import React from 'react'
 import { useState } from 'react'
 import { atom } from './atom'
 import sliceAtomArray from './slice-atom-array'
-import { Atom, DerivedAtomReader, PrimitiveAtom, ReadableAtom } from './types'
+import { DerivedAtomReader, PrimitiveAtom, ReadableAtom } from './types'
 
 export function useNewAtom<S>(value: DerivedAtomReader<S>): ReadableAtom<S>
 export function useNewAtom<S>(value: S): PrimitiveAtom<S>
