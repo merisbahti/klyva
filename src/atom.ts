@@ -90,6 +90,7 @@ export const derivedAtom = <Value, Update>(
 
   return atomConstructor(subscribe, getValue, write)
 }
+// Make this a better construcor, if update is set, it should be a RW atom, but if not, it should always return a ReadOnly atom
 const atomConstructor = <Value, Updater>(
   subscribe: Subscribe<Value>,
   getValue: () => Value,

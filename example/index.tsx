@@ -2,9 +2,8 @@ import 'react-app-polyfill/ie11'
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
 import { PrimitiveAtom } from '../src/types'
-import { useAtom, useNewAtom } from '../src/react-utils'
+import { useAtom, useNewAtom, useAtomSlice } from '../src/react-utils'
 import focusAtom from '../src/focus-atom'
-import sliceAtomArray from '../src/slice-atom-array'
 
 const TodoItem = ({
   item,
@@ -38,16 +37,13 @@ const TodoList = ({
 }: {
   items: PrimitiveAtom<Array<{ checked: boolean; task: string }>>
 }) => {
-  const slicedAtom = sliceAtomArray(items)
-  const itemAtoms = useAtom(slicedAtom)
+  const itemAtoms = useAtomSlice(items)
 
   return (
     <div>
-      {
-        /*itemAtoms.map(itemAtom => (
+      {itemAtoms.map(itemAtom => (
         <TodoItem item={itemAtom} />
-      ))*/ null
-      }
+      ))}
       <button
         onClick={() =>
           items.update(arr => [...arr, { checked: false, task: 'new task!' }])
@@ -60,11 +56,9 @@ const TodoList = ({
 }
 
 const App = () => {
-  const myAtom = useNewAtom([])
-  const myitem = useNewAtom({ checked: false, task: 'hello' })
+  const myAtom = useNewAtom([{ checked: false, task: 'hello' }])
   return (
     <div>
-      <TodoItem item={myitem} />
       <TodoList items={myAtom} />
     </div>
   )

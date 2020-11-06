@@ -25,8 +25,11 @@ const sliceAtomArray = <Value>(
     }
     return arrayCache[length]
   }
+  const atomLengthAtom = atom(atomGetter => {
+    return atomGetter(atomOfArray).length
+  })
   return atom(atomGetter => {
-    const length = atomGetter(atomOfArray).length
+    const length = atomGetter(atomLengthAtom)
     return getArrayAtLength(length)
   })
 }
