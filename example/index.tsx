@@ -35,7 +35,7 @@ const FormList = ({ todos }: { todos: typeof RecursiveFormAtom }) => {
   )
 }
 
-const Form = ({
+const Form = React.memo(({
   formAtom,
   onRemove,
 }: {
@@ -59,10 +59,14 @@ const Form = ({
       <li><button onClick={onRemove}>Remove this form</button></li>
     </ul>
   )
-}
+})
 
-const Field = ({field, onRemove}: {field: PrimitiveAtom<[string, string]>, onRemove: () => void}) => {
-  const [name, value] = useAtom(field)
+const Field = React.memo(({field, onRemove}: {field: PrimitiveAtom<[string, string]>, onRemove: () => void}) => {
+  const resovledAtom = useAtom(field)
+  if (!resovledAtom) {
+    return <div>unresolved</div>
+  }
+  const [name, value] = resovledAtom
 
     return <li>
       <input
@@ -77,11 +81,17 @@ const Field = ({field, onRemove}: {field: PrimitiveAtom<[string, string]>, onRem
       />
       <button onClick={onRemove}>X</button>
     </li>
-}
+})
 
 const App = () => {
+  const value = useAtom(focusAtom(RecursiveFormAtom, optic => optic.to(value => JSON.stringify(value, null, 2))))
   return (
+    <div>
       <FormList todos={RecursiveFormAtom} />
+      <pre>
+        {value}
+      </pre>
+    </div>
   )
 }
 
