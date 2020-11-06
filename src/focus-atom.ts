@@ -7,6 +7,7 @@ import {
   Lens,
   modify,
   optic,
+  preview,
   Prism,
   set,
 } from 'optics-ts'
@@ -79,6 +80,20 @@ function focusAtom<Value, FocusedValue>(
         const currentValue = getAtomValue(baseAtom)
         return get(focus)(currentValue)
       })
+    case 'Prism':
+      return atom(
+        getAtomValue => {
+          const currentValue = getAtomValue(baseAtom)
+          return preview(focus)(currentValue)
+        },
+        (update: SetState<FocusedValue>) => {
+          if (update instanceof Function) {
+            baseAtom.update(modify(focus)(update))
+          } else {
+            baseAtom.update(set(focus)(update))
+          }
+        },
+      )
     default:
       throw new Error(`Focus for ${focus._tag} is not implemented`)
   }
