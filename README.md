@@ -57,7 +57,7 @@ sumAtom.value() // 32
 
 ```typescript
 const objectAtom = atom({a: 10})
-const focusedATom = objectAtom.focus(optic => optic.prop('a'))
+const focusedATom = focusAtom(objectAtom, optic => optic.prop('a'))
 ```
 
 See more about optics at:
