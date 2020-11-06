@@ -65,12 +65,9 @@ export const derivedAtom = <Value, Update>(
     map(_value => {
       const { computedValue, dependencyObserver } = computeDerivedValue()
       dependencyObserverSubject.next(dependencyObserver)
-      console.log('_value', _value)
-      console.log('computedValue', computedValue)
       return computedValue
     }),
     tap((newValue: Value) => {
-      console.log('got new value newValue', newValue)
       valueSubject.next(newValue)
     }),
   )

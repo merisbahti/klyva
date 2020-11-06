@@ -1,18 +1,20 @@
 import 'react-app-polyfill/ie11'
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
-import { Atom } from '../src/types'
+import { PrimitiveAtom } from '../src/types'
 import { useAtom, useNewAtom } from '../src/react-utils'
+import focusAtom from '../src/focus-atom'
+import sliceAtomArray from '../src/slice-atom-array'
 
 const TodoItem = ({
   item,
 }: {
-  item: Atom<{ checked: boolean; task: string }>
+  item: PrimitiveAtom<{ checked: boolean; task: string }>
 }) => {
-  const taskAtom = item.focus(o => o.prop('task'))
+  const taskAtom = focusAtom(item, o => o.prop('task'))
   const task = useAtom(taskAtom)
 
-  const checkedAtom = item.focus(o => o.prop('checked'))
+  const checkedAtom = focusAtom(item, o => o.prop('checked'))
   const checked = useAtom(checkedAtom)
 
   return (
@@ -31,11 +33,39 @@ const TodoItem = ({
   )
 }
 
-const App = () => {
-  const myAtom = useNewAtom({ checked: false, task: 'Feed the cows' })
+const TodoList = ({
+  items,
+}: {
+  items: PrimitiveAtom<Array<{ checked: boolean; task: string }>>
+}) => {
+  const slicedAtom = sliceAtomArray(items)
+  // const itemAtoms = useAtom(slicedAtom)
+
   return (
     <div>
-      <TodoItem item={myAtom} />
+      {
+        /*itemAtoms.map(itemAtom => (
+        <TodoItem item={itemAtom} />
+      ))*/ null
+      }
+      <button
+        onClick={() =>
+          items.update(arr => [...arr, { checked: false, task: 'new task!' }])
+        }
+      >
+        New item
+      </button>
+    </div>
+  )
+}
+
+const App = () => {
+  const myAtom = useNewAtom([])
+  const myitem = useNewAtom({ checked: false, task: 'hello' })
+  return (
+    <div>
+      <TodoItem item={myitem} />
+      <TodoList items={myAtom} />
     </div>
   )
 }
