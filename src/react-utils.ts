@@ -2,7 +2,12 @@ import React from 'react'
 import { useState } from 'react'
 import { atom } from './atom'
 import sliceAtomArray from './slice-atom-array'
-import { DerivedAtomReader, PrimitiveAtom, ReadableAtom } from './types'
+import {
+  DerivedAtomReader,
+  PrimitiveAtom,
+  PrimitiveRemovableAtom,
+  ReadableAtom,
+} from './types'
 
 export function useNewAtom<S>(value: DerivedAtomReader<S>): ReadableAtom<S>
 export function useNewAtom<S>(value: S): PrimitiveAtom<S>
@@ -23,7 +28,7 @@ export const useAtom = <T>(atom: ReadableAtom<T>): T => {
 
 export const useAtomSlice = <T>(
   arrayAtom: PrimitiveAtom<Array<T>>,
-): Array<PrimitiveAtom<T>> => {
+): Array<PrimitiveRemovableAtom<T>> => {
   const atomArray = React.useMemo(() => sliceAtomArray(arrayAtom), [arrayAtom])
   return useAtom(atomArray)
 }
