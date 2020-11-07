@@ -1,11 +1,8 @@
 import { BehaviorSubject, merge, Observable } from 'rxjs'
 import { map, distinctUntilChanged, take, tap, switchMap } from 'rxjs/operators'
-import deepEqual from 'deep-equal'
 import { Atom, ReadableAtom, DerivedAtomReader, SetState } from './types'
 import observeForOneValue from './observe-for-one-value'
-const equal = (l1: any, l2: any) => {
-  return deepEqual(l1, l2, { strict: true })
-}
+import equal from './equal'
 
 export function atom<Value>(
   value: DerivedAtomReader<Value>,
