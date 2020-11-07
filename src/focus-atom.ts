@@ -64,34 +64,30 @@ function focusAtom<Value, FocusedValue>(
     case 'Lens':
       return atom(
         getAtomValue => {
-          const currentValue = getAtomValue(baseAtom)
-          return get(focus)(currentValue)
+          return get(focus)(getAtomValue(baseAtom))
         },
         (update: SetState<FocusedValue>) => {
-          if (update instanceof Function) {
-            baseAtom.update(modify(focus)(update))
-          } else {
-            baseAtom.update(set(focus)(update))
-          }
+          const nextValue = (update instanceof Function
+            ? modify(focus)(update)
+            : set(focus)(update))(baseAtom.getValue())
+          baseAtom.update(nextValue)
         },
       )
     case 'Getter':
       return atom(getAtomValue => {
-        const currentValue = getAtomValue(baseAtom)
-        return get(focus)(currentValue)
+        return get(focus)(getAtomValue(baseAtom))
       })
     case 'Prism':
       return atom(
         getAtomValue => {
-          const currentValue = getAtomValue(baseAtom)
-          return preview(focus)(currentValue)
+          getAtomValue(baseAtom)
+          return preview(focus)(baseAtom.getValue())
         },
         (update: SetState<FocusedValue>) => {
-          if (update instanceof Function) {
-            baseAtom.update(modify(focus)(update))
-          } else {
-            baseAtom.update(set(focus)(update))
-          }
+          const nextValue = (update instanceof Function
+            ? modify(focus)(update)
+            : set(focus)(update))(baseAtom.getValue())
+          baseAtom.update(nextValue)
         },
       )
     default:

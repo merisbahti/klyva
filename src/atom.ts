@@ -2,23 +2,23 @@ import { BehaviorSubject, merge, Observable } from 'rxjs'
 import {
   map,
   distinctUntilChanged,
-  take,
   tap,
-  switchMap,
   skip,
   filter,
+  take,
+  switchMap,
 } from 'rxjs/operators'
 import { Atom, ReadableAtom, DerivedAtomReader, SetState } from './types'
 import observeForOneValue from './observe-for-one-value'
 import equal from './equal'
 
-export function atom<Value>(
-  value: DerivedAtomReader<Value>,
-): ReadableAtom<Value>
 export function atom<Value, Update>(
   value: DerivedAtomReader<Value>,
   write: (update: Update) => void,
 ): Atom<Value, Update>
+export function atom<Value>(
+  value: DerivedAtomReader<Value>,
+): ReadableAtom<Value>
 export function atom<Value>(value: Value): Atom<Value, SetState<Value>>
 
 export function atom<Value, Update = unknown>(
@@ -61,6 +61,10 @@ export const derivedAtom = <Value, Update>(
     // but we want to ignore the first value!
     const observables = Array.from(dependantAtoms).map(observeForOneValue)
     // Out of all dependants, if just one changes, we want to complete the stream
+    console.log(
+      'Adding observer for dependency',
+      Array.from(dependantAtoms).map(x => x.getValue()),
+    )
     const dependencyObserver = merge(...observables).pipe(take(1))
 
     return { computedValue, dependencyObserver } as const
@@ -74,9 +78,13 @@ export const derivedAtom = <Value, Update>(
   const dependencyObserverSubject = new BehaviorSubject(dependencyObserver)
   const dependencyObserver$ = dependencyObserverSubject.pipe(
     switchMap(dependencyObserver => dependencyObserver),
-    map(_value => {
+    map(_updatedDependencyValue => {
       const { computedValue, dependencyObserver } = getValueAndObserver()
       dependencyObserverSubject.next(dependencyObserver)
+      console.log('new computed value', {
+        _updatedDependencyValue,
+        computedValue,
+      })
       return computedValue
     }),
     filter(newValue => !equal(newValue, cachedValue)),
@@ -92,7 +100,10 @@ export const derivedAtom = <Value, Update>(
   }
 
   const subscribe = (listener: (value: Value) => void) => {
-    const dependencySubscription = dependencyObserver$.subscribe(listener)
+    const dependencySubscription = dependencyObserver$.subscribe(newValue => {
+      console.log('sending new value down', newValue)
+      listener(newValue)
+    })
     return () => dependencySubscription.unsubscribe()
   }
 

@@ -67,20 +67,39 @@ test('the parent emits even though its the focused atom being nexted', done => {
   done()
 })
 
-test("the parent emits even though its the focused atom's focused atom being nexted", done => {
+test.only("the parent emits even though its the focused atom's focused atom being nexted", done => {
   const value = { a: { b: 0 } }
   const myAtom = atom(value)
   const firstFocus = focusAtom(myAtom, optic => optic.prop('a'))
   const secondFocus = focusAtom(firstFocus, optic => optic.prop('b'))
   let latestValue = null
   myAtom.subscribe(next => {
+    console.log('myAtom updated', next)
     latestValue = next
   })
-  secondFocus.update(1)
+  firstFocus.subscribe(next => {
+    console.log('firstFocus updated', next)
+  })
+  secondFocus.subscribe(next => {
+    console.log('secondFocus updated', next)
+  })
+
+  myAtom.update({ a: { b: 1 } })
   expect(latestValue).toEqual({ a: { b: 1 } })
+  expect(myAtom.getValue()).toEqual({ a: { b: 1 } })
+  expect(firstFocus.getValue()).toEqual({ b: 1 })
+  expect(secondFocus.getValue()).toEqual(1)
+
   secondFocus.update(2)
   expect(latestValue).toEqual({ a: { b: 2 } })
+  expect(firstFocus.getValue()).toEqual({ b: 2 })
+  expect(secondFocus.getValue()).toEqual(2)
+  expect(myAtom.getValue()).toEqual({ a: { b: 2 } })
+
   secondFocus.update(3)
   expect(latestValue).toEqual({ a: { b: 3 } })
+  expect(firstFocus.getValue()).toEqual({ b: 3 })
+  expect(secondFocus.getValue()).toEqual(3)
+  expect(myAtom.getValue()).toEqual({ a: { b: 3 } })
   done()
 })
