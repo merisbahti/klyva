@@ -7,7 +7,7 @@ test('the atom emits 1, 2, and 3', done => {
   const unsub = myAtom.subscribe(next => {
     latestValue = next
   })
-  expect(latestValue).toEqual(0)
+  expect(latestValue).toEqual(null)
   myAtom.update(1)
   expect(latestValue).toEqual(1)
   myAtom.update(2)
@@ -25,7 +25,7 @@ test('the atom emits 1, 2, and 3 (using updater function)', done => {
     latestValue = next
   })
   const inc = (num: number) => num + 1
-  expect(latestValue).toEqual(0)
+  expect(latestValue).toEqual(null)
   myAtom.update(inc)
   expect(latestValue).toEqual(1)
   myAtom.update(inc)

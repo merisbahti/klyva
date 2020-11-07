@@ -1,5 +1,5 @@
 import { Observable } from 'rxjs/internal/Observable'
-import { skip, take } from 'rxjs/operators'
+import { take } from 'rxjs/operators'
 import { ReadableAtom } from './types'
 
 const observeForOneValue = <T>(atom: ReadableAtom<T>): Observable<T> => {
@@ -10,7 +10,7 @@ const observeForOneValue = <T>(atom: ReadableAtom<T>): Observable<T> => {
     return () => {
       unsubscribe()
     }
-  }).pipe(skip(1), take(1))
+  }).pipe(take(1))
 }
 
 export default observeForOneValue

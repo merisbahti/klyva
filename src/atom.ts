@@ -1,5 +1,13 @@
 import { BehaviorSubject, merge, Observable } from 'rxjs'
-import { map, distinctUntilChanged, take, tap, switchMap } from 'rxjs/operators'
+import {
+  map,
+  distinctUntilChanged,
+  take,
+  tap,
+  switchMap,
+  skip,
+  filter,
+} from 'rxjs/operators'
 import { Atom, ReadableAtom, DerivedAtomReader, SetState } from './types'
 import observeForOneValue from './observe-for-one-value'
 import equal from './equal'
@@ -26,7 +34,11 @@ export function atom<Value, Update = unknown>(
   const next = (next: SetState<Value>) =>
     next instanceof Function ? atom$.next(next(getValue())) : atom$.next(next)
 
-  return atomConstructor(constructSubscribe(atom$), getValue, next)
+  return atomConstructor(
+    constructSubscribe(atom$.pipe(skip(1))),
+    getValue,
+    next,
+  )
 }
 
 export const derivedAtom = <Value, Update>(
@@ -40,7 +52,7 @@ export const derivedAtom = <Value, Update>(
     return a.getValue()
   }
 
-  const computeDerivedValue = () => {
+  const getValueAndObserver = () => {
     const dependantAtoms: Set<ReadableAtom<unknown>> = new Set()
     const onDependency = (atom: ReadableAtom<unknown>) =>
       dependantAtoms.add(atom)
@@ -57,35 +69,31 @@ export const derivedAtom = <Value, Update>(
   const {
     computedValue: initialValue,
     dependencyObserver,
-  } = computeDerivedValue()
+  } = getValueAndObserver()
 
   const dependencyObserverSubject = new BehaviorSubject(dependencyObserver)
   const dependencyObserver$ = dependencyObserverSubject.pipe(
     switchMap(dependencyObserver => dependencyObserver),
     map(_value => {
-      const { computedValue, dependencyObserver } = computeDerivedValue()
+      const { computedValue, dependencyObserver } = getValueAndObserver()
       dependencyObserverSubject.next(dependencyObserver)
       return computedValue
     }),
+    filter(newValue => !equal(newValue, cachedValue)),
     tap((newValue: Value) => {
-      valueSubject.next(newValue)
+      cachedValue = newValue
     }),
   )
 
-  const valueSubject = new BehaviorSubject(initialValue)
-  const value$ = valueSubject.pipe(distinctUntilChanged(equal))
+  let cachedValue = initialValue
 
   const getValue = () => {
-    return valueSubject.getValue()
+    return cachedValue
   }
 
   const subscribe = (listener: (value: Value) => void) => {
-    const valueSubscription = value$.subscribe(listener)
-    const dependencySubscription = dependencyObserver$.subscribe()
-    valueSubscription.add(() => {
-      dependencySubscription.unsubscribe()
-    })
-    return () => valueSubscription.unsubscribe()
+    const dependencySubscription = dependencyObserver$.subscribe(listener)
+    return () => dependencySubscription.unsubscribe()
   }
 
   return atomConstructor(subscribe, getValue, write)

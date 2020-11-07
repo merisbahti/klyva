@@ -21,17 +21,17 @@ test('two sibling atoms wont be updated when the other one is', () => {
     atomBUpdates += 1
   })
 
+  expect(baseAtomUpdates).toBe(0)
+  expect(atomAUpdates).toBe(0)
+  expect(atomBUpdates).toBe(0)
+
+  atomB.update(1)
   expect(baseAtomUpdates).toBe(1)
+  expect(atomAUpdates).toBe(0)
+  expect(atomBUpdates).toBe(1)
+
+  atomA.update(11)
+  expect(baseAtomUpdates).toBe(2)
   expect(atomAUpdates).toBe(1)
   expect(atomBUpdates).toBe(1)
-
-  atomA.update(1)
-  expect(baseAtomUpdates).toBe(2)
-  expect(atomAUpdates).toBe(2)
-  expect(atomBUpdates).toBe(1)
-
-  atomB.update(11)
-  expect(baseAtomUpdates).toBe(3)
-  expect(atomAUpdates).toBe(2)
-  expect(atomBUpdates).toBe(2)
 })
