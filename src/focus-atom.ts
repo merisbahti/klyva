@@ -24,6 +24,8 @@ function focusAtom<Value, FocusedValue>(
     | Lens<Value, any, FocusedValue>,
 ): Atom<FocusedValue, SetState<FocusedValue>>
 
+// remove when tsdx is fixed
+// eslint-disable-next-line no-redeclare
 function focusAtom<Value, FocusedValue>(
   atom: Atom<Value, SetState<Value>>,
   opticCallback: (
@@ -31,6 +33,8 @@ function focusAtom<Value, FocusedValue>(
   ) => Prism<Value, any, FocusedValue>,
 ): Atom<FocusedValue | undefined, SetState<FocusedValue>>
 
+// remove when tsdx is fixed
+// eslint-disable-next-line no-redeclare
 function focusAtom<Value, FocusedValue>(
   atom: Atom<Value, SetState<Value>>,
   opticCallback: (
@@ -38,6 +42,8 @@ function focusAtom<Value, FocusedValue>(
   ) => AffineFold<Value, FocusedValue>,
 ): ReadableAtom<FocusedValue | undefined>
 
+// remove when tsdx is fixed
+// eslint-disable-next-line no-redeclare
 function focusAtom<Value, FocusedValue>(
   atom: Atom<Value, SetState<Value>>,
   opticCallback: (
@@ -45,6 +51,8 @@ function focusAtom<Value, FocusedValue>(
   ) => Getter<Value, FocusedValue>,
 ): ReadableAtom<FocusedValue>
 
+// remove when tsdx is fixed
+// eslint-disable-next-line no-redeclare
 function focusAtom<Value, FocusedValue>(
   baseAtom: Atom<Value, SetState<Value>>,
   opticCallback: (

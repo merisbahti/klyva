@@ -38,6 +38,11 @@
     "singleQuote": true,
     "trailingComma": "all"
   },
+  "// REMOVE WHEN NEW VERSION OF TSDX IS RELEASED1": {},
+  "// REMOVE WHEN NEW VERSION OF TSDX IS RELEASED2": {},
+  "// REMOVE WHEN NEW VERSION OF TSDX IS RELEASED3": {},
+  "// REMOVE WHEN NEW VERSION OF TSDX IS RELEASED4": {},
+  "// REMOVE WHEN NEW VERSION OF TSDX IS RELEASED5": {},
   "resolutions": {
     "**/typescript": "^4.0.5",
     "**/@typescript-eslint/eslint-plugin": "^4.6.1",
