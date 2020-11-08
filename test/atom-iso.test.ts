@@ -1,10 +1,11 @@
 import { atom } from '../src/atom'
+import focusAtom from '../src/focus-atom'
 
 test('isomorphisms work', done => {
   const myAtom = atom(0)
   const there = (a: number) => a + 1
   const back = (a: number) => a - 1
-  const myFocus = myAtom.focus(optic => optic.iso(there, back))
+  const myFocus = focusAtom(myAtom, optic => optic.iso(there, back))
 
   myFocus.subscribe(() => {})
 

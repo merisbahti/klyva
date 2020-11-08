@@ -1,5 +1,6 @@
 import { noop } from 'rxjs'
 import { atom } from '../src/atom'
+import { SetState } from '../src/types'
 
 test('simple derivation with 1 atom works', done => {
   const atomA = atom(10)
@@ -34,37 +35,35 @@ test('no unneccesary updates', done => {
     updates.derived++
   })
 
-  expect(updates.A).toBe(1)
-  expect(updates.B).toBe(1)
-  expect(updates.derived).toBe(1)
+  expect(updates.A).toBe(0)
+  expect(updates.B).toBe(0)
+  expect(updates.derived).toBe(0)
   expect(atomA.getValue()).toBe(10)
   expect(atomB.getValue()).toBe(5)
   expect(derived.getValue()).toBe(false)
 
   atomA.update(9)
 
-  expect(updates.A).toBe(2)
-  expect(updates.B).toBe(1)
-  // @TODO: unforunately this one is updated twice, since
-  // valueSubject provides an initial update, but atom$ provides another
-  expect(updates.derived).toBe(2)
+  expect(updates.A).toBe(1)
+  expect(updates.B).toBe(0)
+  expect(updates.derived).toBe(0)
   expect(atomA.getValue()).toBe(9)
   expect(atomB.getValue()).toBe(5)
   expect(derived.getValue()).toBe(false)
 
   atomA.update(8)
 
-  expect(updates.A).toBe(3)
-  expect(updates.B).toBe(1)
-  expect(updates.derived).toBe(2)
+  expect(updates.A).toBe(2)
+  expect(updates.B).toBe(0)
+  expect(updates.derived).toBe(0)
   expect(atomA.getValue()).toBe(8)
   expect(atomB.getValue()).toBe(5)
   expect(derived.getValue()).toBe(false)
 
   atomB.update(20)
-  expect(updates.A).toBe(3)
-  expect(updates.B).toBe(2)
-  expect(updates.derived).toBe(3)
+  expect(updates.A).toBe(2)
+  expect(updates.B).toBe(1)
+  expect(updates.derived).toBe(1)
   expect(atomA.getValue()).toBe(8)
   expect(atomB.getValue()).toBe(20)
   expect(derived.getValue()).toBe(true)
@@ -75,13 +74,13 @@ test('advanced derivation with multiple dependencies work as expected', done => 
   const atomA = atom(10)
   const atomB = atom(5)
   const atomC = atom('then')
-  const derived = atom(get => (get(atomA) < get(atomB) ? get(atomC) : false))
+  const derived = atom(get => (get(atomA) < get(atomB) ? get(atomC) : 'else'))
 
   derived.subscribe(noop)
 
   expect(atomA.getValue()).toBe(10)
   expect(atomB.getValue()).toBe(5)
-  expect(derived.getValue()).toBe(false)
+  expect(derived.getValue()).toBe('else')
 
   atomA.update(0)
   expect(atomA.getValue()).toBe(0)
@@ -92,5 +91,65 @@ test('advanced derivation with multiple dependencies work as expected', done => 
   expect(atomA.getValue()).toBe(0)
   expect(atomB.getValue()).toBe(20)
   expect(derived.getValue()).toBe('then')
+  done()
+})
+
+test('composite atoms work', done => {
+  const atomA = atom(10)
+  const atomB = atom(5)
+  const derived = atom(
+    get => ({
+      a: get(atomA),
+      b: get(atomB),
+      sum: get(atomA) + get(atomB),
+    }),
+    (update: SetState<{ a: number; b: number }>) => {
+      const { a, b } =
+        update instanceof Function
+          ? update({ a: atomA.getValue(), b: atomB.getValue() })
+          : update
+      atomA.update(a)
+      atomB.update(b)
+    },
+  )
+
+  let atomAUpdates = 0
+  let atomBUpdates = 0
+  let derivedAtomUpdates = 0
+
+  derived.subscribe(() => (derivedAtomUpdates += 1))
+  atomA.subscribe(() => (atomAUpdates += 1))
+  atomB.subscribe(() => (atomBUpdates += 1))
+
+  expect(atomAUpdates).toBe(0)
+  expect(atomBUpdates).toBe(0)
+  expect(derivedAtomUpdates).toBe(0)
+  expect(atomA.getValue()).toBe(10)
+  expect(atomB.getValue()).toBe(5)
+  expect(derived.getValue()).toStrictEqual({ a: 10, b: 5, sum: 15 })
+
+  atomA.update(0)
+  expect(atomAUpdates).toBe(1)
+  expect(atomBUpdates).toBe(0)
+  expect(derivedAtomUpdates).toBe(1)
+  expect(atomA.getValue()).toBe(0)
+  expect(atomB.getValue()).toBe(5)
+  expect(derived.getValue()).toStrictEqual({ a: 0, b: 5, sum: 5 })
+
+  atomB.update(20)
+  expect(atomAUpdates).toBe(1)
+  expect(atomBUpdates).toBe(1)
+  expect(derivedAtomUpdates).toBe(2)
+  expect(atomA.getValue()).toBe(0)
+  expect(atomB.getValue()).toBe(20)
+  expect(derived.getValue()).toStrictEqual({ a: 0, b: 20, sum: 20 })
+
+  derived.update({ a: 10, b: 30 })
+  expect(atomAUpdates).toBe(2)
+  expect(atomBUpdates).toBe(2)
+  expect(derivedAtomUpdates).toBe(4)
+  expect(atomA.getValue()).toBe(10)
+  expect(atomB.getValue()).toBe(30)
+  expect(derived.getValue()).toStrictEqual({ a: 10, b: 30, sum: 40 })
   done()
 })

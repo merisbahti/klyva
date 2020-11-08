@@ -1,43 +1,73 @@
-import {
-  Lens,
-  get,
-  set,
-  Equivalence,
-  Iso,
-  Getter,
-  optic as opticsTsOptic,
-} from 'optics-ts'
-import { BehaviorSubject, merge, Observable } from 'rxjs'
-import { map, distinctUntilChanged, mergeMap, take, tap } from 'rxjs/operators'
-import equal from 'deep-equal'
-import { Atom, ReadOnlyAtom, DerivedAtomReader, RwFocus } from './types'
+import { BehaviorSubject, merge, Observable, Subject } from 'rxjs'
+import { tap, take, switchMap, filter, share } from 'rxjs/operators'
+import { Atom, ReadableAtom, DerivedAtomReader, SetState } from './types'
 import observeForOneValue from './observe-for-one-value'
+import equal from './equal'
 
-export function atom<S>(value: DerivedAtomReader<S>): ReadOnlyAtom<S>
-export function atom<S>(value: S): Atom<S>
+export function atom<Value, Update>(
+  value: DerivedAtomReader<Value>,
+  write: (update: Update) => void,
+): Atom<Value, Update>
 
-export function atom<S>(value: S | DerivedAtomReader<S>) {
-  if (value instanceof Function) {
-    return derivedAtom(value)
+// for some reason we're not allowed to make variadic functions
+// eslint-disable-next-line no-redeclare
+export function atom<Value>(
+  value: DerivedAtomReader<Value>,
+): ReadableAtom<Value>
+
+// eslint-disable-next-line no-redeclare
+export function atom<Value>(value: Value): Atom<Value, SetState<Value>>
+
+// eslint-disable-next-line no-redeclare
+export function atom<Value, Update = unknown>(
+  read: Value | DerivedAtomReader<Value>,
+  write?: (update: Update) => void,
+) {
+  if (read instanceof Function) {
+    return derivedAtom(read, write)
   }
-  const atom$ = new BehaviorSubject<S>(value)
-  const next = (next: S) => atom$.next(next)
-  const getValue = () => atom$.value
 
-  return atomConstructor(atom$, getValue, next)
+  let valueCache = read
+  const subject = new Subject<Value>()
+  const getValue = () => valueCache
+  const obs = subject.pipe(
+    tap(value => {
+      valueCache = value
+    }),
+    share(),
+  )
+
+  const subscribe = (listener: (value: Value) => void) => {
+    const unsub = obs.subscribe(_ => listener(getValue()))
+    return () => {
+      unsub.unsubscribe()
+    }
+  }
+  const next = (next: SetState<Value>) => {
+    const nextValue = next instanceof Function ? next(getValue()) : next
+    if (!equal(nextValue, getValue())) {
+      subject.next(nextValue)
+    }
+  }
+
+  return atomConstructor(subscribe, getValue, next)
 }
 
-export const derivedAtom = <S>(read: DerivedAtomReader<S>): ReadOnlyAtom<S> => {
-  const getter = (onDependency: (newAtom: Atom<any>) => void) => <A>(
-    a: Atom<A>,
+const derivedAtom = <Value, Update>(
+  read: DerivedAtomReader<Value>,
+  write?: (update: Update) => void,
+): ReadableAtom<Value> => {
+  const getter = (onDependency: (newAtom: ReadableAtom<any>) => void) => <A>(
+    a: ReadableAtom<A>,
   ) => {
     onDependency(a)
     return a.getValue()
   }
 
-  const computeDerivedValue = () => {
-    const dependantAtoms: Set<Atom<unknown>> = new Set()
-    const onDependency = (atom: Atom<unknown>) => dependantAtoms.add(atom)
+  const getValueAndObserver = () => {
+    const dependantAtoms: Set<ReadableAtom<unknown>> = new Set()
+    const onDependency = (atom: ReadableAtom<unknown>) =>
+      dependantAtoms.add(atom)
     const computedValue = read(getter(onDependency))
     // Then we want to listen to changes for these ones
     // but we want to ignore the first value!
@@ -50,122 +80,65 @@ export const derivedAtom = <S>(read: DerivedAtomReader<S>): ReadOnlyAtom<S> => {
 
   const {
     computedValue: initialValue,
-    dependencyObserver,
-  } = computeDerivedValue()
+    dependencyObserver: initialDependencyObserver,
+  } = getValueAndObserver()
 
-  const dependencyObserverSubject = new BehaviorSubject(dependencyObserver)
-  const atom$ = dependencyObserverSubject.pipe(
-    mergeMap(dependencyObserver => dependencyObserver),
-    map(_value => {
-      const { computedValue, dependencyObserver } = computeDerivedValue()
+  const dependencyObserverSubject = new BehaviorSubject<Observable<unknown>>(
+    initialDependencyObserver,
+  )
+  const dependencyObserver$ = dependencyObserverSubject.pipe(
+    switchMap(dependencyObserver => dependencyObserver),
+    filter(() => {
+      const {
+        computedValue: newValue,
+        dependencyObserver,
+      } = getValueAndObserver()
       dependencyObserverSubject.next(dependencyObserver)
-      return computedValue
+      const shouldUpdate = !equal(cachedValue, newValue)
+      if (shouldUpdate) {
+        cachedValue = newValue
+      }
+      return shouldUpdate
     }),
-    distinctUntilChanged(equal),
-    tap((newValue: S) => {
-      valueSubject.next(newValue)
-    }),
+    share(),
   )
 
-  const valueSubject = new BehaviorSubject(initialValue)
+  let cachedValue = initialValue
 
   const getValue = () => {
-    return valueSubject.getValue()
+    return cachedValue
   }
 
-  const subscribe = (listener: (value: S) => void) => {
-    const valueSubscription = valueSubject.subscribe(listener)
-    const dependencySubscription = atom$.subscribe()
-    valueSubscription.add(() => {
-      dependencySubscription.unsubscribe()
+  const subscribe = (listener: (value: Value) => void) => {
+    const dependencySubscription = dependencyObserver$.subscribe(_ => {
+      listener(getValue())
     })
-    return () => valueSubscription.unsubscribe()
+    return () => dependencySubscription.unsubscribe()
   }
 
-  return roAtomConstructor(atom$, getValue, subscribe)
+  return atomConstructor(subscribe, getValue, write)
 }
-const atomConstructor = <S>(
-  atom$: Observable<S>,
-  getValue: () => S,
-  next: (value: S) => void,
-): Atom<S> => {
-  const atom: Atom<S> = {
-    subscribe: constructSubscribe(atom$),
-    focus: constructFocus(atom$, getValue, next),
-    update: constructUpdater(next, getValue),
-    getValue,
-  }
-  return atom
-}
-const roAtomConstructor = <S>(
-  atom$: Observable<S>,
-  getValue: () => S,
-  subscribe: (listener: (value: S) => void) => () => void,
-): ReadOnlyAtom<S> => {
-  const readOnlyAtom: ReadOnlyAtom<S> = {
-    subscribe: subscribe,
-    focus: constructReadOnlyFocus(atom$, getValue),
-    getValue,
-  }
-  return readOnlyAtom
-}
-const constructSubscribe = <S>(atom$: Observable<S>) => (
-  listener: (value: S) => void,
-): (() => void) => {
-  const sub = atom$.subscribe(next => listener(next))
-  return () => {
-    sub.unsubscribe()
+
+// Make this a better construcor, if update is set, it should be a RW atom, but if not, it should always return a ReadOnly atom
+const atomConstructor = <Value, Updater>(
+  subscribe: Subscribe<Value>,
+  getValue: () => Value,
+  update?: (updater: Updater) => void,
+) => {
+  if (update) {
+    const atom: Atom<Value, Updater> = {
+      subscribe,
+      update,
+      getValue,
+    }
+    return atom
+  } else {
+    const readOnlyAtom: ReadableAtom<Value> = {
+      subscribe: subscribe,
+      getValue,
+    }
+    return readOnlyAtom
   }
 }
-const constructFocus = <S>(
-  atom$: Observable<S>,
-  getValue: () => S,
-  next: (value: S) => void,
-): RwFocus<S> => <A>(
-  callback: (
-    optic: Equivalence<S, any, S>,
-  ) => Lens<S, any, A> | Equivalence<S, any, A> | Iso<S, any, A> | Getter<S, A>,
-): any => {
-  const optic = callback(opticsTsOptic<S>())
-  if (optic._tag === 'Getter') {
-    return constructReadOnlyFocus(atom$, getValue)(callback as any)
-  }
-  const getter = get(optic)
 
-  const newAtom$: Observable<A> = atom$.pipe(
-    map(getter),
-    distinctUntilChanged(equal),
-  )
-
-  const newValue = () => get(optic)(getValue())
-
-  const newNext = (nextA: A) => {
-    next(set(optic)(nextA)(getValue()))
-  }
-
-  const rwAtom: Atom<A> = atomConstructor(newAtom$, newValue, newNext)
-  return rwAtom
-}
-
-const constructReadOnlyFocus = <S>(atom$: Observable<S>, getValue: () => S) => <
-  A
->(
-  callback: (optic: Equivalence<S, any, S>) => Getter<S, A>,
-): ReadOnlyAtom<A> => {
-  const optic = callback(opticsTsOptic<S>())
-  const getter = get(optic)
-  const newAtom$: Observable<A> = atom$.pipe(
-    map(getter),
-    distinctUntilChanged(equal),
-  )
-  const newValue = () => get(optic)(getValue())
-
-  return roAtomConstructor(newAtom$, newValue, constructSubscribe(newAtom$))
-}
-
-const constructUpdater = <A>(next: (value: A) => void, getValue: () => A) => (
-  updater: A | ((oldValue: A) => A),
-): void => {
-  const newValue = updater instanceof Function ? updater(getValue()) : updater
-  next(newValue)
-}
+type Subscribe<S> = (listener: (value: S) => void) => () => void

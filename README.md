@@ -4,8 +4,9 @@
 *Klyva means to cleave in swedish*
 
 A simple state management solution for react, similar to:
-[Recoil.js](https://recoiljs.org)
-[jotai](https://jotai.surge.sh)
+
+* [Recoil.js](https://recoiljs.org)
+* [jotai](https://jotai.surge.sh)
 
 But with optics, so it's easier to "cleave" an atom so you can create atom that a component can listen to, and update, without listening to the whole state.
 
@@ -59,7 +60,7 @@ sumAtom.value() // 32
 
 ```typescript
 const objectAtom = atom({a: 10})
-const focusedATom = objectAtom.focus(optic => optic.prop('a'))
+const focusedATom = focusAtom(objectAtom, optic => optic.prop('a'))
 ```
 
 See more about optics at:
