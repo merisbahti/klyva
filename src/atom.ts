@@ -1,5 +1,5 @@
 import { BehaviorSubject, merge, Observable, Subject } from 'rxjs'
-import { map, tap, take, switchMap, filter, share } from 'rxjs/operators'
+import { tap, take, switchMap, filter, share } from 'rxjs/operators'
 import { Atom, ReadableAtom, DerivedAtomReader, SetState } from './types'
 import observeForOneValue from './observe-for-one-value'
 import equal from './equal'
@@ -53,7 +53,7 @@ export function atom<Value, Update = unknown>(
   return atomConstructor(subscribe, getValue, next)
 }
 
-export const derivedAtom = <Value, Update>(
+const derivedAtom = <Value, Update>(
   read: DerivedAtomReader<Value>,
   write?: (update: Update) => void,
 ): ReadableAtom<Value> => {
