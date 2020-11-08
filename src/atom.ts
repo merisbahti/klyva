@@ -88,14 +88,17 @@ export const derivedAtom = <Value, Update>(
   )
   const dependencyObserver$ = dependencyObserverSubject.pipe(
     switchMap(dependencyObserver => dependencyObserver),
-    map(_updatedDependencyValue => {
-      const { computedValue, dependencyObserver } = getValueAndObserver()
+    filter(() => {
+      const {
+        computedValue: newValue,
+        dependencyObserver,
+      } = getValueAndObserver()
       dependencyObserverSubject.next(dependencyObserver)
-      return computedValue
-    }),
-    filter(newValue => !equal(cachedValue, newValue)),
-    tap((newValue: Value) => {
-      cachedValue = newValue
+      const shouldUpdate = !equal(cachedValue, newValue)
+      if (shouldUpdate) {
+        cachedValue = newValue
+      }
+      return shouldUpdate
     }),
     share(),
   )
