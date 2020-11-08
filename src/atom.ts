@@ -1,13 +1,5 @@
 import { BehaviorSubject, merge, Observable, Subject } from 'rxjs'
-import {
-  map,
-  tap,
-  take,
-  switchMap,
-  filter,
-  distinctUntilChanged,
-  share,
-} from 'rxjs/operators'
+import { map, tap, take, switchMap, filter, share } from 'rxjs/operators'
 import { Atom, ReadableAtom, DerivedAtomReader, SetState } from './types'
 import observeForOneValue from './observe-for-one-value'
 import equal from './equal'
@@ -39,11 +31,9 @@ export function atom<Value, Update = unknown>(
   const subject = new Subject<Value>()
   const getValue = () => valueCache
   const obs = subject.pipe(
-    distinctUntilChanged(equal),
     tap(value => {
       valueCache = value
     }),
-    map(_ => getValue()),
     share(),
   )
 
@@ -54,9 +44,10 @@ export function atom<Value, Update = unknown>(
     }
   }
   const next = (next: SetState<Value>) => {
-    next instanceof Function
-      ? subject.next(next(getValue()))
-      : subject.next(next)
+    const nextValue = next instanceof Function ? next(getValue()) : next
+    if (!equal(nextValue, getValue())) {
+      subject.next(nextValue)
+    }
   }
 
   return atomConstructor(subscribe, getValue, next)
