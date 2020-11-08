@@ -67,22 +67,17 @@ test('the parent emits even though its the focused atom being nexted', done => {
   done()
 })
 
-test.only("the parent emits even though its the focused atom's focused atom being nexted", done => {
+test("the parent emits even though its the focused atom's focused atom being nexted", done => {
   const value = { a: { b: 0 } }
   const myAtom = atom(value)
   const firstFocus = focusAtom(myAtom, optic => optic.prop('a'))
   const secondFocus = focusAtom(firstFocus, optic => optic.prop('b'))
   let latestValue = null
   myAtom.subscribe(next => {
-    console.log('myAtom updated', next)
     latestValue = next
   })
-  firstFocus.subscribe(next => {
-    console.log('firstFocus updated', next)
-  })
-  secondFocus.subscribe(next => {
-    console.log('secondFocus updated', next)
-  })
+  firstFocus.subscribe(() => {})
+  secondFocus.subscribe(() => {})
 
   myAtom.update({ a: { b: 1 } })
   expect(latestValue).toEqual({ a: { b: 1 } })

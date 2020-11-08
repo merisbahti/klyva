@@ -14,7 +14,7 @@ const RecursiveFormAtom = atom<Array<{ [key: string]: string }>>([
 RecursiveFormAtom.subscribe((value) => console.log('RecursiveFormAtom updated', value, RecursiveFormAtom.getValue()))
 
 const FormList = ({ todos }: { todos: typeof RecursiveFormAtom }) => {
-  const atoms = React.useMemo(() => useAtomSlice(todos), [])
+  const atoms = useAtomSlice(todos)
   return (
     <ul>
       {atoms.map((atom, i) => (
@@ -72,7 +72,6 @@ const Field = ({field, onRemove}: {field: PrimitiveAtom<[string, string]>, onRem
         type="text"
         value={name}
         onChange={e => { 
-          console.log('updating name', e.target.value)
           nameAtom.update(e.target.value)
         }}
         
@@ -88,14 +87,14 @@ const Field = ({field, onRemove}: {field: PrimitiveAtom<[string, string]>, onRem
 
 const fieldAtom = atom(['name', 'value'] as [string, string])
 const App = () => {
-  // const value = useAtom(focusAtom(RecursiveFormAtom, optic => optic.to(value => JSON.stringify(value, null, 2))))
+  const value = useAtom(RecursiveFormAtom)
   return (
     <div>
       <FormList todos={RecursiveFormAtom} />
       <Field field={fieldAtom} onRemove={() => {}}/>
-      {/*<pre>
-        {value}
-      </pre>*/}
+      <pre>
+        {JSON.stringify(value, null, 2)}
+      </pre>
     </div>
   )
 }

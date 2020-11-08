@@ -21,7 +21,7 @@ export const useAtom = <T>(atom: ReadableAtom<T>): T => {
     const unsub = atom.subscribe(value => {
       setCache(value)
     })
-    return unsub
+    return () => unsub()
   }, [atom])
   return cache
 }
@@ -29,6 +29,8 @@ export const useAtom = <T>(atom: ReadableAtom<T>): T => {
 export const useAtomSlice = <T>(
   arrayAtom: PrimitiveAtom<Array<T>>,
 ): Array<PrimitiveRemovableAtom<T>> => {
-  const atomArray = React.useMemo(() => sliceAtomArray(arrayAtom), [arrayAtom])
+  const atomArray = React.useMemo(() => {
+    return sliceAtomArray(arrayAtom)
+  }, [arrayAtom])
   return useAtom(atomArray)
 }

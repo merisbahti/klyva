@@ -3,7 +3,7 @@ import focusAtom from '../src/focus-atom'
 import sliceAtomArray from '../src/slice-atom-array'
 import { SetState } from '../src/types'
 
-test.skip('sliced work', done => {
+test('sliced work', done => {
   const arrayAtom = atom([1, 2, 3])
   const [focus0, focus1] = sliceAtomArray(arrayAtom).getValue()
 
@@ -55,28 +55,23 @@ test('deep slices work', done => {
 
   const formAtoms = sliceAtomArray(formsAtom).getValue()
   const [form0Atom] = formAtoms
-  const entriesFocus = atom<[string, string][], SetState<[string, string][]>>(get => Object.entries(get(form0Atom)), (update) => {
-    const nextValue = update instanceof Function ? update(Object.entries(form0Atom.getValue())) : update
-    form0Atom.update(Object.fromEntries(nextValue))
-  })
-  // const entriesFocus = focusAtom(form0Atom, optic =>
-  //   optic.iso(
-  //     there => Object.entries(there),
-  //     back => Object.fromEntries(back),
-  //   ),
-  // )
+  const entriesFocus = atom<[string, string][], SetState<[string, string][]>>(
+    get => Object.entries(get(form0Atom)),
+    update => {
+      const nextValue =
+        update instanceof Function
+          ? update(Object.entries(form0Atom.getValue()))
+          : update
+      form0Atom.update(Object.fromEntries(nextValue))
+    },
+  )
 
   const entryAtoms = sliceAtomArray(entriesFocus).getValue()
 
   const [entry0Atom] = entryAtoms
   const entry0NameAtom = focusAtom(entry0Atom, optic => optic.index(0))
 
-  formsAtom.subscribe(value => console.log('formsatom emitted', value))
-  form0Atom.subscribe(value => console.log('form0atom emitted', value))
-  entry0Atom.subscribe(value => console.log('entry0atom emitted', value))
-  entry0NameAtom.subscribe(value =>
-    console.log('entry0nameatom emitted', value),
-  )
+  entry0NameAtom.subscribe(() => {})
 
   expect(entry0NameAtom.getValue()).toEqual('task')
   expect(entry0Atom.getValue()).toEqual(['task', 'Eat some food'])
