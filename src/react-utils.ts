@@ -10,7 +10,11 @@ import {
 } from './types'
 
 export function useNewAtom<S>(value: DerivedAtomReader<S>): ReadableAtom<S>
+// REMOVE WHEN NEW VERISON OF TSDX IS RELEASED
+// eslint-disable-next-line no-redeclare
 export function useNewAtom<S>(value: S): PrimitiveAtom<S>
+// REMOVE WHEN NEW VERISON OF TSDX IS RELEASED
+// eslint-disable-next-line no-redeclare
 export function useNewAtom<S>(value: S | DerivedAtomReader<S>) {
   return useState(() => atom(value))[0]
 }
