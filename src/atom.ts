@@ -16,11 +16,17 @@ export function atom<Value, Update>(
   value: DerivedAtomReader<Value>,
   write: (update: Update) => void,
 ): Atom<Value, Update>
+
+// for some reason we're not allowed to make variadic functions
+// eslint-disable-next-line no-redeclare
 export function atom<Value>(
   value: DerivedAtomReader<Value>,
 ): ReadableAtom<Value>
+
+// eslint-disable-next-line no-redeclare
 export function atom<Value>(value: Value): Atom<Value, SetState<Value>>
 
+// eslint-disable-next-line no-redeclare
 export function atom<Value, Update = unknown>(
   read: Value | DerivedAtomReader<Value>,
   write?: (update: Update) => void,
