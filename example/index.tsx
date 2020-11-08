@@ -1,17 +1,14 @@
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
 import { PrimitiveAtom } from '../src/types'
-import { useAtom, useNewAtom, useAtomSlice } from '../src/react-utils'
+import { useAtom, useAtomSlice } from '../src/react-utils'
 import focusAtom from '../src/focus-atom'
 import { atom } from '../src/atom'
-
 
 const RecursiveFormAtom = atom<Array<{ [key: string]: string }>>([
   { task: 'Eat some food', checked: 'yeah' },
   { task: 'Go for a walk', checked: 'yeah' },
 ])
-
-RecursiveFormAtom.subscribe((value) => console.log('RecursiveFormAtom updated', value, RecursiveFormAtom.getValue()))
 
 const FormList = ({ todos }: { todos: typeof RecursiveFormAtom }) => {
   const atoms = useAtomSlice(todos)
@@ -19,8 +16,8 @@ const FormList = ({ todos }: { todos: typeof RecursiveFormAtom }) => {
     <ul>
       {atoms.map((atom, i) => (
         <>
-        Form nr ({i})
-        <Form formAtom={atom} onRemove={atom.remove} />
+          Form nr ({i})
+          <Form formAtom={atom} onRemove={atom.remove} />
         </>
       ))}
       <button
@@ -44,37 +41,53 @@ const Form = ({
   formAtom: PrimitiveAtom<{ [key: string]: string }>
   onRemove: () => void
 }) => {
-  const entriesAtom = React.useMemo(() =>focusAtom(formAtom, optic =>
-      optic.iso(Object.entries, to => Object.fromEntries(to)),
-    ), [])
+  const entriesAtom = focusAtom(formAtom, optic =>
+    optic.iso(Object.entries, to => Object.fromEntries(to)),
+  )
+
   const fieldAtoms = useAtomSlice(entriesAtom)
-  const addField = (() => {
-    entriesAtom.update(oldValue => [...oldValue, ['Something new ' + oldValue.length, 'New too']])
-  })
+  const addField = () => {
+    entriesAtom.update(oldValue => [
+      ...oldValue,
+      ['Something new ' + oldValue.length, 'New too'],
+    ])
+  }
 
   return (
     <ul>
-      {fieldAtoms.map((fieldAtom) => <Field field={fieldAtom} onRemove={fieldAtom.remove} />)}
-      <li><button onClick={addField}>Add new field</button></li>
-      <li><button onClick={onRemove}>Remove this form</button></li>
+      {fieldAtoms.map(fieldAtom => (
+        <Field field={fieldAtom} onRemove={fieldAtom.remove} />
+      ))}
+      <li>
+        <button onClick={addField}>Add new field</button>
+      </li>
+      <li>
+        <button onClick={onRemove}>Remove this form</button>
+      </li>
     </ul>
   )
 }
 
-const Field = ({field, onRemove}: {field: PrimitiveAtom<[string, string]>, onRemove: () => void}) => {
+const Field = ({
+  field,
+  onRemove,
+}: {
+  field: PrimitiveAtom<[string, string]>
+  onRemove: () => void
+}) => {
   const nameAtom = focusAtom(field, optic => optic.index(0))
   const valueAtom = focusAtom(field, optic => optic.index(1))
   const name = useAtom(nameAtom)
   const value = useAtom(valueAtom)
 
-    return <li>
+  return (
+    <li>
       <input
         type="text"
         value={name}
-        onChange={e => { 
+        onChange={e => {
           nameAtom.update(e.target.value)
         }}
-        
       />
       <input
         type="text"
@@ -83,21 +96,17 @@ const Field = ({field, onRemove}: {field: PrimitiveAtom<[string, string]>, onRem
       />
       <button onClick={onRemove}>X</button>
     </li>
-}
-
-const fieldAtom = atom(['name', 'value'] as [string, string])
-const App = () => {
-  const value = useAtom(RecursiveFormAtom)
-  return (
-    <div>
-      <FormList todos={RecursiveFormAtom} />
-      <Field field={fieldAtom} onRemove={() => {}}/>
-      <pre>
-        {JSON.stringify(value, null, 2)}
-      </pre>
-    </div>
   )
 }
 
+const App = () => {
+  //const value = useAtom(RecursiveFormAtom)
+  return (
+    <div>
+      <FormList todos={RecursiveFormAtom} />
+    </div>
+  )
+}
+//<pre>{JSON.stringify(value, null, 2)}</pre>
 
 ReactDOM.render(<App />, document.getElementById('root'))
