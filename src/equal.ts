@@ -1,8 +1,7 @@
-import deepEqual from 'deep-equal'
+import fastDeepEqual from 'fast-deep-equal'
 
 const equal = (l1: any, l2: any) => {
-  return deepEqual(l1, l2, { strict: true })
-  //return false
+  return fastDeepEqual(l1, l2)
 }
 
 export default equal
