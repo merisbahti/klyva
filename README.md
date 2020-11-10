@@ -70,7 +70,7 @@ https://github.com/akheron/optics-ts
 
 ### Usage with react
 
-```
+```typescript
 const myAtom = atom('hello')
 const MyComponent = () => {
   const myAtomValue = useAtom(myAtom)
