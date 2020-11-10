@@ -75,7 +75,7 @@ const myAtom = atom('hello')
 const MyComponent = () => {
   const myAtomValue = useAtom(myAtom)
   const onClick = myAtom.update(oldValue => oldValue + '!')
-  <button onClick={onClick}>{myAtomValue}</div>
+  <button onClick={onClick}>{myAtomValue}</button>
 }
 ```
 
