@@ -68,10 +68,20 @@ const focusedATom = focusAtom(objectAtom, optic => optic.prop('a'))
 See more about optics at:
 https://github.com/akheron/optics-ts
 
+### Usage with react
+
+```
+const myAtom = atom('hello')
+const MyComponent = () => {
+  const myAtomValue = useAtom(myAtom)
+  const onClick = myAtom.update(oldValue => oldValue + '!')
+  <button onClick={onClick}>{myAtomValue}</div>
+}
+```
+
 ## Differences from jotai and recoil
 
 * No `<Provider>` needed
 * No `key` needed for atom
-* No explicit React utils served (yet)
 
 
