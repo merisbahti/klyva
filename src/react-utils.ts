@@ -45,8 +45,6 @@ export const useSelector = <S, A>(
 export const useAtomSlice = <T>(
   arrayAtom: PrimitiveAtom<Array<T>>,
 ): Array<PrimitiveRemovableAtom<T>> => {
-  const atomArray = React.useMemo(() => {
-    return sliceAtomArray(arrayAtom)
-  }, [arrayAtom])
-  return atomArray
+  useAtom(atom(get => get(arrayAtom).length))
+  return sliceAtomArray(arrayAtom)
 }

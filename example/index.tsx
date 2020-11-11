@@ -37,7 +37,7 @@ const FormList = ({ todos }: { todos: typeof RecursiveFormAtom }) => {
           entriesFocus.update(oldValue => [
             ...oldValue,
             [
-              `form${oldValue.length + 1}`,
+              `form${Math.random()+ 1}`,
               {
                 name: 'New name',
                 otherAttribute: 'value',
@@ -67,8 +67,8 @@ const Form = ({
   const addField = () => {
     entriesAtom.update(oldValue => [
       ...oldValue,
-      ['Something new ' + oldValue.length, 'New too'],
-    ])
+      ['Something new ' + Math.random(), 'New too'],
+    
   }
   const nameAtom = focusAtom(formAtom, optic => optic.head())
   const name = useAtom(nameAtom)
