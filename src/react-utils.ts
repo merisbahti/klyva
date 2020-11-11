@@ -30,6 +30,17 @@ export const useAtom = <T>(atom: ReadableAtom<T>): T => {
   return cache
 }
 
+export const useSelector = <S, A>(
+  sourceAtom: ReadableAtom<S>,
+  selector: (source: S) => A,
+): A => {
+  const selectorAtom = React.useMemo(
+    () => atom(get => selector(get(sourceAtom))),
+    [selector, sourceAtom],
+  )
+  return useAtom(selectorAtom)
+}
+
 export const useAtomSlice = <T>(
   arrayAtom: PrimitiveAtom<Array<T>>,
 ): Array<PrimitiveRemovableAtom<T>> => {
