@@ -22,6 +22,7 @@ export function useNewAtom<S>(value: S | DerivedAtomReader<S>) {
 export const useAtom = <T>(atom: ReadableAtom<T>): T => {
   const [cache, setCache] = React.useState(atom.getValue())
   React.useEffect(() => {
+    setCache(atom.getValue())
     const unsub = atom.subscribe(value => {
       setCache(value)
     })
@@ -47,5 +48,5 @@ export const useAtomSlice = <T>(
   const atomArray = React.useMemo(() => {
     return sliceAtomArray(arrayAtom)
   }, [arrayAtom])
-  return useAtom(atomArray)
+  return atomArray
 }

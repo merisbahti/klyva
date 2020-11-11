@@ -5,7 +5,7 @@ import { SetState } from '../src/types'
 
 test('sliced work', done => {
   const arrayAtom = atom([1, 2, 3])
-  const [focus0, focus1] = sliceAtomArray(arrayAtom).getValue()
+  const [focus0, focus1] = sliceAtomArray(arrayAtom)
 
   let focus0Updates = 0
   let focus1Updates = 0
@@ -53,7 +53,7 @@ test('deep slices work', done => {
     { task: 'Go for a walk', checked: 'yeah' },
   ])
 
-  const formAtoms = sliceAtomArray(formsAtom).getValue()
+  const formAtoms = sliceAtomArray(formsAtom)
   const [form0Atom] = formAtoms
   const entriesFocus = atom<[string, string][], SetState<[string, string][]>>(
     get => Object.entries(get(form0Atom)),
@@ -66,7 +66,7 @@ test('deep slices work', done => {
     },
   )
 
-  const entryAtoms = sliceAtomArray(entriesFocus).getValue()
+  const entryAtoms = sliceAtomArray(entriesFocus)
 
   const [entry0Atom] = entryAtoms
   const entry0NameAtom = focusAtom(entry0Atom, optic => optic.index(0))

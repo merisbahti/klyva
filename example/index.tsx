@@ -128,7 +128,7 @@ const Field = ({
 }
 
 const App = () => {
-  const value = useAtom(RecursiveFormAtom)
+  const value = null //useAtom(RecursiveFormAtom)
   return (
     <div>
       <FormList todos={RecursiveFormAtom} />

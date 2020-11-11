@@ -1,11 +1,10 @@
 import { optic, remove } from 'optics-ts'
-import { atom } from './atom'
 import focusAtom from './focus-atom'
-import { PrimitiveAtom, PrimitiveRemovableAtom, ReadableAtom } from './types'
+import { PrimitiveAtom, PrimitiveRemovableAtom } from './types'
 
 const sliceAtomArray = <Value>(
   atomOfArray: PrimitiveAtom<Array<Value>>,
-): ReadableAtom<Array<PrimitiveRemovableAtom<Value>>> => {
+): Array<PrimitiveRemovableAtom<Value>> => {
   const getAtomAtIndex = (index: number) => {
     const newAtom = focusAtom(atomOfArray, optic =>
       optic.index(index),
@@ -22,13 +21,8 @@ const sliceAtomArray = <Value>(
     const newValue = emptyArray.map((_, index) => getAtomAtIndex(index))
     return newValue
   }
-  const atomLengthAtom = atom(atomGetter => {
-    return atomGetter(atomOfArray).length
-  })
-  return atom(atomGetter => {
-    const length = atomGetter(atomLengthAtom)
-    return getArrayAtLength(length)
-  })
+  const length = atomOfArray.getValue().length
+  return getArrayAtLength(length)
 }
 
 export default sliceAtomArray
