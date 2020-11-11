@@ -1,6 +1,7 @@
 import React from 'react'
 import { useState } from 'react'
 import { atom } from './atom'
+import equal from './equal'
 import sliceAtomArray from './slice-atom-array'
 import {
   DerivedAtomReader,
@@ -22,7 +23,13 @@ export function useNewAtom<S>(value: S | DerivedAtomReader<S>) {
 export const useAtom = <T>(atom: ReadableAtom<T>): T => {
   const [cache, setCache] = React.useState(atom.getValue())
   React.useEffect(() => {
-    setCache(atom.getValue())
+    setCache(oldCache => {
+      const currValue = atom.getValue()
+      if (equal(currValue, oldCache)) {
+        return oldCache
+      }
+      return currValue
+    })
     const unsub = atom.subscribe(value => {
       setCache(value)
     })
