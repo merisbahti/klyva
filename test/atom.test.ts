@@ -98,3 +98,28 @@ test("the parent emits even though its the focused atom's focused atom being nex
   expect(myAtom.getValue()).toEqual({ a: { b: 3 } })
   done()
 })
+
+test('identity is perserved for values, equal changes should not change idenitity', done => {
+  const value = { a: { b: 0 } }
+  const myAtom = atom(value)
+  const focusA = focusAtom(myAtom, optic => optic.prop('a'))
+
+  let focusAUpdates = 0
+  let myAtomUpdates = 0
+  focusA.subscribe(() => (focusAUpdates += 1))
+  myAtom.subscribe(() => (myAtomUpdates += 1))
+
+  myAtom.update({ a: { b: 0 } })
+  expect(focusAUpdates).toBe(0)
+  expect(myAtomUpdates).toBe(0)
+  expect(focusA.getValue()).toBe(value.a)
+  expect(myAtom.getValue()).toBe(value)
+
+  focusA.update({ b: 0 })
+  expect(focusAUpdates).toBe(0)
+  expect(myAtomUpdates).toBe(0)
+  expect(focusA.getValue()).toBe(value.a)
+  expect(myAtom.getValue()).toBe(value)
+
+  done()
+})
