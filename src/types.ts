@@ -1,7 +1,10 @@
 export type SetState<S> = S | ((newValue: S) => S)
 
 export type ReadableAtom<Value> = {
-  subscribe: (listener: (value: Value) => void) => () => void
+  subscribe: (
+    listener: (value: Value) => void,
+    errorListener?: (error: unknown) => void,
+  ) => () => void
   getValue: () => Value
 }
 

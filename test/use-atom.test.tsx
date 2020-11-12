@@ -163,6 +163,6 @@ it('removal works without throwing', async () => {
   const { getByText } = rtl.render(<App />)
 
   rtl.fireEvent.click(getByText('remove item 0'))
-  rtl.fireEvent.click(getByText('remove item 1'))
+  rtl.fireEvent.click(getByText('remove item 0'))
   //rtl.fireEvent.click(getByText('remove array'))
 })
