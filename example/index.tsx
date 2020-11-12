@@ -29,7 +29,7 @@ const FormList = ({ todos }: { todos: typeof RecursiveFormAtom }) => {
       {atoms.map((atom, i) => (
         <>
           Form nr ({i})
-          <Form formAtom={atom} onRemove={atom.remove} />
+          <Form key={i} formAtom={atom} onRemove={atom.remove} />
         </>
       ))}
       <button
@@ -37,7 +37,7 @@ const FormList = ({ todos }: { todos: typeof RecursiveFormAtom }) => {
           entriesFocus.update(oldValue => [
             ...oldValue,
             [
-              `form${Math.random()+ 1}`,
+              `form${Math.random() + 1}`,
               {
                 name: 'New name',
                 otherAttribute: 'value',
@@ -68,7 +68,7 @@ const Form = ({
     entriesAtom.update(oldValue => [
       ...oldValue,
       ['Something new ' + Math.random(), 'New too'],
-    
+    ])
   }
   const nameAtom = focusAtom(formAtom, optic => optic.head())
   const name = useAtom(nameAtom)
@@ -82,8 +82,8 @@ const Form = ({
         }}
       />
       <ul>
-        {fieldAtoms.map(fieldAtom => (
-          <Field field={fieldAtom} onRemove={fieldAtom.remove} />
+        {fieldAtoms.map((fieldAtom, index) => (
+          <Field key={index} field={fieldAtom} onRemove={fieldAtom.remove} />
         ))}
         <li>
           <button onClick={addField}>Add new field</button>

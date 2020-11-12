@@ -2,7 +2,7 @@ import React from 'react'
 import { useState } from 'react'
 import { atom } from './atom'
 import equal from './equal'
-import sliceAtomArray from './slice-atom-array'
+import sliceAtomArray, { OutOfBoundsPrismError } from './slice-atom-array'
 import {
   DerivedAtomReader,
   PrimitiveAtom,
@@ -30,9 +30,16 @@ export const useAtom = <T>(atom: ReadableAtom<T>): T => {
       }
       return currValue
     })
-    const unsub = atom.subscribe(value => {
-      setCache(value)
-    })
+    const unsub = atom.subscribe(
+      value => {
+        setCache(value)
+      },
+      error => {
+        if (!(error instanceof OutOfBoundsPrismError)) {
+          throw error
+        }
+      },
+    )
     return () => unsub()
   }, [atom])
   return cache

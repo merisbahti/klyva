@@ -4,9 +4,10 @@ import { ReadableAtom } from './types'
 
 const observeForOneValue = <T>(atom: ReadableAtom<T>): Observable<T> => {
   return new Observable<T>(observer => {
-    const unsubscribe = atom.subscribe(value => {
-      observer.next(value)
-    })
+    const unsubscribe = atom.subscribe(
+      value => observer.next(value),
+      error => observer.error(error),
+    )
     return () => {
       unsubscribe()
     }
