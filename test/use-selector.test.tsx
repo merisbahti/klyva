@@ -16,7 +16,7 @@ it('selection on an atom works', async () => {
         <button
           onClick={() =>
             myAtom.update(value => ({
-              a: value.a + 2,
+              a: value.a + 3,
             }))
           }
         >
