@@ -68,10 +68,11 @@ export const sliceAtomArray = <Value>(
          * the index has "completed", and it should not update,
          * nor return anything other than its cached value.
          */
+        const newValue = get(atomOfArray)[index]
         if (sliceIsRemoved(index)) {
           return cachedValue
         }
-        cachedValue = get(atomOfArray)[index]
+        cachedValue = newValue
         return cachedValue
       },
       (update: SetState<Value>) => {

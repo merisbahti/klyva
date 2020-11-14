@@ -99,3 +99,32 @@ test('deep slices work', done => {
 
   done()
 })
+
+test('removal of atom slices work', done => {
+  const itemsAtom = atom(['hello', 'world'])
+
+  const itemsAtoms = sliceAtomArray(itemsAtom)
+  const [item0Atom, item1Atom] = itemsAtoms
+
+  item0Atom.subscribe(() => {})
+  item1Atom.subscribe(() => {})
+
+  item0Atom.update('hello!!!')
+
+  expect(itemsAtom.getValue()).toStrictEqual(['hello!!!', 'world'])
+  expect(item0Atom.getValue()).toStrictEqual('hello!!!')
+  expect(item1Atom.getValue()).toStrictEqual('world')
+
+  item0Atom.remove()
+
+  expect(item0Atom.getValue()).toStrictEqual('world')
+  // value is stale
+  expect(item1Atom.getValue()).toStrictEqual('world')
+
+  itemsAtom.update(oldValue => ['hello', ...oldValue])
+
+  expect(item0Atom.getValue()).toStrictEqual('hello')
+  expect(item1Atom.getValue()).toStrictEqual('world')
+
+  done()
+})
