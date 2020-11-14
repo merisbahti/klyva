@@ -50,7 +50,7 @@ export const useSelector = <S, A>(
 export const useAtomSlice = <T>(
   arrayAtom: PrimitiveAtom<Array<T>>,
 ): Array<PrimitiveRemovableAtom<T>> => {
-  useAtom(atom(get => get(arrayAtom).length))
+  useSelector(arrayAtom, arr => arr.length)
   return sliceAtomArray(arrayAtom)
 }
 
