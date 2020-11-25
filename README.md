@@ -17,7 +17,6 @@ Questions? [Discord](https://discord.gg/5HXQ8Kagu6)
 
 ```typescript
 const numberAtom = atom(5)
-const objectAtom = atom({a: 10})
 ```
 
 ### Update it
@@ -62,7 +61,7 @@ sumAtom.value() // 32
 
 ```typescript
 const objectAtom = atom({a: 10})
-const focusedATom = focusAtom(objectAtom, optic => optic.prop('a'))
+const focusedAtom = focusAtom(objectAtom, optic => optic.prop('a'))
 ```
 
 See more about optics at:
@@ -75,7 +74,7 @@ const myAtom = atom('hello')
 const MyComponent = () => {
   const myAtomValue = useAtom(myAtom)
   const onClick = myAtom.update(oldValue => oldValue + '!')
-  <button onClick={onClick}>{myAtomValue}</button>
+  return <button onClick={onClick}>{myAtomValue}</button>
 }
 ```
 
