@@ -10,7 +10,7 @@ A simple state management solution for react, similar to:
 
 But with optics, so it's easier to "cleave" an atom so you can create atom that a component can listen to, and update, without listening to the whole state.
 
-Questions? [Discord](https://discord.com/invite/wXTMagCv)
+Questions? [Discord](https://discord.gg/5HXQ8Kagu6)
 
 ## How to
 ### Create an atom
