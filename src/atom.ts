@@ -109,13 +109,9 @@ const derivedAtom = <Value, Update>(
     return cachedValue
   }
 
-  const subscribe = (
-    listener: (value: Value) => void,
-    errorHandler?: (error: unknown) => void,
-  ) => {
-    const dependencySubscription = dependencyObserver$.subscribe(
-      _ => listener(getValue()),
-      errorHandler,
+  const subscribe = (listener: (value: Value) => void) => {
+    const dependencySubscription = dependencyObserver$.subscribe(_ =>
+      listener(getValue()),
     )
     return () => dependencySubscription.unsubscribe()
   }
