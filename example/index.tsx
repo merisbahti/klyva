@@ -1,138 +1,113 @@
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
+import 'todomvc-app-css/index.css'
+import { atom, focusAtom, useAtomSlice, useSelector } from '../src/index'
 import { PrimitiveAtom } from '../src/types'
-import { useAtom, useAtomSlice } from '../src/react-utils'
-import focusAtom from '../src/focus-atom'
-import { atom } from '../src/atom'
 
-const RecursiveFormAtom = atom<Record<string, Record<string, string>>>({
-  form1: { task: 'Eat some food', checked: 'yeah' },
-  form2: { task: 'Eat some food', checked: 'yeah' },
-  form3: { task: 'Eat some food', checked: 'yeah' },
-  form4: { task: 'Eat some food', checked: 'yeah' },
-  form5: { task: 'Eat some food', checked: 'yeah' },
-  form6: { task: 'Eat some food', checked: 'yeah' },
-  form7: { task: 'Eat some food', checked: 'yeah' },
-  form8: { task: 'Eat some food', checked: 'yeah' },
-})
-
-const FormList = ({ todos }: { todos: typeof RecursiveFormAtom }) => {
-  const entriesFocus = focusAtom(todos, optic =>
-    optic.iso(
-      x => Object.entries(x),
-      x => Object.fromEntries(x),
-    ),
-  )
-  const atoms = useAtomSlice(entriesFocus)
+const CheckBox = ({ checkedAtom }: { checkedAtom: PrimitiveAtom<boolean> }) => {
+  const checked = useSelector(checkedAtom, id => id)
   return (
-    <ul>
-      {atoms.map((atom, i) => (
-        <>
-          Form nr ({i})
-          <Form key={i} formAtom={atom} onRemove={atom.remove} />
-        </>
-      ))}
-      <button
-        onClick={() =>
-          entriesFocus.update(oldValue => [
-            ...oldValue,
-            [
-              `form${Math.random() + 1}`,
-              {
-                name: 'New name',
-                otherAttribute: 'value',
-              },
-            ],
-          ])
-        }
-      >
-        Add new form
-      </button>
-    </ul>
+    <input
+      type="checkbox"
+      checked={checked}
+      onChange={() => checkedAtom.update(!checked)}
+    />
   )
 }
 
-const Form = ({
-  formAtom,
+const TextInput = ({ textAtom }: { textAtom: PrimitiveAtom<string> }) => {
+  const text = useSelector(textAtom, id => id)
+  return (
+    <input
+      type="text"
+      value={text}
+      onChange={event => textAtom.update(event.target.value)}
+    />
+  )
+}
+type TodoType = { task: string; checked: boolean }
+const TodoItem = ({
+  todoAtom,
   onRemove,
 }: {
-  formAtom: PrimitiveAtom<[string, { [key: string]: string }]>
+  todoAtom: PrimitiveAtom<TodoType>
   onRemove: () => void
 }) => {
-  const entriesAtom = focusAtom(formAtom, optic =>
-    optic.index(1).iso(Object.entries, to => Object.fromEntries(to)),
-  ) as PrimitiveAtom<[string, string][]>
+  const checkedAtom = focusAtom(todoAtom, optic => optic.prop('checked'))
+  const textAtom = focusAtom(todoAtom, optic => optic.prop('task'))
+  return (
+    <>
+      <CheckBox checkedAtom={checkedAtom} />
+      <TextInput textAtom={textAtom} />
+      <button onClick={onRemove}>X</button>
+    </>
+  )
+}
 
-  const fieldAtoms = useAtomSlice(entriesAtom)
-  const addField = () => {
-    entriesAtom.update(oldValue => [
-      ...oldValue,
-      ['Something new ' + Math.random(), 'New too'],
-    ])
-  }
-  const nameAtom = focusAtom(formAtom, optic => optic.head())
-  const name = useAtom(nameAtom)
+type TodoListType = Array<TodoType>
+
+const TodoList = ({
+  todoListAtom,
+  showCompleted,
+}: {
+  showCompleted: boolean
+  todoListAtom: PrimitiveAtom<TodoListType>
+}) => {
+  const todoAtoms = useAtomSlice(todoListAtom)
+  const [newTodo, setNewTodo] = React.useState('')
 
   return (
-    <div>
+    <>
       <input
-        value={name as string}
-        onChange={e => {
-          nameAtom.update(e.target.value)
+        value={newTodo}
+        placeholder="New todo"
+        onKeyUp={e => {
+          if (e.key === 'Enter') {
+            todoListAtom.update(todos => [
+              ...todos,
+              { task: newTodo, checked: false },
+            ])
+            setNewTodo('')
+          }
+        }}
+        onChange={event => {
+          setNewTodo(event.target.value)
         }}
       />
       <ul>
-        {fieldAtoms.map((fieldAtom, index) => (
-          <Field key={index} field={fieldAtom} onRemove={fieldAtom.remove} />
-        ))}
-        <li>
-          <button onClick={addField}>Add new field</button>
-        </li>
-        <li>
-          <button onClick={onRemove}>Remove this form</button>
-        </li>
+        {todoAtoms
+          .filter(value => value.getValue().checked === showCompleted)
+          .map((todoAtom, index) => {
+            return (
+              <li>
+                <TodoItem
+                  key={index}
+                  todoAtom={todoAtom}
+                  onRemove={todoAtom.remove}
+                />
+              </li>
+            )
+          })}
       </ul>
-    </div>
+    </>
   )
 }
 
-const Field = ({
-  field,
-  onRemove,
-}: {
-  field: PrimitiveAtom<[string, string]>
-  onRemove: () => void
-}) => {
-  const nameAtom = focusAtom(field, optic => optic.index(0))
-  const valueAtom = focusAtom(field, optic => optic.index(1))
-  const name = useAtom(nameAtom)
-  const value = useAtom(valueAtom)
-
-  return (
-    <li>
-      <input
-        type="text"
-        value={name}
-        onChange={e => {
-          nameAtom.update(e.target.value)
-        }}
-      />
-      <input
-        type="text"
-        value={value}
-        onChange={e => valueAtom.update(e.target.value)}
-      />
-      <button onClick={onRemove}>X</button>
-    </li>
-  )
-}
+const todoListAtom = atom([
+  { task: 'Handle the dragon', checked: false },
+  { task: 'Drink some water', checked: false },
+])
 
 const App = () => {
-  const value = null //useAtom(RecursiveFormAtom)
+  const appState = useSelector(todoListAtom, id => id)
+  const [showCompleted, setShowCompleted] = React.useState(false)
   return (
     <div>
-      <FormList todos={RecursiveFormAtom} />
-      <pre>{JSON.stringify(value, null, 2)}</pre>
+      <TodoList todoListAtom={todoListAtom} showCompleted={showCompleted} />
+      <button onClick={() => setShowCompleted(!showCompleted)}>
+        Show completed ({JSON.stringify(showCompleted)})
+      </button>
+      <pre>{JSON.stringify(appState, null, 2)}</pre>
     </div>
   )
 }

@@ -8,7 +8,8 @@
     "build": "parcel build index.html"
   },
   "dependencies": {
-    "react-app-polyfill": "^1.0.0"
+    "react-app-polyfill": "^1.0.0",
+    "todomvc-app-css": "^2.3.0"
   },
   "alias": {
     "react": "../node_modules/react",
