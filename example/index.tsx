@@ -117,6 +117,26 @@ const todoListAtom = atom<TodoListAtomType>({
   ],
 })
 
+const Filter = ({ filterAtom }: { filterAtom: PrimitiveAtom<FilterType> }) => {
+  const filter = useAtom(filterAtom)
+  return (
+    <>
+      <div onClick={() => filterAtom.update('all')}>
+        <input type="radio" readOnly checked={filter === 'all'} />
+        <label htmlFor="all">All</label>
+      </div>
+      <div onClick={() => filterAtom.update('completed')}>
+        <input type="radio" readOnly checked={filter === 'completed'} />
+        <label>Completed</label>
+      </div>
+      <div onClick={() => filterAtom.update('uncompleted')}>
+        <input type="radio" readOnly checked={filter === 'uncompleted'} />
+        <label htmlFor="uncompleted">Uncompleted</label>
+      </div>
+    </>
+  )
+}
+
 const App = () => {
   const filterAtom = focusAtom(todoListAtom, optic => optic.prop('filter'))
   return (
@@ -124,37 +144,6 @@ const App = () => {
       <TodoList todoListAtom={todoListAtom} />
       <Filter filterAtom={filterAtom} />
     </div>
-  )
-}
-
-const Filter = ({ filterAtom }: { filterAtom: PrimitiveAtom<FilterType> }) => {
-  const filter = useAtom(filterAtom)
-  return (
-    <>
-      <div onClick={() => filterAtom.update('all')}>
-        <input type="radio" id="all" readOnly checked={filter === 'all'} />
-        <label htmlFor="all">All</label>
-      </div>
-      <div onClick={() => filterAtom.update('completed')}>
-        <input
-          type="radio"
-          id="completed"
-          readOnly
-          checked={filter === 'completed'}
-        />
-        <label htmlFor="completed">Completed</label>
-      </div>
-      <div onClick={() => filterAtom.update('uncompleted')}>
-        <input
-          type="radio"
-          id="uncompleted"
-          value="uncompleted"
-          readOnly
-          checked={filter === 'uncompleted'}
-        />
-        <label htmlFor="uncompleted">Uncompleted</label>
-      </div>
-    </>
   )
 }
 
