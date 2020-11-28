@@ -58,15 +58,14 @@ const TodoList = ({
   const todosAtom = focusAtom(todoListAtom, optic => optic.prop('todos'))
   const todoAtoms = useAtomSlice(todosAtom)
   const shouldBeFilteredAtIndex = useSelector(
-    atom(get => {
-      const { todos, filter } = get(todoListAtom)
-      return todos.map(
+    todoListAtom,
+    ({ todos, filter }) =>
+      todos.map(
         ({ checked }) =>
           filter === 'all' ||
           (filter === 'completed' && checked) ||
           (filter === 'uncompleted' && !checked),
-      )
-    }),
+      ),
   )
   const [newTodo, setNewTodo] = React.useState('')
 
