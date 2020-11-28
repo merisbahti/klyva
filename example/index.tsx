@@ -1,7 +1,13 @@
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
 import 'todomvc-app-css/index.css'
-import { atom, focusAtom, useAtomSlice, useSelector } from '../src/index'
+import {
+  atom,
+  focusAtom,
+  useAtom,
+  useAtomSlice,
+  useSelector,
+} from '../src/index'
 import { PrimitiveAtom } from '../src/types'
 
 const CheckBox = ({ checkedAtom }: { checkedAtom: PrimitiveAtom<boolean> }) => {
@@ -44,16 +50,36 @@ const TodoItem = ({
   )
 }
 
-type TodoListType = Array<TodoType>
-
 const TodoList = ({
   todoListAtom,
-  showCompleted,
 }: {
-  showCompleted: boolean
-  todoListAtom: PrimitiveAtom<TodoListType>
+  todoListAtom: PrimitiveAtom<TodoListAtomType>
 }) => {
-  const todoAtoms = useAtomSlice(todoListAtom)
+  const filter = useSelector(
+    focusAtom(todoListAtom, optic => optic.prop('filter')),
+    id => id,
+  )
+  const filterFunction = (todo: TodoType) => {
+    if (filter === 'completed') {
+      return todo.checked
+    }
+    if (filter === 'uncompleted') {
+      return !todo.checked
+    }
+    return true
+  }
+  // Would like to do the following, however, the optics-ts library doesn't support removing of filtered atoms... yet
+  // Watch for: https://github.com/akheron/optics-ts/pull/16
+  // const todosAtom = focusAtom(todoListAtom, optic =>
+  //   optic.prop('todos').filter(filterFunction),
+  // )
+  const todosAtom = focusAtom(todoListAtom, optic => optic.prop('todos'))
+  // Workaround to observe the "filtered length" until the above issue is resolved...
+  // We really would like to filter in the optic instead, and skip this.
+  // Watch for: https://github.com/akheron/optics-ts/pull/16
+  useAtom(atom(get => get(todosAtom).filter(filterFunction).length))
+
+  const todoAtoms = useAtomSlice(todosAtom)
   const [newTodo, setNewTodo] = React.useState('')
 
   return (
@@ -63,7 +89,7 @@ const TodoList = ({
         placeholder="New todo"
         onKeyUp={e => {
           if (e.key === 'Enter') {
-            todoListAtom.update(todos => [
+            todosAtom.update(todos => [
               ...todos,
               { task: newTodo, checked: false },
             ])
@@ -76,39 +102,73 @@ const TodoList = ({
       />
       <ul>
         {todoAtoms
-          .filter(value => value.getValue().checked === showCompleted)
-          .map((todoAtom, index) => {
-            return (
-              <li>
-                <TodoItem
-                  key={index}
-                  todoAtom={todoAtom}
-                  onRemove={todoAtom.remove}
-                />
-              </li>
-            )
-          })}
+          // Watch for: https://github.com/akheron/optics-ts/pull/16
+          // We can remove the getValue here if we do the filtering in the optic.
+          .filter(atom => filterFunction(atom.getValue()))
+          .map((todoAtom, index) => (
+            <li key={index}>
+              <TodoItem
+                key={index}
+                todoAtom={todoAtom}
+                onRemove={todoAtom.remove}
+              />
+            </li>
+          ))}
       </ul>
     </>
   )
 }
-
-const todoListAtom = atom([
-  { task: 'Handle the dragon', checked: false },
-  { task: 'Drink some water', checked: false },
-])
+type FilterType = 'all' | 'completed' | 'uncompleted'
+type TodoListAtomType = {
+  filter: FilterType
+  todos: Array<TodoType>
+}
+const todoListAtom = atom<TodoListAtomType>({
+  filter: 'all',
+  todos: [
+    { task: 'Handle the dragon', checked: false },
+    { task: 'Drink some water', checked: false },
+  ],
+})
 
 const App = () => {
-  const appState = useSelector(todoListAtom, id => id)
-  const [showCompleted, setShowCompleted] = React.useState(false)
+  const filterAtom = focusAtom(todoListAtom, optic => optic.prop('filter'))
   return (
     <div>
-      <TodoList todoListAtom={todoListAtom} showCompleted={showCompleted} />
-      <button onClick={() => setShowCompleted(!showCompleted)}>
-        Show completed ({JSON.stringify(showCompleted)})
-      </button>
-      <pre>{JSON.stringify(appState, null, 2)}</pre>
+      <TodoList todoListAtom={todoListAtom} />
+      <Filter filterAtom={filterAtom} />
     </div>
+  )
+}
+
+const Filter = ({ filterAtom }: { filterAtom: PrimitiveAtom<FilterType> }) => {
+  const filter = useAtom(filterAtom)
+  return (
+    <>
+      <div onClick={() => filterAtom.update('all')}>
+        <input type="radio" id="all" readOnly checked={filter === 'all'} />
+        <label htmlFor="all">All</label>
+      </div>
+      <div onClick={() => filterAtom.update('completed')}>
+        <input
+          type="radio"
+          id="completed"
+          readOnly
+          checked={filter === 'completed'}
+        />
+        <label htmlFor="completed">Completed</label>
+      </div>
+      <div onClick={() => filterAtom.update('uncompleted')}>
+        <input
+          type="radio"
+          id="uncompleted"
+          value="uncompleted"
+          readOnly
+          checked={filter === 'uncompleted'}
+        />
+        <label htmlFor="uncompleted">Uncompleted</label>
+      </div>
+    </>
   )
 }
 
