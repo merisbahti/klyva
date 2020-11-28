@@ -77,8 +77,7 @@ const TodoList = ({
   // Workaround to observe the "filtered length" until the above issue is resolved...
   // We really would like to filter in the optic instead, and skip this.
   // Watch for: https://github.com/akheron/optics-ts/pull/16
-  useAtom(atom(get => get(todosAtom).filter(filterFunction).length))
-
+  useSelector(todosAtom, todos => todos.filter(filterFunction))
   const todoAtoms = useAtomSlice(todosAtom)
   const [newTodo, setNewTodo] = React.useState('')
 
