@@ -55,29 +55,21 @@ const TodoList = ({
 }: {
   todoListAtom: PrimitiveAtom<TodoListAtomType>
 }) => {
-  const filter = useSelector(
-    focusAtom(todoListAtom, optic => optic.prop('filter')),
-  )
-  const filterFunction = (todo: TodoType) => {
-    if (filter === 'completed') {
-      return todo.checked
-    }
-    if (filter === 'uncompleted') {
-      return !todo.checked
-    }
-    return true
-  }
-  // Would like to do the following, however, the optics-ts library doesn't support removing of filtered atoms... yet
-  // Watch for: https://github.com/akheron/optics-ts/pull/16
-  // const todosAtom = focusAtom(todoListAtom, optic =>
-  //   optic.prop('todos').filter(filterFunction),
-  // )
   const todosAtom = focusAtom(todoListAtom, optic => optic.prop('todos'))
-  // Workaround to observe the "filtered length" until the above issue is resolved...
-  // We really would like to filter in the optic instead, and skip this.
-  // Watch for: https://github.com/akheron/optics-ts/pull/16
-  useSelector(todosAtom, todos => todos.filter(filterFunction).length)
   const todoAtoms = useAtomSlice(todosAtom)
+  const shouldBeFilteredAtIndex = useSelector(
+    atom(get => {
+      const { todos, filter } = get(todoListAtom)
+      return todos.map(value => {
+        if (filter === 'completed') {
+          return value.checked
+        } else if (filter === 'uncompleted') {
+          return !value.checked
+        }
+        return true
+      })
+    }),
+  )
   const [newTodo, setNewTodo] = React.useState('')
 
   return (
@@ -100,9 +92,7 @@ const TodoList = ({
       />
       <ul>
         {todoAtoms
-          // Watch for: https://github.com/akheron/optics-ts/pull/16
-          // We can remove the getValue here if we do the filtering in the optic.
-          .filter(atom => filterFunction(atom.getValue()))
+          .filter((_, index) => shouldBeFilteredAtIndex[index])
           .map((todoAtom, index) => (
             <li key={index}>
               <TodoItem
