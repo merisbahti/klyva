@@ -60,14 +60,12 @@ const TodoList = ({
   const shouldBeFilteredAtIndex = useSelector(
     atom(get => {
       const { todos, filter } = get(todoListAtom)
-      return todos.map(value => {
-        if (filter === 'completed') {
-          return value.checked
-        } else if (filter === 'uncompleted') {
-          return !value.checked
-        }
-        return true
-      })
+      return todos.map(
+        ({ checked }) =>
+          filter === 'all' ||
+          (filter === 'completed' && checked) ||
+          (filter === 'uncompleted' && !checked),
+      )
     }),
   )
   const [newTodo, setNewTodo] = React.useState('')
