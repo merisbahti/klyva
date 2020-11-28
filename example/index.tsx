@@ -80,8 +80,8 @@ const TodoList = ({
         onKeyUp={e => {
           if (e.key === 'Enter') {
             todosAtom.update(todos => [
-              ...todos,
               { task: newTodo, checked: false },
+              ...todos,
             ])
             setNewTodo('')
           }
