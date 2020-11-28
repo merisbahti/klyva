@@ -11,7 +11,7 @@ import {
 import { PrimitiveAtom } from '../src/types'
 
 const CheckBox = ({ checkedAtom }: { checkedAtom: PrimitiveAtom<boolean> }) => {
-  const checked = useSelector(checkedAtom, id => id)
+  const checked = useSelector(checkedAtom)
   return (
     <input
       type="checkbox"
@@ -22,7 +22,7 @@ const CheckBox = ({ checkedAtom }: { checkedAtom: PrimitiveAtom<boolean> }) => {
 }
 
 const TextInput = ({ textAtom }: { textAtom: PrimitiveAtom<string> }) => {
-  const text = useSelector(textAtom, id => id)
+  const text = useSelector(textAtom)
   return (
     <input
       type="text"
@@ -57,7 +57,6 @@ const TodoList = ({
 }) => {
   const filter = useSelector(
     focusAtom(todoListAtom, optic => optic.prop('filter')),
-    id => id,
   )
   const filterFunction = (todo: TodoType) => {
     if (filter === 'completed') {
@@ -77,7 +76,7 @@ const TodoList = ({
   // Workaround to observe the "filtered length" until the above issue is resolved...
   // We really would like to filter in the optic instead, and skip this.
   // Watch for: https://github.com/akheron/optics-ts/pull/16
-  useSelector(todosAtom, todos => todos.filter(filterFunction))
+  useSelector(todosAtom, todos => todos.filter(filterFunction).length)
   const todoAtoms = useAtomSlice(todosAtom)
   const [newTodo, setNewTodo] = React.useState('')
 

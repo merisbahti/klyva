@@ -36,10 +36,16 @@ export const useAtom = <T>(atom: ReadableAtom<T>): T => {
   return cache
 }
 
-export const useSelector = <S, A>(
-  sourceAtom: ReadableAtom<S>,
-  selector: (source: S) => A,
-): A => {
+type UseSelector = {
+  <S, A>(sourceAtom: ReadableAtom<S>, selector: (source: S) => A): A
+  <S>(sourceAtom: ReadableAtom<S>): S
+}
+
+const identity = (id: any) => id
+export const useSelector: UseSelector = (
+  sourceAtom: any,
+  selector: any = identity,
+) => {
   const selectorAtom = React.useMemo(
     () => atom(get => selector(get(sourceAtom))),
     [selector, sourceAtom],

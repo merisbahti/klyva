@@ -44,10 +44,12 @@ it('selection on a derived atom works', async () => {
     const myAtomValue = useAtom(myAtom)
     const myDerivedAtomValue = useAtom(derivedAtom)
     const selectedA = useSelector(derivedAtom, source => source + 2)
+    const selectedIdentity = useSelector(derivedAtom)
     return (
       <div>
         <div>bigAtom: {JSON.stringify(myAtomValue)}</div>
         <div>focusedAtom: {JSON.stringify(selectedA)}</div>
+        <div>selectedIdentity: {JSON.stringify(selectedIdentity)}</div>
         <div>derivedAtom: {JSON.stringify(myDerivedAtomValue)}</div>
         <button
           onClick={() =>
@@ -66,10 +68,12 @@ it('selection on a derived atom works', async () => {
 
   await findByText('bigAtom: {"a":5}')
   await findByText('focusedAtom: 8')
+  await findByText('selectedIdentity: 6')
   await findByText('derivedAtom: 6')
 
   rtl.fireEvent.click(getByText('big inc'))
   await findByText('focusedAtom: 10')
   await findByText('bigAtom: {"a":7}')
+  await findByText('selectedIdentity: 8')
   await findByText('derivedAtom: 8')
 })
