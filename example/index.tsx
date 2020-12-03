@@ -2,13 +2,14 @@ import * as React from 'react'
 import * as ReactDOM from 'react-dom'
 import 'todomvc-app-css/index.css'
 import {
-  atom,
   focusAtom,
+  localStorageAtom,
   useAtom,
   useAtomSlice,
   useSelector,
 } from '../src/index'
 import { PrimitiveAtom } from '../src/types'
+import { FilterType, TodoListAtomType, TodoListTypeIO, TodoType } from './types'
 
 const CheckBox = ({ checkedAtom }: { checkedAtom: PrimitiveAtom<boolean> }) => {
   const checked = useSelector(checkedAtom)
@@ -31,7 +32,6 @@ const TextInput = ({ textAtom }: { textAtom: PrimitiveAtom<string> }) => {
     />
   )
 }
-type TodoType = { task: string; checked: boolean }
 const TodoItem = ({
   todoAtom,
   onRemove,
@@ -119,18 +119,18 @@ const Filter = ({ filterAtom }: { filterAtom: PrimitiveAtom<FilterType> }) => {
   )
 }
 
-type FilterType = 'all' | 'completed' | 'uncompleted'
-type TodoListAtomType = {
-  filter: FilterType
-  todos: Array<TodoType>
-}
-const todoListAtom = atom<TodoListAtomType>({
-  filter: 'all',
-  todos: [
-    { task: 'Handle the dragon', checked: false },
-    { task: 'Drink some water', checked: false },
-  ],
-})
+const todoListAtom = localStorageAtom<TodoListAtomType>(
+  {
+    filter: 'all',
+    todos: [
+      { task: 'Handle the dragon', checked: false },
+      { task: 'Drink some water', checked: false },
+    ],
+  },
+  'todos',
+  (value): value is TodoListAtomType => TodoListTypeIO.check(value),
+)
+
 
 const App = () => {
   const filterAtom = focusAtom(todoListAtom, optic => optic.prop('filter'))

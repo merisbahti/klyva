@@ -5252,3 +5252,8 @@ xtend@^4.0.0, xtend@~4.0.1:
   version "4.0.2"
   resolved "https://registry.yarnpkg.com/xtend/-/xtend-4.0.2.tgz#bb72779f5fa465186b1f438f674fa347fdb5db54"
   integrity sha512-LKYU1iAXJXUgAXn9URjiu+MWhyUXHsvfp7mcuYm9dSUKK0/CjtrUwFAxD82/mCWbtLsGjFIad0wIsod4zrTAEQ==
+
+zod@^2.0.0-beta.25:
+  version "2.0.0-beta.25"
+  resolved "https://registry.yarnpkg.com/zod/-/zod-2.0.0-beta.25.tgz#b1a280f89e24e044897412cb51b53de46c0bd8d9"
+  integrity sha512-fsPQ0j/r65wACW90TzK+gHFyDIZ3qKUiqmr7ysRvurynl87+6GSCQTmkzCQWd4/xADQ60UiD+sZWztt1LHxr0Q==

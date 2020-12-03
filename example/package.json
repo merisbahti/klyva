@@ -9,7 +9,8 @@
   },
   "dependencies": {
     "react-app-polyfill": "^1.0.0",
-    "todomvc-app-css": "^2.3.0"
+    "todomvc-app-css": "^2.3.0",
+    "zod": "^2.0.0-beta.25"
   },
   "alias": {
     "react": "../node_modules/react",
