@@ -57,17 +57,13 @@ const TodoList = ({
 }) => {
   const todosAtom = focusAtom(todoListAtom, optic => optic.prop('todos'))
   const filter = useSelector(todoListAtom, value => value.filter)
-  const filteredTodos = focusAtom(todosAtom, optic =>
-    optic
-      .indexed()
-      .filter(
-        ([index, { checked }]) =>
-          filter === 'all' ||
-          (filter === 'completed' && checked) ||
-          (filter === 'uncompleted' && !checked),
-      ),
+  const todoAtoms = useAtomSlice(
+    todosAtom,
+    ({ checked }) =>
+      filter === 'all' ||
+      (filter === 'completed' && checked) ||
+      (filter === 'uncompleted' && !checked),
   )
-  const todoAtoms = useAtomSlice(filteredTodos)
   const [newTodo, setNewTodo] = React.useState('')
 
   return (
@@ -93,7 +89,7 @@ const TodoList = ({
           <li key={index}>
             <TodoItem
               key={index}
-              todoAtom={focusAtom(todoAtom, optic => optic.nth(1))}
+              todoAtom={todoAtom}
               onRemove={todoAtom.remove}
             />
           </li>
@@ -102,18 +98,6 @@ const TodoList = ({
     </>
   )
 }
-type FilterType = 'all' | 'completed' | 'uncompleted'
-type TodoListAtomType = {
-  filter: FilterType
-  todos: Array<TodoType>
-}
-const todoListAtom = atom<TodoListAtomType>({
-  filter: 'all',
-  todos: [
-    { task: 'Handle the dragon', checked: false },
-    { task: 'Drink some water', checked: false },
-  ],
-})
 
 const Filter = ({ filterAtom }: { filterAtom: PrimitiveAtom<FilterType> }) => {
   const filter = useAtom(filterAtom)
@@ -134,6 +118,19 @@ const Filter = ({ filterAtom }: { filterAtom: PrimitiveAtom<FilterType> }) => {
     </>
   )
 }
+
+type FilterType = 'all' | 'completed' | 'uncompleted'
+type TodoListAtomType = {
+  filter: FilterType
+  todos: Array<TodoType>
+}
+const todoListAtom = atom<TodoListAtomType>({
+  filter: 'all',
+  todos: [
+    { task: 'Handle the dragon', checked: false },
+    { task: 'Drink some water', checked: false },
+  ],
+})
 
 const App = () => {
   const filterAtom = focusAtom(todoListAtom, optic => optic.prop('filter'))
