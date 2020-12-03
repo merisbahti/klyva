@@ -56,17 +56,18 @@ const TodoList = ({
   todoListAtom: PrimitiveAtom<TodoListAtomType>
 }) => {
   const todosAtom = focusAtom(todoListAtom, optic => optic.prop('todos'))
-  const todoAtoms = useAtomSlice(todosAtom)
-  const shouldBeFilteredAtIndex = useSelector(
-    todoListAtom,
-    ({ todos, filter }) =>
-      todos.map(
-        ({ checked }) =>
+  const filter = useSelector(todoListAtom, value => value.filter)
+  const filteredTodos = focusAtom(todosAtom, optic =>
+    optic
+      .indexed()
+      .filter(
+        ([index, { checked }]) =>
           filter === 'all' ||
           (filter === 'completed' && checked) ||
           (filter === 'uncompleted' && !checked),
       ),
   )
+  const todoAtoms = useAtomSlice(filteredTodos)
   const [newTodo, setNewTodo] = React.useState('')
 
   return (
@@ -88,17 +89,15 @@ const TodoList = ({
         }}
       />
       <ul>
-        {todoAtoms
-          .filter((_, index) => shouldBeFilteredAtIndex[index])
-          .map((todoAtom, index) => (
-            <li key={index}>
-              <TodoItem
-                key={index}
-                todoAtom={todoAtom}
-                onRemove={todoAtom.remove}
-              />
-            </li>
-          ))}
+        {todoAtoms.map((todoAtom, index) => (
+          <li key={index}>
+            <TodoItem
+              key={index}
+              todoAtom={focusAtom(todoAtom, optic => optic.nth(1))}
+              onRemove={todoAtom.remove}
+            />
+          </li>
+        ))}
       </ul>
     </>
   )
