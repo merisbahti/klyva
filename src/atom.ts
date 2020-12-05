@@ -31,7 +31,7 @@ export function atom<Value, Update = unknown>(
   const getValue = () => subject.getValue()
   const obs = subject.pipe(skip(1), share())
 
-  const subscribe = (listener: (value: Value) => void) => {
+  const subscribe: Subscribe<Value> = listener => {
     const unsub = obs.subscribe(listener)
     return () => unsub.unsubscribe()
   }
@@ -112,7 +112,7 @@ const derivedAtom = <Value, Update>(
     return valueSubject.getValue()
   }
 
-  const subscribe = (listener: (value: Value) => void) => {
+  const subscribe: Subscribe<Value> = listener => {
     const valueSubscription = value$.subscribe(listener)
     const dependencySubscription = dependencyObserver$.subscribe()
     return () => {
