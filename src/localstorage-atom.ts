@@ -10,13 +10,6 @@ const localStorageAtom = <T>(
   const parsedItem = storedItem ? JSON.parse(storedItem) : null
   const initialItem = verifyItem(parsedItem) ? parsedItem : initialValue
 
-  console.log({ parsedItem, verify: verifyItem(parsedItem) })
-
-  console.log(
-    'check',
-    { filter: 'all', todos: [] },
-    //TodoListTypeIO.check({ filter: 'all', todos: [] }),
-  )
   const baseAtom = atom(initialItem)
   const derivedAtom = atom(
     get => get(baseAtom),
