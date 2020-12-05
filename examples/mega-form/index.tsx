@@ -93,11 +93,11 @@ const Form = ({
   onRemove: () => void
 }) => {
   const entriesAtom = focusAtom(formAtom, optic =>
-    optic.index(1).iso(
+    optic.nth(1).iso(
       from => Object.entries(from),
       to => Object.fromEntries(to),
     ),
-  ) as PrimitiveAtom<[string, string][]>
+  )
   const fieldAtoms = useAtomSlice(entriesAtom)
   const addField = () =>
     entriesAtom.update(oldValue => [
@@ -159,9 +159,9 @@ const Field = ({
 }
 
 const App = () => {
-  const allState = useSelector(RecursiveFormAtom, v =>
+  const allState = null /*useSelector(RecursiveFormAtom, v =>
     JSON.stringify(v, null, 2),
-  )
+  )*/
   return (
     <>
       <FormList todos={RecursiveFormAtom} />
