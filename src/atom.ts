@@ -57,14 +57,20 @@ const derivedAtom = <Value, Update>(
     return a.getValue()
   }
 
+  const dependencies: Array<ReadableAtom<unknown>> = []
+  const dependencyValueCache: Array<unknown> = []
+
   const getValueAndObserver = () => {
-    const dependantAtoms: Array<ReadableAtom<unknown>> = []
-    const onDependency = (atom: ReadableAtom<unknown>) =>
-      dependantAtoms.push(atom)
+    dependencies.length = 0
+    dependencyValueCache.length = 0
+    const onDependency = (atom: ReadableAtom<unknown>) => {
+      dependencies.push(atom)
+      dependencyValueCache.push(atom.getValue())
+    }
     const computedValue = read(getter(onDependency))
     // Then we want to listen to changes for these ones
     // but we want to ignore the first value!
-    const observables = Array.from(dependantAtoms).map(observeForOneValue)
+    const observables = Array.from(dependencies).map(observeForOneValue)
     // Out of all dependants, if just one changes, we want to complete the stream
     const dependencyObserver = merge(...observables).pipe(take(1))
 
@@ -81,21 +87,30 @@ const derivedAtom = <Value, Update>(
   )
   const valueSubject = new BehaviorSubject<Value>(initialValue)
 
+  const recalculateValue = () => {
+    const { computedValue, dependencyObserver } = getValueAndObserver()
+    dependencyObserverSubject.next(dependencyObserver)
+    if (!equal(computedValue, valueSubject.getValue()))
+      valueSubject.next(computedValue)
+  }
+
   const dependencyObserver$ = dependencyObserverSubject.pipe(
     mergeMap(dependencyObserver => dependencyObserver),
-    tap(() => {
-      const { computedValue, dependencyObserver } = getValueAndObserver()
-      dependencyObserverSubject.next(dependencyObserver)
-      if (!equal(computedValue, valueSubject.getValue()))
-        valueSubject.next(computedValue)
-    }),
+    tap(recalculateValue),
     skip(1),
     share(),
   )
 
   const value$ = valueSubject.pipe(skip(1), share())
 
-  const getValue = () => valueSubject.getValue()
+  const getValue = () => {
+    const dependenciesChanged = dependencyValueCache.some(
+      (cachedValue, index) =>
+        !equal(cachedValue, dependencies[index].getValue()),
+    )
+    if (dependenciesChanged) recalculateValue()
+    return valueSubject.getValue()
+  }
 
   const subscribe = (listener: (value: Value) => void) => {
     const valueSubscription = value$.subscribe(listener)
