@@ -137,3 +137,17 @@ test('no extra updates for extra subscriptiosn', done => {
 
   done()
 })
+
+test('stale atom detection', done => {
+  const myAtom = atom(0)
+  const derivedAtom = atom(get => get(myAtom) + 5)
+
+  expect(myAtom.getValue()).toBe(0)
+  expect(derivedAtom.getValue()).toBe(5)
+
+  myAtom.update(1)
+  expect(myAtom.getValue()).toBe(1)
+  expect(derivedAtom.getValue()).toBe(6)
+
+  done()
+})
