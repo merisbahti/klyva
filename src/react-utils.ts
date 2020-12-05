@@ -1,6 +1,5 @@
 import React from 'react'
 import { useState } from 'react'
-import focusAtom from './focus-atom'
 import { atom } from './atom'
 import equal from './equal'
 import {
@@ -58,17 +57,21 @@ export const useAtomSlice = <T>(
   arrayAtom: PrimitiveAtom<Array<T>>,
   filterBy?: (value: T) => boolean,
 ): Array<PrimitiveRemovableAtom<T>> => {
-  const filtered = focusAtom(arrayAtom, optic =>
-    optic.indexed().filter(([, value]) => (filterBy ? filterBy(value) : true)),
+  const keptIndexesAtom = atom(get =>
+    filterBy
+      ? get(arrayAtom).flatMap((value, index) => {
+          return filterBy(value) ? [index] : []
+        })
+      : null,
   )
-  useSelector(filtered, arr => arr.length)
 
-  const sliced = sliceAtomArray(filtered).map(atom => ({
-    ...focusAtom(atom, optic => optic.nth(1)),
-    remove: atom.remove,
-  }))
+  const keptIndexes = useSelector(keptIndexesAtom)
 
-  return sliced
+  const sliced = sliceAtomArray(arrayAtom)
+
+  return keptIndexes
+    ? sliced.filter((_, index) => keptIndexes.includes(index))
+    : sliced
 }
 
 export const sliceAtomArray = <Value>(
