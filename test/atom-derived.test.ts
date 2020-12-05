@@ -153,3 +153,24 @@ test('composite atoms work', done => {
   expect(derived.getValue()).toStrictEqual({ a: 10, b: 30, sum: 40 })
   done()
 })
+
+test('composite atoms work even without extra subs', done => {
+  const count = atom(0)
+  const p1 = atom(get => get(count) + 10)
+  const composite = atom(get => ({ c: get(count), p1: get(p1) }))
+
+  composite.subscribe(() => {})
+
+  expect(composite.getValue()).toStrictEqual({ c: 0, p1: 10 })
+  expect(p1.getValue()).toBe(10)
+  expect(count.getValue()).toBe(0)
+
+  count.update(1)
+  expect(composite.getValue()).toStrictEqual({ c: 1, p1: 11 })
+  expect(count.getValue()).toBe(1)
+
+  count.update(2)
+  expect(composite.getValue()).toStrictEqual({ c: 2, p1: 12 })
+  expect(count.getValue()).toBe(2)
+  done()
+})

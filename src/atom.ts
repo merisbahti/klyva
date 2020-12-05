@@ -1,5 +1,5 @@
-import { BehaviorSubject, merge, Observable, Subject } from 'rxjs'
-import { tap, take, switchMap, filter, share } from 'rxjs/operators'
+import { BehaviorSubject, merge, Observable } from 'rxjs'
+import { tap, take, switchMap, share, skip } from 'rxjs/operators'
 import { Atom, ReadableAtom, DerivedAtomReader, SetState } from './types'
 import observeForOneValue from './observe-for-one-value'
 import equal from './equal'
@@ -27,27 +27,20 @@ export function atom<Value, Update = unknown>(
     return derivedAtom(read, write)
   }
 
-  let valueCache = read
-  const subject = new Subject<Value>()
-  const getValue = () => valueCache
-  const obs = subject.pipe(
-    tap(value => {
-      valueCache = value
-    }),
-    share(),
-  )
+  const subject = new BehaviorSubject<Value>(read)
+  const getValue = () => subject.getValue()
+  const obs = subject.pipe(skip(1), share())
 
   const subscribe = (listener: (value: Value) => void) => {
-    const unsub = obs.subscribe(_ => listener(getValue()))
-    return () => {
-      unsub.unsubscribe()
-    }
+    const unsub = obs.subscribe(listener)
+    return () => unsub.unsubscribe()
   }
   const next = (next: SetState<Value>) => {
     const nextValue = next instanceof Function ? next(getValue()) : next
-    if (!equal(nextValue, getValue())) {
-      subject.next(nextValue)
-    }
+    // Instead of distinctUntilChanged(equal), we do the check here so
+    // that the latest value from the stream (obs) and subject.getValue()
+    // are the same reference
+    if (!equal(nextValue, subject.getValue())) subject.next(nextValue)
   }
 
   return atomConstructor(subscribe, getValue, next)
@@ -65,9 +58,9 @@ const derivedAtom = <Value, Update>(
   }
 
   const getValueAndObserver = () => {
-    const dependantAtoms: Set<ReadableAtom<unknown>> = new Set()
+    const dependantAtoms: Array<ReadableAtom<unknown>> = []
     const onDependency = (atom: ReadableAtom<unknown>) =>
-      dependantAtoms.add(atom)
+      dependantAtoms.push(atom)
     const computedValue = read(getter(onDependency))
     // Then we want to listen to changes for these ones
     // but we want to ignore the first value!
@@ -86,34 +79,31 @@ const derivedAtom = <Value, Update>(
   const dependencyObserverSubject = new BehaviorSubject<Observable<unknown>>(
     initialDependencyObserver,
   )
+  const valueSubject = new BehaviorSubject<Value>(initialValue)
+
   const dependencyObserver$ = dependencyObserverSubject.pipe(
     switchMap(dependencyObserver => dependencyObserver),
-    filter(() => {
-      const {
-        computedValue: newValue,
-        dependencyObserver,
-      } = getValueAndObserver()
+    tap(() => {
+      const { computedValue, dependencyObserver } = getValueAndObserver()
       dependencyObserverSubject.next(dependencyObserver)
-      const shouldUpdate = !equal(cachedValue, newValue)
-      if (shouldUpdate) {
-        cachedValue = newValue
-      }
-      return shouldUpdate
+      if (!equal(computedValue, valueSubject.getValue()))
+        valueSubject.next(computedValue)
     }),
+    skip(1),
     share(),
   )
 
-  let cachedValue = initialValue
+  const value$ = valueSubject.pipe(skip(1), share())
 
-  const getValue = () => {
-    return cachedValue
-  }
+  const getValue = () => valueSubject.getValue()
 
   const subscribe = (listener: (value: Value) => void) => {
-    const dependencySubscription = dependencyObserver$.subscribe(_ =>
-      listener(getValue()),
-    )
-    return () => dependencySubscription.unsubscribe()
+    const valueSubscription = value$.subscribe(listener)
+    const dependencySubscription = dependencyObserver$.subscribe()
+    return () => {
+      dependencySubscription.unsubscribe()
+      valueSubscription.unsubscribe()
+    }
   }
 
   return atomConstructor(subscribe, getValue, write)
