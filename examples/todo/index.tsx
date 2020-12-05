@@ -128,9 +128,8 @@ const todoListAtom = localStorageAtom<TodoListAtomType>(
     ],
   },
   'todos',
-  (value): value is TodoListAtomType => TodoListTypeIO.check(value),
+  TodoListTypeIO.is,
 )
-
 
 const App = () => {
   const filterAtom = focusAtom(todoListAtom, optic => optic.prop('filter'))

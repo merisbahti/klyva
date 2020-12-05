@@ -1,14 +1,14 @@
-import * as z from 'zod'
-export const FilterTypeIO = z.union([
-  z.literal('uncompleted'),
-  z.literal('completed'),
-  z.literal('all'),
+import * as io from 'io-ts'
+export const FilterTypeIO = io.union([
+  io.literal('uncompleted'),
+  io.literal('completed'),
+  io.literal('all'),
 ])
-export const TodoTypeIO = z.object({ task: z.string(), checked: z.boolean() })
-export const TodoListTypeIO = z.object({
+export const TodoTypeIO = io.type({ task: io.string, checked: io.boolean })
+export const TodoListTypeIO = io.type({
   filter: FilterTypeIO,
-  todos: z.array(TodoTypeIO),
+  todos: io.array(TodoTypeIO),
 })
-export type TodoType = z.infer<typeof TodoTypeIO>
-export type FilterType = z.infer<typeof FilterTypeIO>
-export type TodoListAtomType = z.infer<typeof TodoListTypeIO>
+export type TodoType = typeof TodoTypeIO._A
+export type FilterType = typeof FilterTypeIO._A
+export type TodoListAtomType = typeof TodoListTypeIO._A

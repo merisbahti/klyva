@@ -2395,6 +2395,11 @@ form-data@~2.3.2:
     combined-stream "^1.0.6"
     mime-types "^2.1.12"
 
+fp-ts@^2.9.1:
+  version "2.9.1"
+  resolved "https://registry.yarnpkg.com/fp-ts/-/fp-ts-2.9.1.tgz#24557f66f9221f8a1922fce6cbe2b8ea6d0f3929"
+  integrity sha512-9++IpEtF2blK7tfSV+iHxO3KXdAGO/bPPQtUYqzC6XKzGOWNctqvlf13SpXxcu2mYaibOvneh/m9vAPLAHdoRQ==
+
 fragment-cache@^0.2.1:
   version "0.2.1"
   resolved "https://registry.yarnpkg.com/fragment-cache/-/fragment-cache-0.2.1.tgz#4290fad27f13e89be7f33799c6bc5a0abfff0d19"
@@ -2731,6 +2736,11 @@ invariant@^2.2.2, invariant@^2.2.4:
   integrity sha512-phJfQVBuaJM5raOpJjSfkiD6BpbCE4Ns//LaXl6wGYtUBY83nWS6Rf9tXm2e8VaK60JEjYldbPif/A2B1C2gNA==
   dependencies:
     loose-envify "^1.0.0"
+
+io-ts@^2.2.13:
+  version "2.2.13"
+  resolved "https://registry.yarnpkg.com/io-ts/-/io-ts-2.2.13.tgz#e04016685e863dd5cffb2b5262c5c9c74432dfda"
+  integrity sha512-BYJgE/BanovJKDvCnAkrr7f3gTucSyk+Sr5VtpouBO1/YfBKUyIn2z1ODG8LEF+1D4sjKZ3Bd/A5/v8JrJe5UQ==
 
 is-absolute-url@^2.0.0:
   version "2.1.0"
@@ -5252,8 +5262,3 @@ xtend@^4.0.0, xtend@~4.0.1:
   version "4.0.2"
   resolved "https://registry.yarnpkg.com/xtend/-/xtend-4.0.2.tgz#bb72779f5fa465186b1f438f674fa347fdb5db54"
   integrity sha512-LKYU1iAXJXUgAXn9URjiu+MWhyUXHsvfp7mcuYm9dSUKK0/CjtrUwFAxD82/mCWbtLsGjFIad0wIsod4zrTAEQ==
-
-zod@^2.0.0-beta.25:
-  version "2.0.0-beta.25"
-  resolved "https://registry.yarnpkg.com/zod/-/zod-2.0.0-beta.25.tgz#b1a280f89e24e044897412cb51b53de46c0bd8d9"
-  integrity sha512-fsPQ0j/r65wACW90TzK+gHFyDIZ3qKUiqmr7ysRvurynl87+6GSCQTmkzCQWd4/xADQ60UiD+sZWztt1LHxr0Q==
