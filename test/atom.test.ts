@@ -76,8 +76,6 @@ test("the parent emits even though its the focused atom's focused atom being nex
   myAtom.subscribe(next => {
     latestValue = next
   })
-  firstFocus.subscribe(() => {})
-  secondFocus.subscribe(() => {})
 
   myAtom.update({ a: { b: 1 } })
   expect(latestValue).toEqual({ a: { b: 1 } })

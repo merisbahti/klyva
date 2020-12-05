@@ -7,8 +7,6 @@ test('isomorphisms work', done => {
   const back = (a: number) => a - 1
   const myFocus = focusAtom(myAtom, optic => optic.iso(there, back))
 
-  myFocus.subscribe(() => {})
-
   myAtom.update(1)
   expect(myAtom.getValue()).toEqual(1)
   expect(myFocus.getValue()).toEqual(2)

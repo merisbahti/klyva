@@ -1,4 +1,3 @@
-import { noop } from 'rxjs'
 import { atom } from '../src/atom'
 import { SetState } from '../src/types'
 
@@ -6,7 +5,6 @@ test('simple derivation with 1 atom works', done => {
   const atomA = atom(10)
 
   const derived = atom(get => get(atomA) + 1)
-  const unsub = derived.subscribe(noop)
 
   expect(atomA.getValue()).toBe(10)
   expect(derived.getValue()).toBe(11)
@@ -15,7 +13,6 @@ test('simple derivation with 1 atom works', done => {
   expect(atomA.getValue()).toBe(1)
   expect(derived.getValue()).toBe(2)
 
-  unsub()
   done()
 })
 
@@ -75,8 +72,6 @@ test('advanced derivation with multiple dependencies work as expected', done => 
   const atomB = atom(5)
   const atomC = atom('then')
   const derived = atom(get => (get(atomA) < get(atomB) ? get(atomC) : 'else'))
-
-  derived.subscribe(noop)
 
   expect(atomA.getValue()).toBe(10)
   expect(atomB.getValue()).toBe(5)
@@ -158,8 +153,6 @@ test('composite atoms work even without extra subs', done => {
   const count = atom(0)
   const p1 = atom(get => get(count) + 10)
   const composite = atom(get => ({ c: get(count), p1: get(p1) }))
-
-  composite.subscribe(() => {})
 
   expect(composite.getValue()).toStrictEqual({ c: 0, p1: 10 })
   expect(p1.getValue()).toBe(10)

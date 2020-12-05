@@ -71,8 +71,6 @@ test('deep slices work', done => {
   const [entry0Atom] = entryAtoms
   const entry0NameAtom = focusAtom(entry0Atom, optic => optic.index(0))
 
-  entry0NameAtom.subscribe(() => {})
-
   expect(entry0NameAtom.getValue()).toEqual('task')
   expect(entry0Atom.getValue()).toEqual(['task', 'Eat some food'])
   expect(form0Atom.getValue()).toEqual({
@@ -105,9 +103,6 @@ test('removal of atom slices work', done => {
 
   const itemsAtoms = sliceAtomArray(itemsAtom)
   const [item0Atom, item1Atom] = itemsAtoms
-
-  item0Atom.subscribe(() => {})
-  item1Atom.subscribe(() => {})
 
   item0Atom.update('hello!!!')
 
