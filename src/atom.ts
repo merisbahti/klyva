@@ -1,5 +1,5 @@
 import { BehaviorSubject, merge, Observable } from 'rxjs'
-import { tap, take, switchMap, share, skip } from 'rxjs/operators'
+import { tap, take, share, skip, mergeMap } from 'rxjs/operators'
 import { Atom, ReadableAtom, DerivedAtomReader, SetState } from './types'
 import observeForOneValue from './observe-for-one-value'
 import equal from './equal'
@@ -82,7 +82,7 @@ const derivedAtom = <Value, Update>(
   const valueSubject = new BehaviorSubject<Value>(initialValue)
 
   const dependencyObserver$ = dependencyObserverSubject.pipe(
-    switchMap(dependencyObserver => dependencyObserver),
+    mergeMap(dependencyObserver => dependencyObserver),
     tap(() => {
       const { computedValue, dependencyObserver } = getValueAndObserver()
       dependencyObserverSubject.next(dependencyObserver)
