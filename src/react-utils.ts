@@ -62,7 +62,7 @@ export const useAtomSlice = <T>(
       ? get(arrayAtom).flatMap((value, index) => {
           return filterBy(value) ? [index] : []
         })
-      : null,
+      : get(arrayAtom).map((_, index) => index),
   )
 
   const keptIndexes = useSelector(keptIndexesAtom)
