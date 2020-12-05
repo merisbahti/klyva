@@ -55,9 +55,23 @@ export const useSelector: UseSelector = (
 
 export const useAtomSlice = <T>(
   arrayAtom: PrimitiveAtom<Array<T>>,
+  filterBy?: (value: T) => boolean,
 ): Array<PrimitiveRemovableAtom<T>> => {
-  useSelector(arrayAtom, arr => arr.length)
-  return sliceAtomArray(arrayAtom)
+  const keptIndexesAtom = atom(get =>
+    filterBy
+      ? get(arrayAtom).flatMap((value, index) => {
+          return filterBy(value) ? [index] : []
+        })
+      : null,
+  )
+
+  const keptIndexes = useSelector(keptIndexesAtom)
+
+  const sliced = sliceAtomArray(arrayAtom)
+
+  return keptIndexes
+    ? sliced.filter((_, index) => keptIndexes.includes(index))
+    : sliced
 }
 
 export const sliceAtomArray = <Value>(

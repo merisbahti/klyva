@@ -123,3 +123,17 @@ test('identity is perserved for values, equal changes should not change idenitit
 
   done()
 })
+
+test('no extra updates for extra subscriptiosn', done => {
+  const myAtom = atom(0)
+
+  let sub1updates = 0
+  let sub2updates = 0
+  myAtom.subscribe(() => (sub1updates += 1))
+  myAtom.subscribe(() => (sub2updates += 1))
+
+  expect(sub1updates).toBe(0)
+  expect(sub2updates).toBe(0)
+
+  done()
+})
