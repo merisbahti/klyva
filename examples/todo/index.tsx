@@ -7,8 +7,8 @@ import {
   useAtom,
   useAtomSlice,
   useSelector,
-} from '../src/index'
-import { PrimitiveAtom } from '../src/types'
+} from '../../src/index'
+import { PrimitiveAtom } from '../../src/types'
 import { FilterType, TodoListAtomType, TodoListTypeIO, TodoType } from './types'
 
 const CheckBox = ({ checkedAtom }: { checkedAtom: PrimitiveAtom<boolean> }) => {
