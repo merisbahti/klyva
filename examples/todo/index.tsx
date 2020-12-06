@@ -12,23 +12,23 @@ import { PrimitiveAtom } from '../../src/types'
 import { FilterType, TodoListAtomType, TodoListTypeIO, TodoType } from './types'
 
 const CheckBox = ({ checkedAtom }: { checkedAtom: PrimitiveAtom<boolean> }) => {
-  const checked = useSelector(checkedAtom)
+  const [checked, setChecked] = useAtom(checkedAtom)
   return (
     <input
       type="checkbox"
       checked={checked}
-      onChange={() => checkedAtom.update(!checked)}
+      onChange={() => setChecked(!checked)}
     />
   )
 }
 
 const TextInput = ({ textAtom }: { textAtom: PrimitiveAtom<string> }) => {
-  const text = useSelector(textAtom)
+  const [text, setText] = useAtom(textAtom)
   return (
     <input
       type="text"
       value={text}
-      onChange={event => textAtom.update(event.target.value)}
+      onChange={event => setText(event.target.value)}
     />
   )
 }
@@ -100,18 +100,18 @@ const TodoList = ({
 }
 
 const Filter = ({ filterAtom }: { filterAtom: PrimitiveAtom<FilterType> }) => {
-  const filter = useAtom(filterAtom)
+  const [filter, setFilter] = useAtom(filterAtom)
   return (
     <>
-      <div onClick={() => filterAtom.update('all')}>
+      <div onClick={() => setFilter('all')}>
         <input type="radio" readOnly checked={filter === 'all'} />
         <label htmlFor="all">All</label>
       </div>
-      <div onClick={() => filterAtom.update('completed')}>
+      <div onClick={() => setFilter('completed')}>
         <input type="radio" readOnly checked={filter === 'completed'} />
         <label>Completed</label>
       </div>
-      <div onClick={() => filterAtom.update('uncompleted')}>
+      <div onClick={() => setFilter('uncompleted')}>
         <input type="radio" readOnly checked={filter === 'uncompleted'} />
         <label htmlFor="uncompleted">Uncompleted</label>
       </div>

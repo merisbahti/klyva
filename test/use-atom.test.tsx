@@ -8,12 +8,12 @@ import focusAtom from '../src/focus-atom'
 it('focus on an atom works', async () => {
   const anAtom = atom({ a: 5 })
   const Counter = ({ myAtom }: { myAtom: PrimitiveAtom<{ a: number }> }) => {
-    const myAtomValue = useAtom(myAtom)
+    const [myAtomValue] = useAtom(myAtom)
     const focusedA = React.useMemo(
       () => focusAtom(myAtom, optic => optic.prop('a')),
       [myAtom],
     )
-    const count = useAtom(focusedA)
+    const [count] = useAtom(focusedA)
     return (
       <div>
         <div>bigAtom: {JSON.stringify(myAtomValue)}</div>
@@ -53,13 +53,13 @@ it('focus on a derived atom works', async () => {
   const derivedAtom = atom(get => get(anAtom).a + 1)
 
   const Counter = ({ myAtom }: { myAtom: PrimitiveAtom<{ a: number }> }) => {
-    const myAtomValue = useAtom(myAtom)
-    const myDerivedAtomValue = useAtom(derivedAtom)
+    const [myAtomValue] = useAtom(myAtom)
+    const [myDerivedAtomValue] = useAtom(derivedAtom)
     const focusedA = React.useMemo(
       () => focusAtom(myAtom, optic => optic.prop('a')),
       [myAtom],
     )
-    const count = useAtom(focusedA)
+    const [count] = useAtom(focusedA)
     return (
       <div>
         <div>bigAtom: {JSON.stringify(myAtomValue)}</div>
@@ -109,7 +109,7 @@ it('removal works without throwing', async () => {
     stringAtom: PrimitiveAtom<string>
     remove: () => void
   }) => {
-    const str = useAtom(stringAtom)
+    const [str] = useAtom(stringAtom)
     return (
       <div>
         <input value={str} onChange={e => stringAtom.update(e.target.value)} />
@@ -220,16 +220,17 @@ it('updates are batched (useEffect)', async () => {
     p2: get(p2atom),
   }))
   const Counter = () => {
-    const myAtomValue = useSelector(derivedAtom)
+    const [, setAnAtom] = useAtom(anAtom)
+    const [myAtomValue] = useAtom(derivedAtom)
     useSelector(p1atom)
     useSelector(p2atom)
     const updates = useUpdateCount()
     React.useEffect(() => {
       const timeout = setTimeout(() => {
-        anAtom.update(value => value + 1)
-      }, 100)
+        setAnAtom(value => value + 1)
+      }, 500)
       return () => clearTimeout(timeout)
-    }, [])
+    }, [setAnAtom])
     return (
       <div>
         <div>updates: {updates}</div>

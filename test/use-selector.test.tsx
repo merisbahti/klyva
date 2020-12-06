@@ -7,7 +7,7 @@ import { useAtom, useSelector } from '../src/react-utils'
 it('selection on an atom works', async () => {
   const anAtom = atom({ a: 5 })
   const Counter = ({ myAtom }: { myAtom: PrimitiveAtom<{ a: number }> }) => {
-    const myAtomValue = useAtom(myAtom)
+    const [myAtomValue] = useAtom(myAtom)
     const selectedA = useSelector(myAtom, value => value.a)
     return (
       <div>
@@ -41,8 +41,8 @@ it('selection on a derived atom works', async () => {
   const derivedAtom = atom(get => get(anAtom).a + 1)
 
   const Counter = ({ myAtom }: { myAtom: PrimitiveAtom<{ a: number }> }) => {
-    const myAtomValue = useAtom(myAtom)
-    const myDerivedAtomValue = useAtom(derivedAtom)
+    const [myAtomValue] = useAtom(myAtom)
+    const [myDerivedAtomValue] = useAtom(derivedAtom)
     const selectedA = useSelector(derivedAtom, source => source + 2)
     const selectedIdentity = useSelector(derivedAtom)
     return (
