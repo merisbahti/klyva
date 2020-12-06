@@ -2,7 +2,7 @@ import React from 'react'
 import * as rtl from '@testing-library/react'
 import { atom } from '../src'
 import { PrimitiveAtom } from '../src/types'
-import { useAtom, useAtomSlice } from '../src/react-utils'
+import { useAtom, useAtomSlice, useSelector } from '../src/react-utils'
 import focusAtom from '../src/focus-atom'
 
 it('focus on an atom works', async () => {
@@ -165,4 +165,84 @@ it('removal works without throwing', async () => {
   rtl.fireEvent.click(getByText('remove item 0'))
   rtl.fireEvent.click(getByText('remove item 0'))
   //rtl.fireEvent.click(getByText('remove array'))
+})
+
+const useUpdateCount = () => {
+  const count = React.useRef(0)
+  React.useEffect(() => {
+    count.current += 1
+  })
+  return count.current
+}
+
+it('updates are batched (onclick)', async () => {
+  const anAtom = atom(5)
+  const p1atom = atom(get => get(anAtom) + 1)
+  const p2atom = atom(get => get(anAtom) + 2)
+  const derivedAtom = atom(get => ({
+    c: get(anAtom),
+    p1: get(p1atom),
+    p2: get(p2atom),
+  }))
+  const Counter = () => {
+    const myAtomValue = useSelector(derivedAtom)
+    const updates = useUpdateCount()
+    return (
+      <div>
+        <div>updates: {updates}</div>
+        <div>derivedAtom: {JSON.stringify(myAtomValue)}</div>
+        <button onClick={() => anAtom.update(value => value + 1)}>inc</button>
+      </div>
+    )
+  }
+
+  const { getByText, findByText } = rtl.render(<Counter />)
+
+  await findByText('updates: 0')
+  await findByText('derivedAtom: {"c":5,"p1":6,"p2":7}')
+  rtl.fireEvent.click(getByText('inc'))
+
+  await findByText('updates: 1')
+  await findByText('derivedAtom: {"c":6,"p1":7,"p2":8}')
+
+  rtl.fireEvent.click(getByText('inc'))
+  await findByText('updates: 2')
+  await findByText('derivedAtom: {"c":7,"p1":8,"p2":9}')
+})
+
+it('updates are batched (useEffect)', async () => {
+  const anAtom = atom(5)
+  const p1atom = atom(get => get(anAtom) + 1)
+  const p2atom = atom(get => get(anAtom) + 2)
+  const derivedAtom = atom(get => ({
+    c: get(anAtom),
+    p1: get(p1atom),
+    p2: get(p2atom),
+  }))
+  const Counter = () => {
+    const myAtomValue = useSelector(derivedAtom)
+    useSelector(p1atom)
+    useSelector(p2atom)
+    const updates = useUpdateCount()
+    React.useEffect(() => {
+      const timeout = setTimeout(() => {
+        anAtom.update(value => value + 1)
+      }, 100)
+      return () => clearTimeout(timeout)
+    }, [])
+    return (
+      <div>
+        <div>updates: {updates}</div>
+        <div>derivedAtom: {JSON.stringify(myAtomValue)}</div>
+      </div>
+    )
+  }
+
+  const { findByText } = rtl.render(<Counter />)
+
+  await findByText('updates: 0')
+  await findByText('derivedAtom: {"c":5,"p1":6,"p2":7}')
+
+  await findByText('updates: 1')
+  await findByText('derivedAtom: {"c":6,"p1":7,"p2":8}')
 })
