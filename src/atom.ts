@@ -1,8 +1,16 @@
-import { BehaviorSubject, merge, Observable } from 'rxjs'
-import { tap, take, share, skip, mergeMap } from 'rxjs/operators'
+import cbSubscribe from 'callbag-subscribe'
+import cbTap from 'callbag-tap'
+import cbTake from 'callbag-take'
+import cbSkip from 'callbag-skip'
+import cbShare from 'callbag-share'
+import cbPipe from 'callbag-pipe'
+import cbMergeMap from 'callbag-merge-map'
+import cbMerge from 'callbag-merge'
 import { Atom, ReadableAtom, DerivedAtomReader, SetState } from './types'
-import observeForOneValue from './observe-for-one-value'
+import { atomToSource } from './atom-to-source'
 import equal from './equal'
+import { Source } from 'callbag'
+import behaviorSubject from './behavior-subject'
 
 export function atom<Value, Update>(
   value: DerivedAtomReader<Value>,
@@ -27,20 +35,23 @@ export function atom<Value, Update = unknown>(
     return derivedAtom(read, write)
   }
 
-  const subject = new BehaviorSubject<Value>(read)
-  const getValue = () => subject.getValue()
-  const obs = subject.pipe(skip(1), share())
+  const subject = behaviorSubject(read)
+  const getValue = subject.getValue
+
+  const obs = cbPipe(subject, cbSkip(1), cbShare)
 
   const subscribe: Subscribe<Value> = listener => {
-    const unsub = obs.subscribe(listener)
-    return () => unsub.unsubscribe()
+    const unsub = cbSubscribe(listener)(obs)
+    return () => unsub()
   }
   const next = (next: SetState<Value>) => {
     const nextValue = next instanceof Function ? next(getValue()) : next
     // Instead of distinctUntilChanged(equal), we do the check here so
     // that the latest value from the stream (obs) and subject.getValue()
     // are the same reference
-    if (!equal(nextValue, subject.getValue())) subject.next(nextValue)
+    if (!equal(nextValue, getValue())) {
+      subject(1, nextValue)
+    }
   }
 
   return atomConstructor(subscribe, getValue, next)
@@ -70,38 +81,40 @@ const derivedAtom = <Value, Update>(
     const computedValue = read(getter(onDependency))
     // Then we want to listen to changes for these ones
     // but we want to ignore the first value!
-    const observables = Array.from(dependencies).map(observeForOneValue)
+    const sources = Array.from(dependencies).map(atomToSource)
     // Out of all dependants, if just one changes, we want to complete the stream
-    const dependencyObserver = merge(...observables).pipe(take(1))
+    const dependencyObserver = cbPipe(cbMerge(...sources), cbTake(1))
 
     return { computedValue, dependencyObserver } as const
   }
 
   const {
     computedValue: initialValue,
-    dependencyObserver: initialDependencyObserver,
+    dependencyObserver: initialDependencySource,
   } = getValueAndObserver()
 
-  const dependencyObserverSubject = new BehaviorSubject<Observable<unknown>>(
-    initialDependencyObserver,
+  const dependencyObserverSubject = behaviorSubject<Source<unknown>>(
+    initialDependencySource,
   )
-  const valueSubject = new BehaviorSubject<Value>(initialValue)
+  const valueSubject = behaviorSubject<Value>(initialValue)
 
   const recalculateValue = () => {
     const { computedValue, dependencyObserver } = getValueAndObserver()
-    dependencyObserverSubject.next(dependencyObserver)
-    if (!equal(computedValue, valueSubject.getValue()))
-      valueSubject.next(computedValue)
+    dependencyObserverSubject(1, dependencyObserver)
+    if (!equal(computedValue, getValue())) {
+      valueSubject(1, computedValue)
+    }
   }
 
-  const dependencyObserver$ = dependencyObserverSubject.pipe(
-    mergeMap(dependencyObserver => dependencyObserver),
-    tap(recalculateValue),
-    skip(1),
-    share(),
+  const dependencyObserver$ = cbPipe(
+    dependencyObserverSubject,
+    cbMergeMap(dependencyObserver => dependencyObserver),
+    cbTap(recalculateValue),
+    cbSkip(1),
+    cbShare,
   )
 
-  const value$ = valueSubject.pipe(skip(1), share())
+  const value$ = cbPipe(valueSubject, cbSkip(1), cbShare)
 
   const getValue = () => {
     const dependenciesChanged = dependencyValueCache.some(
@@ -113,11 +126,11 @@ const derivedAtom = <Value, Update>(
   }
 
   const subscribe: Subscribe<Value> = listener => {
-    const valueSubscription = value$.subscribe(listener)
-    const dependencySubscription = dependencyObserver$.subscribe()
+    const valueSubscription = cbSubscribe(listener)(value$)
+    const dependencySubscription = cbSubscribe(() => {})(dependencyObserver$)
     return () => {
-      dependencySubscription.unsubscribe()
-      valueSubscription.unsubscribe()
+      dependencySubscription()
+      valueSubscription()
     }
   }
 
