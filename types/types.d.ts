@@ -7,13 +7,6 @@ declare module 'callbag-tap' {
   export default tap
 }
 
-declare module 'callbag-behavior-subject' {
-  import { Source } from 'callbag'
-
-  const createBehaviorSubject: <T>(initialValue: T) => Source<T>
-  export default createBehaviorSubject
-}
-
 declare module 'callbag-merge-map' {
   import { Source } from 'callbag'
 

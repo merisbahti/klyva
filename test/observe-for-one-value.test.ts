@@ -1,6 +1,6 @@
 import subscribe from 'callbag-subscribe'
 import { atom } from '../src/atom'
-import { atomToSource } from '../src/observe-for-one-value'
+import { atomToSource } from '../src/atom-to-source'
 
 /*
 test('isomorphisms work', done => {

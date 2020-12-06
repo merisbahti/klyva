@@ -80,7 +80,6 @@
   },
   "dependencies": {
     "@types/deep-equal": "^1.0.1",
-    "callbag-behavior-subject": "^1.2.0",
     "callbag-merge": "^3.2.2",
     "callbag-merge-map": "^0.0.1",
     "callbag-pipe": "^1.2.0",

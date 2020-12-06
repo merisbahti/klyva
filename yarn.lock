@@ -4153,11 +4153,6 @@ call-me-maybe@^1.0.1:
   resolved "https://registry.yarnpkg.com/call-me-maybe/-/call-me-maybe-1.0.1.tgz#26d208ea89e37b5cbde60250a15f031c16a4d66b"
   integrity sha1-JtII6onje1y95gJQoV8DHBak1ms=
 
-callbag-behavior-subject@^1.2.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/callbag-behavior-subject/-/callbag-behavior-subject-1.2.0.tgz#9fd519206853e992a6cdd51a8d0863fa7f53c49c"
-  integrity sha512-8F7gI0U3AFeErLJTAQs5IrjbGxlf3PRwaMXuYJPQaAq82Z+9JzkjgGSjeLlIkjVkj2jM/ZnWSigMhnGLmIbAtA==
-
 callbag-merge-map@^0.0.1:
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/callbag-merge-map/-/callbag-merge-map-0.0.1.tgz#1075264686720a69698ec2cd1cf6be92ccfbc6b5"

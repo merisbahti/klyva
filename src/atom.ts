@@ -1,4 +1,3 @@
-import createBehaviorSubject from 'callbag-behavior-subject'
 import cbSubscribe from 'callbag-subscribe'
 import cbTap from 'callbag-tap'
 import cbTake from 'callbag-take'
@@ -8,21 +7,10 @@ import cbPipe from 'callbag-pipe'
 import cbMergeMap from 'callbag-merge-map'
 import cbMerge from 'callbag-merge'
 import { Atom, ReadableAtom, DerivedAtomReader, SetState } from './types'
-import { atomToSource } from './observe-for-one-value'
+import { atomToSource } from './atom-to-source'
 import equal from './equal'
 import { Source } from 'callbag'
-
-console.log(
-  cbTap,
-  cbTake,
-  cbSkip,
-  cbShare,
-  cbPipe,
-  cbMergeMap,
-  cbMerge,
-  createBehaviorSubject,
-  cbSubscribe,
-)
+import behaviorSubject from './behavior-subject'
 
 export function atom<Value, Update>(
   value: DerivedAtomReader<Value>,
@@ -47,24 +35,13 @@ export function atom<Value, Update = unknown>(
     return derivedAtom(read, write)
   }
 
-  const subject = createBehaviorSubject(read)
-  const getValue = () => {
-    let value: Value
-    const unsub = cbPipe(
-      subject,
-      cbSubscribe(currValue => {
-        value = currValue
-      }),
-    )
-    unsub()
-    // @ts-ignore
-    return value
-  }
+  const subject = behaviorSubject(read)
+  const getValue = subject.getValue
+
   const obs = cbPipe(subject, cbSkip(1), cbShare)
 
   const subscribe: Subscribe<Value> = listener => {
     const unsub = cbSubscribe(listener)(obs)
-
     return () => unsub()
   }
   const next = (next: SetState<Value>) => {
@@ -73,7 +50,6 @@ export function atom<Value, Update = unknown>(
     // that the latest value from the stream (obs) and subject.getValue()
     // are the same reference
     if (!equal(nextValue, getValue())) {
-      // @ts-ignore
       subject(1, nextValue)
     }
   }
@@ -117,17 +93,15 @@ const derivedAtom = <Value, Update>(
     dependencyObserver: initialDependencySource,
   } = getValueAndObserver()
 
-  const dependencyObserverSubject = createBehaviorSubject<Source<unknown>>(
+  const dependencyObserverSubject = behaviorSubject<Source<unknown>>(
     initialDependencySource,
   )
-  const valueSubject = createBehaviorSubject<Value>(initialValue)
+  const valueSubject = behaviorSubject<Value>(initialValue)
 
   const recalculateValue = () => {
     const { computedValue, dependencyObserver } = getValueAndObserver()
-    // @ts-ignore
     dependencyObserverSubject(1, dependencyObserver)
     if (!equal(computedValue, getValue())) {
-      // @ts-ignore
       valueSubject(1, computedValue)
     }
   }
@@ -148,16 +122,7 @@ const derivedAtom = <Value, Update>(
         !equal(cachedValue, dependencies[index].getValue()),
     )
     if (dependenciesChanged) recalculateValue()
-    let value: Value
-    const unsub = cbPipe(
-      valueSubject,
-      cbSubscribe(currValue => {
-        value = currValue
-      }),
-    )
-    unsub()
-    // @ts-ignore
-    return value
+    return valueSubject.getValue()
   }
 
   const subscribe: Subscribe<Value> = listener => {
