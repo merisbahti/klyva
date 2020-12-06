@@ -1,8 +1,29 @@
 import { BehaviorSubject, merge, Observable } from 'rxjs'
 import { tap, take, share, skip, mergeMap } from 'rxjs/operators'
+import createBehaviorSubject from 'callbag-behavior-subject'
+import cbSubscribe from 'callbag-subscribe'
+import cbTap from 'callbag-tap'
+import cbTake from 'callbag-take'
+import cbSkip from 'callbag-skip'
+import cbShare from 'callbag-share'
+import cbPipe from 'callbag-pipe'
+import cbMergeMap from 'callbag-merge-map'
+import cbMerge from 'callbag-merge'
 import { Atom, ReadableAtom, DerivedAtomReader, SetState } from './types'
 import observeForOneValue from './observe-for-one-value'
 import equal from './equal'
+
+console.log(
+  cbTap,
+  cbTake,
+  cbSkip,
+  cbShare,
+  cbPipe,
+  cbMergeMap,
+  cbMerge,
+  createBehaviorSubject,
+  cbSubscribe,
+)
 
 export function atom<Value, Update>(
   value: DerivedAtomReader<Value>,
@@ -27,20 +48,35 @@ export function atom<Value, Update = unknown>(
     return derivedAtom(read, write)
   }
 
-  const subject = new BehaviorSubject<Value>(read)
-  const getValue = () => subject.getValue()
-  const obs = subject.pipe(skip(1), share())
+  const subject = createBehaviorSubject(read)
+  const getValue = () => {
+    let value: Value
+    const unsub = cbPipe(
+      subject,
+      cbSubscribe(currValue => {
+        value = currValue
+      }),
+    )
+    unsub()
+    // @ts-ignore
+    return value
+  }
+  const obs = cbPipe(subject, cbSkip(1), cbShare)
 
   const subscribe: Subscribe<Value> = listener => {
-    const unsub = obs.subscribe(listener)
-    return () => unsub.unsubscribe()
+    const unsub = cbSubscribe(listener)(obs)
+
+    return () => unsub()
   }
   const next = (next: SetState<Value>) => {
     const nextValue = next instanceof Function ? next(getValue()) : next
     // Instead of distinctUntilChanged(equal), we do the check here so
     // that the latest value from the stream (obs) and subject.getValue()
     // are the same reference
-    if (!equal(nextValue, subject.getValue())) subject.next(nextValue)
+    if (!equal(nextValue, getValue())) {
+      // @ts-ignore
+      subject(1, nextValue)
+    }
   }
 
   return atomConstructor(subscribe, getValue, next)
