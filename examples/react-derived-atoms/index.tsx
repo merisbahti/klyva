@@ -13,14 +13,15 @@ const composite = atom(get => ({
 }))
 
 const App = () => {
-  const { c, p1, p2 } = useAtom(composite)
+  const [, setCount] = useAtom(count)
+  const [{ c, p1, p2 }] = useAtom(composite)
   return (
     <div>
       <pre>
         {c} - {p1} - {p2}
         working
       </pre>
-      <button onClick={() => count.update(v => v + 1)}>+</button>
+      <button onClick={() => setCount(v => v + 1)}>+</button>
     </div>
   )
 }

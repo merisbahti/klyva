@@ -72,9 +72,9 @@ https://github.com/akheron/optics-ts
 ```typescript
 const myAtom = atom('hello')
 const MyComponent = () => {
-  const myAtomValue = useAtom(myAtom)
-  const onClick = myAtom.update(oldValue => oldValue + '!')
-  return <button onClick={onClick}>{myAtomValue}</button>
+  const [value, setValue] = useAtom(myAtom)
+  const onClick = setValue(oldValue => oldValue + '!')
+  return <button onClick={onClick}>{value}</button>
 }
 ```
 

@@ -1,13 +1,7 @@
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
 import 'todomvc-app-css/index.css'
-import {
-  atom,
-  focusAtom,
-  useAtom,
-  useAtomSlice,
-  useSelector,
-} from '../../src/index'
+import { atom, focusAtom, useAtom, useAtomSlice } from '../../src/index'
 import { PrimitiveAtom } from '../../src/types'
 
 const OriginalAtom = atom<Record<string, Record<string, string>>>({
@@ -105,14 +99,14 @@ const Form = ({
       ['Something new' + Math.random(), 'New too'],
     ])
   const fieldNameAtom = focusAtom(formAtom, optic => optic.nth(0))
-  const fieldName = useAtom(fieldNameAtom)
+  const [fieldName, setFieldName] = useAtom(fieldNameAtom)
 
   return (
     <div>
       <h1>
         <input
           value={fieldName}
-          onChange={event => fieldNameAtom.update(event.target.value)}
+          onChange={event => setFieldName(event.target.value)}
         />
       </h1>
       <ul>
@@ -139,19 +133,19 @@ const Field = ({
   field: PrimitiveAtom<[string, string]>
   onRemove: () => void
 }) => {
-  const [name, value] = useAtom(field)
+  const [[name, value], setField] = useAtom(field)
 
   return (
     <li>
       <input
         type="text"
         value={name}
-        onChange={e => field.update(oldValue => [e.target.value, oldValue[1]])}
+        onChange={e => setField(oldValue => [e.target.value, oldValue[1]])}
       />
       <input
         type="text"
         value={value}
-        onChange={e => field.update(oldValue => [oldValue[0], e.target.value])}
+        onChange={e => setField(oldValue => [oldValue[0], e.target.value])}
       />
       <button onClick={onRemove}>X</button>
     </li>
