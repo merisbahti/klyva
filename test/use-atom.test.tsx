@@ -185,12 +185,15 @@ it('updates are batched (onclick)', async () => {
     p2: get(p2atom),
   }))
   const Counter = () => {
-    const myAtomValue = useSelector(derivedAtom)
+    const derivedAtomValue = useSelector(derivedAtom)
+    useSelector(p1atom)
+    useSelector(p2atom)
+    useSelector(anAtom)
     const updates = useUpdateCount()
     return (
       <div>
         <div>updates: {updates}</div>
-        <div>derivedAtom: {JSON.stringify(myAtomValue)}</div>
+        <div>derivedAtom: {JSON.stringify(derivedAtomValue)}</div>
         <button onClick={() => anAtom.update(value => value + 1)}>inc</button>
       </div>
     )
