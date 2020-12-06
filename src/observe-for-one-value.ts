@@ -1,16 +1,5 @@
-import { Observable } from 'rxjs/internal/Observable'
-import { take } from 'rxjs/operators'
 import { ReadableAtom } from './types'
 import * as cb from 'callbag'
-
-const observeForOneValue = <T>(atom: ReadableAtom<T>): Observable<T> => {
-  return new Observable<T>(observer => {
-    const unsubscribe = atom.subscribe(value => observer.next(value))
-    return () => {
-      unsubscribe()
-    }
-  }).pipe(take(1))
-}
 
 export const atomToSource = <T>(atom: ReadableAtom<T>): cb.Source<T> => {
   return (type: 0 | 1 | 2, data: cb.Sink<T>) => {
@@ -26,5 +15,3 @@ export const atomToSource = <T>(atom: ReadableAtom<T>): cb.Source<T> => {
     }
   }
 }
-
-export default observeForOneValue

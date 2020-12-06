@@ -17,6 +17,8 @@ declare module 'callbag-behavior-subject' {
 declare module 'callbag-merge-map' {
   import { Source } from 'callbag'
 
-  const mergeMap: <T, B>(cb: (value: T) => Source<B>) => Source<B>
+  const mergeMap: <T, B>(
+    cb: (value: T) => Source<B>,
+  ) => (source: Source<T>) => Source<B>
   export default mergeMap
 }
