@@ -1,8 +1,10 @@
 import React from 'react'
 import { useState } from 'react'
+import { unstable_batchedUpdates } from 'react-dom'
 import { atom } from './atom'
 import equal from './equal'
 import {
+  Atom,
   DerivedAtomReader,
   PrimitiveAtom,
   PrimitiveRemovableAtom,
@@ -20,10 +22,18 @@ export function useNewAtom<S>(value: S | DerivedAtomReader<S>) {
   return useState(() => atom(value))[0]
 }
 
-export const useAtom = <T>(atom: ReadableAtom<T>): T => {
+export function useAtom<Value, Updater>(
+  atom: Atom<Value, Updater>,
+): [Value, (updater: Updater) => void]
+// eslint-disable-next-line no-redeclare
+export function useAtom<Value>(atom: ReadableAtom<Value>): [Value]
+// eslint-disable-next-line no-redeclare
+export function useAtom<Value, Updater = unknown>(
+  atom: ReadableAtom<Value> & { update?: (updater: Updater) => void },
+) {
   const [cache, setCache] = React.useState(atom.getValue())
   React.useEffect(() => {
-    setCache(oldCache => {
+    setCache((oldCache: any) => {
       const currValue = atom.getValue()
       if (equal(currValue, oldCache)) {
         return oldCache
@@ -33,7 +43,18 @@ export const useAtom = <T>(atom: ReadableAtom<T>): T => {
     const unsub = atom.subscribe(value => setCache(value))
     return () => unsub()
   }, [atom])
-  return cache
+  const updaterMaybe: null | ((updater: Updater) => void) = React.useMemo(
+    () =>
+      atom.update
+        ? updater => {
+            unstable_batchedUpdates(() => {
+              atom.update?.(updater)
+            })
+          }
+        : null,
+    [atom],
+  )
+  return [cache, ...(updaterMaybe ? [updaterMaybe] : [])]
 }
 
 type UseSelector = {
@@ -50,7 +71,7 @@ export const useSelector: UseSelector = (
     () => atom(get => selector(get(sourceAtom))),
     [selector, sourceAtom],
   )
-  return useAtom(selectorAtom)
+  return useAtom(selectorAtom)[0]
 }
 
 export const useAtomSlice = <T>(
