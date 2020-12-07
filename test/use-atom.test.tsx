@@ -214,26 +214,26 @@ it('updates are batched (onclick)', async () => {
 })
 
 it('updates are batched (useEffect)', async () => {
-  const anAtom = atom(5)
-  const p1atom = atom(get => get(anAtom) + 1)
-  const p2atom = atom(get => get(anAtom) + 2)
+  const countAtom = atom(5)
+  const p1atom = atom(get => get(countAtom) + 1)
+  const p2atom = atom(get => get(countAtom) + 2)
   const derivedAtom = atom(get => ({
-    c: get(anAtom),
+    c: get(countAtom),
     p1: get(p1atom),
     p2: get(p2atom),
   }))
   const Counter = () => {
-    const [, setAnAtom] = useAtom(anAtom)
+    const [, setCount] = useAtom(countAtom)
     const [myAtomValue] = useAtom(derivedAtom)
     useSelector(p1atom)
     useSelector(p2atom)
     const updates = useUpdateCount()
     React.useEffect(() => {
       const timeout = setTimeout(() => {
-        setAnAtom(value => value + 1)
-      }, 500)
+        setCount(value => value + 1)
+      }, 100)
       return () => clearTimeout(timeout)
-    }, [setAnAtom])
+    }, [setCount])
     return (
       <div>
         <div>updates: {updates}</div>
@@ -242,11 +242,15 @@ it('updates are batched (useEffect)', async () => {
     )
   }
 
-  const { findByText } = rtl.render(<Counter />)
+  const { findByText, queryByText } = rtl.render(<Counter />)
 
   await findByText('updates: 0')
   await findByText('derivedAtom: {"c":5,"p1":6,"p2":7}')
 
+  const twoUpdates = await queryByText('updates: 2')
+
   await findByText('updates: 1')
   await findByText('derivedAtom: {"c":6,"p1":7,"p2":8}')
+
+  expect(twoUpdates).toBe(null)
 })
