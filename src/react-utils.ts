@@ -31,7 +31,7 @@ export function useAtom<Value>(atom: ReadableAtom<Value>): [Value]
 export function useAtom<Value, Updater = unknown>(
   atom: ReadableAtom<Value> & { update?: (updater: Updater) => void },
 ) {
-  const [cache, setCache] = React.useState(atom.getValue())
+  const [cache, setCache] = React.useState(() => atom.getValue())
   React.useEffect(() => {
     setCache((oldCache: any) => {
       const currValue = atom.getValue()
