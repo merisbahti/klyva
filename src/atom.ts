@@ -61,11 +61,15 @@ const derivedAtom = <Value, Update>(
   read: DerivedAtomReader<Value>,
   write?: (update: Update) => void,
 ): ReadableAtom<Value> => {
-  const getter = (onDependency: (newAtom: ReadableAtom<any>) => void) => <A>(
-    a: ReadableAtom<A>,
-  ) => {
-    onDependency(a)
-    return a.getValue()
+  const getter = (
+    onDependency: (dep: {
+      atom: ReadableAtom<unknown>
+      value: unknown
+    }) => void,
+  ) => <A>(atom: ReadableAtom<A>) => {
+    const value = atom.getValue()
+    onDependency({ atom, value })
+    return value
   }
 
   const dependencies: Array<ReadableAtom<unknown>> = []
@@ -74,9 +78,15 @@ const derivedAtom = <Value, Update>(
   const getValueAndObserver = () => {
     dependencies.length = 0
     dependencyValueCache.length = 0
-    const onDependency = (atom: ReadableAtom<unknown>) => {
+    const onDependency = ({
+      atom,
+      value,
+    }: {
+      atom: ReadableAtom<unknown>
+      value: unknown
+    }) => {
       dependencies.push(atom)
-      dependencyValueCache.push(atom.getValue())
+      dependencyValueCache.push(value)
     }
     const computedValue = read(getter(onDependency))
     // Then we want to listen to changes for these ones
