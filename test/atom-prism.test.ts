@@ -27,7 +27,7 @@ test('prisms work', done => {
   expect(baseAtomUpdates).toEqual(0)
 
   focus0.update(val => val + 1)
-  focus1.update(val => val + 2)
+  focus1.update(4)
   focus3.update(val => val + 3)
   expect(baseAtom.getValue()).toEqual([2, 4, 3])
   expect(focus0.getValue()).toEqual(2)
@@ -37,5 +37,16 @@ test('prisms work', done => {
   expect(focus1Updates).toEqual(1)
   expect(focus3Updates).toEqual(0)
   expect(baseAtomUpdates).toEqual(2)
+  done()
+})
+
+test('read-only prisms (AffineFold) crash', done => {
+  const baseAtom = atom([1, 2, 3])
+  const affineFoldAtom = focusAtom(baseAtom, optic =>
+    optic.index(0).to(v => v + 1),
+  )
+  baseAtom.update(v => v.map(x => x + 1))
+  expect(affineFoldAtom.getValue()).toBe(3)
+
   done()
 })

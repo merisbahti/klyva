@@ -64,7 +64,7 @@ function focusAtom<Value, FocusedValue>(
     | Lens<Value, any, FocusedValue>
     | AffineFold<Value, FocusedValue>
     | Getter<Value, FocusedValue>,
-): any {
+) {
   const focus = opticCallback(optic<Value>())
   switch (focus._tag) {
     case 'Iso':
@@ -81,6 +81,8 @@ function focusAtom<Value, FocusedValue>(
       )
     case 'Getter':
       return atom(getAtomValue => get(focus)(getAtomValue(baseAtom)))
+    case 'AffineFold':
+      return atom(getAtomValue => preview(focus)(getAtomValue(baseAtom)))
     case 'Prism':
       return atom(
         getAtomValue => preview(focus)(getAtomValue(baseAtom)),
@@ -91,8 +93,6 @@ function focusAtom<Value, FocusedValue>(
           baseAtom.update(nextValue)
         },
       )
-    default:
-      throw new Error(`Focus for ${focus._tag} is not implemented`)
   }
 }
 
