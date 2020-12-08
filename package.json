@@ -89,6 +89,6 @@
     "callbag-take": "^1.5.0",
     "callbag-tap": "^1.3.0",
     "fast-deep-equal": "^3.1.3",
-    "optics-ts": "^2.0.0"
+    "optics-ts": "1.1.0"
   }
 }
