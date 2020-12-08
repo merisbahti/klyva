@@ -254,3 +254,35 @@ it('updates are batched (useEffect)', async () => {
 
   expect(twoUpdates).toBe(null)
 })
+
+it('if atom changes reference, it updates its value', async () => {
+  const atomLeft = atom(0)
+  const atomRight = atom(10)
+  const Counter = () => {
+    const [left, setLeft] = React.useState(true)
+    const [value, setValue] = useAtom(left ? atomLeft : atomRight)
+    return (
+      <div>
+        <button onClick={() => setLeft(value => !value)}>Toggle atom</button>
+        <button onClick={() => setValue(value => value + 1)}>inc</button>
+        <div>value: {JSON.stringify(value)}</div>
+        <div>incCurrent: {JSON.stringify(value)}</div>
+      </div>
+    )
+  }
+
+  const { getByText, findByText } = rtl.render(<Counter />)
+
+  await findByText('value: 0')
+  rtl.fireEvent.click(getByText('inc'))
+  await findByText('value: 1')
+
+  rtl.fireEvent.click(getByText('Toggle atom'))
+  await findByText('value: 10')
+
+  rtl.fireEvent.click(getByText('inc'))
+  await findByText('value: 11')
+
+  rtl.fireEvent.click(getByText('Toggle atom'))
+  await findByText('value: 1')
+})
