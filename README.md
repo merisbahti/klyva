@@ -73,7 +73,7 @@ https://github.com/akheron/optics-ts
 const myAtom = atom('hello')
 const MyComponent = () => {
   const [value, setValue] = useAtom(myAtom)
-  const onClick = setValue(oldValue => oldValue + '!')
+  const onClick = () => setValue(oldValue => oldValue + '!')
   return <button onClick={onClick}>{value}</button>
 }
 ```
