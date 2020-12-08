@@ -1,26 +1,14 @@
+import equal from 'fast-deep-equal'
 import React from 'react'
-import { useState } from 'react'
 import { unstable_batchedUpdates } from 'react-dom'
 import { atom } from './atom'
-import equal from './equal'
 import {
   Atom,
-  DerivedAtomReader,
   PrimitiveAtom,
   PrimitiveRemovableAtom,
   ReadableAtom,
   SetState,
 } from './types'
-
-export function useNewAtom<S>(value: DerivedAtomReader<S>): ReadableAtom<S>
-// REMOVE WHEN NEW VERISON OF TSDX IS RELEASED
-// eslint-disable-next-line no-redeclare
-export function useNewAtom<S>(value: S): PrimitiveAtom<S>
-// REMOVE WHEN NEW VERISON OF TSDX IS RELEASED
-// eslint-disable-next-line no-redeclare
-export function useNewAtom<S>(value: S | DerivedAtomReader<S>) {
-  return useState(() => atom(value))[0]
-}
 
 export function useAtom<Value, Updater>(
   atom: Atom<Value, Updater>,
@@ -33,7 +21,7 @@ export function useAtom<Value, Updater = unknown>(
 ) {
   const [cache, setCache] = React.useState(() => atom.getValue())
   React.useEffect(() => {
-    setCache((oldCache: any) => {
+    setCache(oldCache => {
       const currValue = atom.getValue()
       if (equal(currValue, oldCache)) {
         return oldCache
