@@ -65,11 +65,12 @@ sumAtom.getValue() // 32
 ```typescript
 const objectAtom = atom({a: 10})
 const focusedAtom = focusAtom(objectAtom, optic => optic.prop('a'))
+
 focusedAtom.getValue() // 10
 focusedAtom.update(v => v + 1)
 
 focusedAtom.getValue() // 11
-objetAtom.getValue() // {a: 11}
+objectAtom.getValue() // {a: 11}
 ```
 
 This creates a derived atom. This atom, views, and can update the `a` prop of `objectAtom`.
