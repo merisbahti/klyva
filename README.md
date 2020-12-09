@@ -81,6 +81,8 @@ https://github.com/akheron/optics-ts
 
 ### Usage with react
 
+#### useAtom
+
 ```typescript
 const myAtom = atom('hello')
 const MyComponent = () => {
@@ -89,6 +91,43 @@ const MyComponent = () => {
   return <button onClick={onClick}>{value}</button>
 }
 ```
+
+The `useAtom` hook implicitly subscribes to changes to the `myAtom` atom, so if it's updated (either in this component or outside), then this component is notified and updated.
+
+#### useAtomSlice
+
+When you have an atom which contains a list, and you want to delegate control of each list item, you can use the `useAtomSlice`-hook like this:
+
+```tsx
+const listAtom = atom([0,0,0])
+
+const CounterList = () => {
+  const counterAtoms = useAtomSlice(listAtom)
+  const addCounter = () => listAtom.update(counters => [...counters, 0])
+  return (
+    <>
+      <ul>
+        {counterAtoms.map((atom) => <Counter counterAtom={atom} onRemove={atom.remove} />)}
+      </ul>
+      <button onClick={addCounter}>
+        Add counter
+      </button>
+    </>
+  )
+}
+
+const Counter = ({counterAtom, onRemove}: {counterAtom: PrimitiveAtom<number>, onRemove: () => void}) => {
+  const [count, setCount] = useAtom(counterAtom)
+  return (
+    <li>
+      <button onClick={() => setCount(v => v + 1)}>{count}</button>
+      <button onClick={onRemove}>Remove me</button>
+    </li>
+  )
+}
+```
+
+Curious? See [codesandbox](https://codesandbox.io/s/adoring-waterfall-2ot5y?file=/src/App.tsx)!
 
 ## Differences from jotai and recoil
 
