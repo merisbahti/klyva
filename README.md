@@ -92,5 +92,6 @@ const MyComponent = () => {
 
 * No `<Provider>` needed
 * No `key` needed for atom
-
+* More performant: Atoms are _minimally_ expensive to create, and you can create them almost for free in react components.
+* No memory leaks (especially when atoms are created adhoc)
 
