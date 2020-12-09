@@ -1,16 +1,18 @@
 [![Gitpod ready-to-code](https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/merisbahti/klyva)
 
 # Klyva
-*Klyva means to cleave in swedish*
+Flexible state management for React.
 
-A simple state management solution for react, similar to:
+Similar to: 
 
 * [Recoil.js](https://recoiljs.org)
 * [jotai](https://jotai.surge.sh)
 
-But with optics, so it's easier to "cleave" an atom so you can create atom that a component can listen to, and update, without listening to the whole state.
+But _both_ composable and decomposable state.
 
 Questions? [Discord](https://discord.gg/5HXQ8Kagu6)
+
+*Klyva means to cleave in swedish*
 
 ## How to
 ### Create an atom
@@ -46,23 +48,31 @@ const atomOne = atom(10)
 const atomTwo = atom(20)
 const sumAtom = atom(get => get(atomOne) + get(atomTwo))
 
-sumAtom.subscribe((newValue) => console.log(`My new value is: ${newValue}`))
-
-sumAtom.value() // 30
+sumAtom.getValue() // 30
 
 atomOne.update(value => value + 1)
+
+sumAtom.getValue() // 32
+
 atomTwo.update(value => value + 1)
 
-sumAtom.value() // 32
+sumAtom.getValue() // 32
 ```
 
 
-### Focus on properties on an atom (lenses, prisms, isos)
+### Decomposition
 
 ```typescript
 const objectAtom = atom({a: 10})
 const focusedAtom = focusAtom(objectAtom, optic => optic.prop('a'))
+focusedAtom.getValue() // 10
+focusedAtom.update(v => v + 1)
+
+focusedAtom.getValue() // 11
+objetAtom.getValue() // {a: 11}
 ```
+
+This creates a derived atom. This atom, views, and can update the `a` prop of `objectAtom`.
 
 See more about optics at:
 https://github.com/akheron/optics-ts
