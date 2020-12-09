@@ -24,6 +24,8 @@ const numberAtom = atom(5)
 
 ### Update it
 
+There are two ways one can update atoms, either by sending the value directly - or by sending a callback.
+
 ```typescript
 const numberAtom = atom(5)
 
@@ -33,17 +35,23 @@ numberAtom.update(value => value + 1)
 
 ### Read from it
 
+use `subscribe()` to subscribe to all future updates of an atom, and `getValue()` to get the current value of it.
+
 ```typescript
 const numberAtom = atom(5)
 
 numberAtom.subscribe(value => console.log('my value is:', value))
-// my value is 5
 
-numberAtom.write(6)
-// my value is 6
+numberAtom.update(6)
+// log: my value is 6
+
+numberAtom.getValue() // 6
 ```
 
 ### Composition
+
+Atoms are composable. Meaning that you can *glue* together two atoms using the `get` function:
+
 ```typescript
 const atomOne = atom(10)
 const atomTwo = atom(20)
@@ -60,8 +68,9 @@ atomTwo.update(value => value + 1)
 sumAtom.getValue() // 32
 ```
 
-
 ### Decomposition
+
+You can focus on a smaller part of an atom, to view and update that smaller part (`focusedAtom`) - which in turn updates the derivee (`objectAtom`).
 
 ```typescript
 const objectAtom = atom({a: 10})
@@ -73,8 +82,6 @@ focusedAtom.update(v => v + 1)
 focusedAtom.getValue() // 11
 objectAtom.getValue() // {a: 11}
 ```
-
-This creates a derived atom. This atom, views, and can update the `a` prop of `objectAtom`.
 
 See more about optics at:
 https://github.com/akheron/optics-ts
