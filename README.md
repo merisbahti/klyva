@@ -1,14 +1,15 @@
 [![Gitpod ready-to-code](https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/merisbahti/klyva)
 
-# Klyva
-Flexible state management for React.
+# 🪓 klyva
+
+Scalable state management for React.
 
 Similar to: 
 
 * [Recoil.js](https://recoiljs.org)
 * [jotai](https://jotai.surge.sh)
 
-But _both_ composable and decomposable state.
+But with _both_ composable and decomposable state.
 
 Questions? [Discord](https://discord.gg/5HXQ8Kagu6)
 
