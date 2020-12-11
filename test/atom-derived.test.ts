@@ -167,3 +167,23 @@ test('composite atoms work even without extra subs', done => {
   expect(count.getValue()).toBe(2)
   done()
 })
+
+test('composite atom works after resubscribe', done => {
+  const count = atom(0)
+  const derived = atom(get => get(count) + 1)
+
+  let firstSubUpdates = 0
+  let secondSubUpdates = 0
+  const unsub = derived.subscribe(() => firstSubUpdates++)
+  unsub()
+  count.update(v => v + 1)
+  const unsub2 = derived.subscribe(() => secondSubUpdates++)
+  unsub2()
+  count.update(v => v + 1)
+  derived.subscribe(() => secondSubUpdates++)
+  count.update(v => v + 1)
+
+  expect(secondSubUpdates).toBe(1)
+
+  done()
+})
