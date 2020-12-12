@@ -4,12 +4,7 @@
 
 Scalable state management for React.
 
-Similar to: 
-
-* [Recoil.js](https://recoiljs.org)
-* [jotai](https://jotai.surge.sh)
-
-But with _both_ composable and decomposable state.
+With _both_ composable and decomposable state.
 
 Questions? [Discord](https://discord.gg/5HXQ8Kagu6)
 
@@ -18,54 +13,33 @@ Questions? [Discord](https://discord.gg/5HXQ8Kagu6)
 ## How to
 ### Create an atom
 
+A base atom can be constructed by giving the `atom` a value.
+
 ```typescript
-const numberAtom = atom(5)
+const countAtom = atom(5)
 ```
 
-### Update it
+### useAtom
 
-There are two ways one can update atoms, either by sending the value directly - or by sending a callback.
+The `useAtom` hook subscribes to changes to the atom, so if it's updated, then this component is notified and updated.
+The hook is similar to react's `useState` in that it gives a `setState` function.
 
-```typescript
-const numberAtom = atom(5)
-
-numberAtom.update(6)
-numberAtom.update(value => value + 1)
-```
-
-### Read from it
-
-use `subscribe()` to subscribe to all future updates of an atom, and `getValue()` to get the current value of it.
-
-```typescript
-const numberAtom = atom(5)
-
-numberAtom.subscribe(value => console.log('my value is:', value))
-
-numberAtom.update(6)
-// log: my value is 6
-
-numberAtom.getValue() // 6
+```tsx
+const MyComponent = () => {
+  const [value, setValue] = useAtom(countAtom)
+  const increase = () => setValue(oldValue => oldValue + 1)
+  return <button onClick={increase}>{value}</button>
+}
 ```
 
 ### Composition
 
-Atoms are composable. Meaning that you can *glue* together two atoms using the `get` function:
+Atoms are composable. Meaning that you can *glue* together two atoms using the `get` function, when any dependant atoms are updated, the derived atom is updated:
 
 ```typescript
 const atomOne = atom(10)
 const atomTwo = atom(20)
 const sumAtom = atom(get => get(atomOne) + get(atomTwo))
-
-sumAtom.getValue() // 30
-
-atomOne.update(value => value + 1)
-
-sumAtom.getValue() // 32
-
-atomTwo.update(value => value + 1)
-
-sumAtom.getValue() // 32
 ```
 
 ### Decomposition
@@ -76,32 +50,39 @@ You can focus on a smaller part of an atom, to view and update that smaller part
 const objectAtom = atom({a: 10})
 const focusedAtom = focusAtom(objectAtom, optic => optic.prop('a'))
 
-focusedAtom.getValue() // 10
-focusedAtom.update(v => v + 1)
-
-focusedAtom.getValue() // 11
-objectAtom.getValue() // {a: 11}
+const MyComponent = () => {
+  const [value, setValue] = useAtom(focusedAtom)
+  const increase = () => setValue(oldValue => oldValue + 1)
+  return <button onClick={increase}>{value}</button>
+}
 ```
 
 See more about optics at:
 https://github.com/akheron/optics-ts
 
-### Usage with react
+### Usage outside of react
 
-#### useAtom
+#### Subscribe 
+Use the `subscribe` function to subscribe to changes for this atom:
 
-```typescript
-const myAtom = atom('hello')
-const MyComponent = () => {
-  const [value, setValue] = useAtom(myAtom)
-  const onClick = () => setValue(oldValue => oldValue + '!')
-  return <button onClick={onClick}>{value}</button>
-}
+```tsx
+const counterAtom = atom(0)
+counterAtom.subscribe(count => console.log(`The count is: ${count}`))
+counterAtom.update(count => count + 1)
+// console: The count is: 1
 ```
 
-The `useAtom` hook implicitly subscribes to changes to the `myAtom` atom, so if it's updated (either in this component or outside), then this component is notified and updated.
+### Update it
+Atoms have an `update` function, which can be used to update it outside of react:
 
-#### useAtomSlice
+```typescript
+const numberAtom = atom(5)
+
+numberAtom.update(6)
+numberAtom.update(value => value + 1)
+```
+
+## Advanced example
 
 When you have an atom which contains a list, and you want to delegate control of each list item, you can use the `useAtomSlice`-hook like this:
 
@@ -141,5 +122,4 @@ Curious? See [codesandbox](https://codesandbox.io/s/adoring-waterfall-2ot5y?file
 * No `<Provider>` needed
 * No `key` needed for atom
 * More performant: Atoms are _minimally_ expensive to create, and you can create them almost for free in react components.
-* No memory leaks (especially when atoms are created adhoc)
-
+* Usage outside of react components is supported, so you can listen to changes and update atoms from outside of a react context.
