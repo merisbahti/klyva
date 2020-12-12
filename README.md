@@ -4,7 +4,7 @@
 
 Scalable state management for React.
 
-With _both_ composable and decomposable state.
+Minimal API, with reactive, composable and decomposable state!
 
 Questions? [Discord](https://discord.gg/5HXQ8Kagu6)
 
