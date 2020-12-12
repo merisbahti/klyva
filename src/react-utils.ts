@@ -1,5 +1,4 @@
-import equal from 'fast-deep-equal'
-import React from 'react'
+import React, { useRef } from 'react'
 import { unstable_batchedUpdates } from 'react-dom'
 import { atom } from './atom'
 import {
@@ -21,13 +20,7 @@ export function useAtom<Value, Updater = unknown>(
 ) {
   const [cache, setCache] = React.useState(() => atom.getValue())
   React.useEffect(() => {
-    setCache(oldCache => {
-      const currValue = atom.getValue()
-      if (equal(currValue, oldCache)) {
-        return oldCache
-      }
-      return currValue
-    })
+    setCache(atom.getValue())
     const unsub = atom.subscribe(value => setCache(value))
     return () => unsub()
   }, [atom])
@@ -62,17 +55,26 @@ export const useSelector: UseSelector = (
   return useAtom(selectorAtom)[0]
 }
 
+const equalNumberArray = (l: number[], r: number[]) =>
+  l.length === r.length && !l.some((lVal, lIndex) => lVal !== r[lIndex])
 export const useAtomSlice = <T>(
   arrayAtom: PrimitiveAtom<Array<T>>,
   filterBy?: (value: T) => boolean,
 ): Array<PrimitiveRemovableAtom<T>> => {
-  const keptIndexesAtom = atom(get =>
-    filterBy
+  const latestValueRef = useRef([] as Array<number>)
+
+  const keptIndexesAtom = atom(get => {
+    const newValue = filterBy
       ? get(arrayAtom).flatMap((value, index) => {
           return filterBy(value) ? [index] : []
         })
-      : get(arrayAtom).map((_, index) => index),
-  )
+      : get(arrayAtom).map((_, index) => index)
+    const isNotEqual = !equalNumberArray(newValue, latestValueRef.current)
+    if (isNotEqual) {
+      latestValueRef.current = newValue
+    }
+    return latestValueRef.current
+  })
 
   const keptIndexes = useSelector(keptIndexesAtom)
 
