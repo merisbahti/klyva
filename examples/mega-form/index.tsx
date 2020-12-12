@@ -135,19 +135,16 @@ const Field = ({
   field: PrimitiveAtom<[string, string]>
   onRemove: () => void
 }) => {
-  const [[name, value], setField] = useAtom(field)
+  const [name, setName] = useAtom(focusAtom(field, optic => optic.index(0)))
+  const [value, setValue] = useAtom(focusAtom(field, optic => optic.index(1)))
 
   return (
     <li>
-      <input
-        type="text"
-        value={name}
-        onChange={e => setField(oldValue => [e.target.value, oldValue[1]])}
-      />
+      <input type="text" value={name} onChange={e => setName(e.target.value)} />
       <input
         type="text"
         value={value}
-        onChange={e => setField(oldValue => [oldValue[0], e.target.value])}
+        onChange={e => setValue(e.target.value)}
       />
       <button onClick={onRemove}>X</button>
     </li>
