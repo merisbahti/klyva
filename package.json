@@ -81,13 +81,9 @@
   "dependencies": {
     "@types/deep-equal": "^1.0.1",
     "callbag-merge": "^3.2.2",
-    "callbag-merge-map": "^0.0.1",
-    "callbag-pipe": "^1.2.0",
     "callbag-share": "^1.2.0",
-    "callbag-skip": "^1.1.0",
     "callbag-subscribe": "^1.5.1",
     "callbag-take": "^1.5.0",
-    "callbag-tap": "^1.3.0",
     "optics-ts": "1.1.0"
   }
 }

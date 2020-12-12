@@ -1,16 +1,11 @@
 import cbSubscribe from 'callbag-subscribe'
-import cbTap from 'callbag-tap'
-import cbTake from 'callbag-take'
-import cbSkip from 'callbag-skip'
 import cbShare from 'callbag-share'
-import cbPipe from 'callbag-pipe'
-import cbMergeMap from 'callbag-merge-map'
 import cbMerge from 'callbag-merge'
 import { Atom, ReadableAtom, DerivedAtomReader, SetState } from './types'
 import { atomToSource } from './atom-to-source'
 import equal from './equal'
-import { Source } from 'callbag'
-import behaviorSubject from './behavior-subject'
+import cachedSubject from './cached-subject'
+import take from 'callbag-take'
 
 export function atom<Value, Update>(
   value: DerivedAtomReader<Value>,
@@ -35,10 +30,10 @@ export function atom<Value, Update = unknown>(
     return derivedAtom(read, write)
   }
 
-  const subject = behaviorSubject(read)
+  const subject = cachedSubject(read)
   const getValue = subject.getValue
 
-  const obs = cbPipe(subject, cbSkip(1), cbShare)
+  const obs = cbShare(subject)
 
   const subscribe: Subscribe<Value> = listener => {
     const unsub = cbSubscribe(listener)(obs)
@@ -93,38 +88,29 @@ const derivedAtom = <Value, Update>(
     // but we want to ignore the first value!
     const sources = Array.from(dependencies).map(atomToSource)
     // Out of all dependants, if just one changes, we want to complete the stream
-    const dependencyObserver = cbPipe(cbMerge(...sources), cbTake(1))
+    const dependencyObserver = take(1)(cbMerge(...sources))
 
     return { computedValue, dependencyObserver } as const
   }
 
-  const {
-    computedValue: initialValue,
-    dependencyObserver: initialDependencySource,
-  } = getValueAndObserver()
+  const { computedValue: initialValue } = getValueAndObserver()
 
-  const dependencyObserverSubject = behaviorSubject<Source<unknown>>(
-    initialDependencySource,
-  )
-  const valueSubject = behaviorSubject<Value>(initialValue)
+  const valueSubject = cachedSubject<Value>(initialValue)
 
   const recalculateValue = () => {
     const { computedValue, dependencyObserver } = getValueAndObserver()
-    dependencyObserverSubject(1, dependencyObserver)
+    if (subs !== 0) {
+      dependencySubscription?.()
+      dependencySubscription = cbSubscribe(recalculateValue)(dependencyObserver)
+    }
     if (!equal(computedValue, getValue())) {
       valueSubject(1, computedValue)
     }
   }
 
-  const dependencyObserver$ = cbPipe(
-    dependencyObserverSubject,
-    cbMergeMap(dependencyObserver => dependencyObserver),
-    cbTap(recalculateValue),
-    cbSkip(1),
-    cbShare,
-  )
+  const value$ = cbShare(valueSubject)
 
-  const value$ = cbPipe(valueSubject, cbSkip(1), cbShare)
+  let dependencySubscription: null | (() => void) = null
 
   const getValue = () => {
     const dependenciesChanged = dependencyValueCache.some(
@@ -135,11 +121,24 @@ const derivedAtom = <Value, Update>(
     return valueSubject.getValue()
   }
 
+  let subs = 0
   const subscribe: Subscribe<Value> = listener => {
     const valueSubscription = cbSubscribe(listener)(value$)
-    const dependencySubscription = cbSubscribe(() => {})(dependencyObserver$)
+    if (subs === 0) {
+      const { dependencyObserver } = getValueAndObserver()
+      dependencySubscription?.()
+      dependencySubscription = cbSubscribe(recalculateValue)(dependencyObserver)
+    }
+    let hasUnsubbed = false
+    subs++
     return () => {
-      dependencySubscription()
+      if (hasUnsubbed) return
+      hasUnsubbed = true
+      subs--
+      if (subs === 0) {
+        dependencySubscription?.()
+        dependencySubscription = null
+      }
       valueSubscription()
     }
   }
