@@ -7,11 +7,11 @@ declare module 'callbag-tap' {
   export default tap
 }
 
-declare module 'callbag-merge-map' {
+declare module 'callbag-concat-map' {
   import { Source } from 'callbag'
 
-  const mergeMap: <T, B>(
+  const concatMap: <T, B>(
     cb: (value: T) => Source<B>,
   ) => (source: Source<T>) => Source<B>
-  export default mergeMap
+  export default concatMap
 }
