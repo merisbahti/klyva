@@ -63,11 +63,21 @@ https://github.com/akheron/optics-ts
 ## Usage outside of react
 
 ### Get value 
-Use the `getvalue` function to get the atoms current value:
+Use the `getValue` function to get the atoms current value:
 
 ```tsx
 const counterAtom = atom(0)
-counterAtom.getValue(0) // 0
+counterAtom.getValue() // 0
+```
+
+### Update it
+Atoms have an `update` function, which can be used to update it outside of react:
+
+```typescript
+const numberAtom = atom(5)
+
+numberAtom.update(6)
+numberAtom.update(value => value + 1)
 ```
 
 ### Subscribe 
@@ -80,15 +90,6 @@ counterAtom.update(count => count + 1)
 // console: The count is: 1
 ```
 
-### Update it
-Atoms have an `update` function, which can be used to update it outside of react:
-
-```typescript
-const numberAtom = atom(5)
-
-numberAtom.update(6)
-numberAtom.update(value => value + 1)
-```
 
 ## Advanced example
 
