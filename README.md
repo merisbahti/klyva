@@ -10,8 +10,8 @@ Questions? [Discord](https://discord.gg/5HXQ8Kagu6)
 
 *Klyva means to cleave in swedish*
 
-## How to
-### Create an atom
+# How to
+## Create an atom
 
 A base atom can be constructed by giving the `atom` a value.
 
@@ -19,7 +19,7 @@ A base atom can be constructed by giving the `atom` a value.
 const countAtom = atom(5)
 ```
 
-### useAtom
+## useAtom
 
 The `useAtom` hook subscribes to changes to the atom, so if it's updated, then this component is notified and updated.
 The hook is similar to react's `useState` in that it gives a `setState` function.
@@ -32,7 +32,7 @@ const MyComponent = () => {
 }
 ```
 
-### Composition
+## Composition
 
 Atoms are composable. Meaning that you can *glue* together two atoms using the `get` function, when any dependant atoms are updated, the derived atom is updated:
 
@@ -42,7 +42,7 @@ const atomTwo = atom(20)
 const sumAtom = atom(get => get(atomOne) + get(atomTwo))
 ```
 
-### Decomposition
+## Decomposition
 
 You can focus on a smaller part of an atom, to view and update that smaller part (`focusedAtom`) - which in turn updates the derivee (`objectAtom`).
 
@@ -60,9 +60,17 @@ const MyComponent = () => {
 See more about optics at:
 https://github.com/akheron/optics-ts
 
-### Usage outside of react
+## Usage outside of react
 
-#### Subscribe 
+### Get value 
+Use the `getvalue` function to get the atoms current value:
+
+```tsx
+const counterAtom = atom(0)
+counterAtom.getValue(0) // 0
+```
+
+### Subscribe 
 Use the `subscribe` function to subscribe to changes for this atom:
 
 ```tsx
