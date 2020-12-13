@@ -53,16 +53,18 @@ export const useSelector: UseSelector = (
   selector: any = identity,
   equals = Object.is,
 ) => {
-  const selectorAtom = React.useMemo(() => {
-    let prevSlice: any
-    return atom(get => {
-      const newSlice = selector(get(sourceAtom))
-      if (prevSlice === undefined || !equals(newSlice, prevSlice)) {
-        prevSlice = newSlice
-      }
-      return prevSlice
-    })
-  }, [equals, selector, sourceAtom])
+  const latestValueRef = React.useRef<any>()
+  const selectorAtom = atom(get => {
+    const newSlice = selector(get(sourceAtom))
+    if (
+      latestValueRef.current === undefined ||
+      !equals(newSlice, latestValueRef.current)
+    ) {
+      latestValueRef.current = newSlice
+    }
+    return latestValueRef.current
+  })
+
   return useAtom(selectorAtom)[0]
 }
 
