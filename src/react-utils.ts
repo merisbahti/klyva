@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import React from 'react'
 import { unstable_batchedUpdates } from 'react-dom'
 import { atom } from './atom'
 import {
@@ -39,7 +39,11 @@ export function useAtom<Value, Updater = unknown>(
 }
 
 type UseSelector = {
-  <S, A>(sourceAtom: ReadableAtom<S>, selector: (source: S) => A): A
+  <S, A>(
+    sourceAtom: ReadableAtom<S>,
+    selector: (source: S) => A,
+    equals?: (left: S, right: S) => boolean,
+  ): A
   <S>(sourceAtom: ReadableAtom<S>): S
 }
 
@@ -47,11 +51,20 @@ const identity = (id: any) => id
 export const useSelector: UseSelector = (
   sourceAtom: any,
   selector: any = identity,
+  equals = Object.is,
 ) => {
-  const selectorAtom = React.useMemo(
-    () => atom(get => selector(get(sourceAtom))),
-    [selector, sourceAtom],
-  )
+  const latestValueRef = React.useRef<any>()
+  const selectorAtom = atom(get => {
+    const newSlice = selector(get(sourceAtom))
+    if (
+      latestValueRef.current === undefined ||
+      !equals(newSlice, latestValueRef.current)
+    ) {
+      latestValueRef.current = newSlice
+    }
+    return latestValueRef.current
+  })
+
   return useAtom(selectorAtom)[0]
 }
 
@@ -61,22 +74,15 @@ export const useAtomSlice = <T>(
   arrayAtom: PrimitiveAtom<Array<T>>,
   filterBy?: (value: T) => boolean,
 ): Array<PrimitiveRemovableAtom<T>> => {
-  const latestValueRef = useRef([] as Array<number>)
-
   const keptIndexesAtom = atom(get => {
-    const newValue = filterBy
+    return filterBy
       ? get(arrayAtom).flatMap((value, index) => {
           return filterBy(value) ? [index] : []
         })
       : get(arrayAtom).map((_, index) => index)
-    const isNotEqual = !equalNumberArray(newValue, latestValueRef.current)
-    if (isNotEqual) {
-      latestValueRef.current = newValue
-    }
-    return latestValueRef.current
   })
 
-  const keptIndexes = useSelector(keptIndexesAtom)
+  const keptIndexes = useSelector(keptIndexesAtom, v => v, equalNumberArray)
 
   const sliced = sliceAtomArray(arrayAtom)
 
