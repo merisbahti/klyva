@@ -57,7 +57,7 @@ export const useSelector: UseSelector = (
     let prevSlice: any
     return atom(get => {
       const newSlice = selector(get(sourceAtom))
-      if (prevSlice !== undefined && !equals(newSlice, prevSlice)) {
+      if (prevSlice === undefined || !equals(newSlice, prevSlice)) {
         prevSlice = newSlice
       }
       return prevSlice
