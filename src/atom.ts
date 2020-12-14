@@ -12,6 +12,23 @@ import equal from './equal'
 import { Source } from 'callbag'
 import behaviorSubject from './behavior-subject'
 
+let resetVersion = 0
+
+const resetListeners: Array<() => void> = []
+const subscribeToResets = (listener: () => void) => {
+  resetListeners.push(listener)
+  const unsubscribe = () => {
+    const myIndex = resetListeners.indexOf(listener)
+    resetListeners.splice(myIndex, 1)
+  }
+  return unsubscribe
+}
+
+export const resetAll = () => {
+  resetVersion++
+  resetListeners.forEach(resetListener => resetListener())
+}
+
 export function atom<Value, Update>(
   value: DerivedAtomReader<Value>,
   write: (update: Update) => void,
@@ -35,14 +52,32 @@ export function atom<Value, Update = unknown>(
     return derivedAtom(read, write)
   }
 
+  let currentResetVersion = resetVersion
+
   const subject = behaviorSubject(read)
-  const getValue = subject.getValue
+
+  const maybeResetValue = () => {
+    if (resetVersion !== currentResetVersion) {
+      const initialValue = read
+      subject(1, initialValue)
+      currentResetVersion = resetVersion
+    }
+  }
+
+  const getValue = () => {
+    maybeResetValue()
+    return subject.getValue()
+  }
 
   const obs = cbPipe(subject, cbSkip(1), cbShare)
 
   const subscribe: Subscribe<Value> = listener => {
     const unsub = cbSubscribe(listener)(obs)
-    return () => unsub()
+    const unsubListeners = subscribeToResets(maybeResetValue)
+    return () => {
+      unsub()
+      unsubListeners()
+    }
   }
   const next = (next: SetState<Value>) => {
     const nextValue = next instanceof Function ? next(getValue()) : next
