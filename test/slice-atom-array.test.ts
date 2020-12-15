@@ -1,6 +1,6 @@
 import { atom } from '../src'
 import focusAtom from '../src/focus-atom'
-import { sliceAtomArray } from '../src/react-utils'
+import { sliceAtomArray } from '../src/slice-atom-array'
 import { SetState } from '../src/types'
 
 test('sliced work', done => {
