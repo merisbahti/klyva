@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { TodoType } from '../types'
-import { PrimitiveAtom } from '../../../src/types'
+import { PrimitiveAtom } from 'klyva/dist/types'
 
 type NewTodoInputProps = {
   todosAtom: PrimitiveAtom<TodoType[]>

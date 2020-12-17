@@ -2,8 +2,8 @@ import * as React from 'react'
 import { TextInput } from './TextInput'
 import { CheckBox } from './CheckBox'
 import { TodoType } from '../types'
-import { focusAtom } from '../../../src/index'
-import { RemovableAtom } from '../../../src/types'
+import { focusAtom } from 'klyva'
+import { ReadableAtom } from 'klyva/dist/types'
 
 type TodoItemProps = {
   todoAtom: RemovableAtom<TodoType, any>

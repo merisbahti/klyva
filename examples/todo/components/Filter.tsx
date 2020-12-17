@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { FilterType } from '../types'
-import { PrimitiveAtom } from '../../../src/types'
-import { useAtom } from '../../../src/react-utils'
+import { PrimitiveAtom } from 'klyva/dist/types'
+import { useAtom } from 'klyva'
 
 type FilterProps = { filterAtom: PrimitiveAtom<FilterType> }
 

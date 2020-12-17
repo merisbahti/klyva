@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { TodoType } from '../types'
-import { PrimitiveAtom } from '../../../src/types'
-import { useSelector } from '../../../src/react-utils'
+import { PrimitiveAtom } from 'klyva/dist/types'
+import { useSelector } from 'klyva'
 
 type RemainingIndicatorProps = {
   todosAtom: PrimitiveAtom<TodoType[]>

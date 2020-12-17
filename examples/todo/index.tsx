@@ -1,12 +1,11 @@
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
-
-import 'todomvc-app-css/index.css'
-
-import { localStorageAtom } from '../../src/index'
+import { localStorageAtom } from 'klyva'
 import { TodoAppType, TodoAppTypeIO } from './types'
 import { StaticFooter } from './components/StaticFooter'
 import { TodoApp } from './components/TodoApp'
+
+import 'todomvc-app-css/index.css'
 
 const Main = () => {
   const todoAppAtom = localStorageAtom<TodoAppType>(

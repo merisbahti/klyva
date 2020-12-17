@@ -1,6 +1,6 @@
 import * as React from 'react'
-import { focusAtom } from '../../../src/index'
-import { PrimitiveAtom } from '../../../src/types'
+import { focusAtom } from 'klyva'
+import { PrimitiveAtom } from 'klyva/dist/types'
 import { TodoAppType } from '../types'
 import { RemainingIndicator } from './RemainingIndicator'
 import { ToggleAllButton } from './ToggleAllButton'

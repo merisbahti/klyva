@@ -1,6 +1,6 @@
 import * as React from 'react'
-import { useAtom } from '../../../src/index'
-import { PrimitiveAtom } from '../../../src/types'
+import { useAtom } from 'klyva'
+import { PrimitiveAtom } from 'klyva/dist/types'
 
 type TextInputProps = {
   textAtom: PrimitiveAtom<string>
