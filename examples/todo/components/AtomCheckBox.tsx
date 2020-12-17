@@ -2,11 +2,11 @@ import * as React from 'react'
 import { useAtom } from 'klyva'
 import { PrimitiveAtom } from 'klyva/dist/types'
 
-type CheckBoxProps = {
+type AtomCheckBoxProps = {
   checkedAtom: PrimitiveAtom<boolean>
 }
 
-export const CheckBox = ({ checkedAtom }: CheckBoxProps) => {
+export const AtomCheckBox = ({ checkedAtom }: AtomCheckBoxProps) => {
   const [checked, setChecked] = useAtom(checkedAtom)
   return (
     <input
