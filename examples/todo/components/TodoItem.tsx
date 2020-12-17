@@ -1,8 +1,7 @@
 import * as React from 'react'
-import { TextInput } from './TextInput'
 import { AtomCheckBox } from './AtomCheckBox'
 import { TodoType } from '../types'
-import { focusAtom } from 'klyva'
+import { focusAtom, useSelector } from 'klyva'
 import { RemovableAtom } from 'klyva/dist/types'
 
 type TodoItemProps = {
@@ -12,11 +11,14 @@ type TodoItemProps = {
 export const TodoItem = ({ todoAtom }: TodoItemProps) => {
   const checkedAtom = focusAtom(todoAtom, optic => optic.prop('checked'))
   const textAtom = focusAtom(todoAtom, optic => optic.prop('task'))
+  const text = useSelector(textAtom)
+  const cls = useSelector(checkedAtom, chk => (chk ? 'completed' : ''))
   return (
-    <>
-      <AtomCheckBox checkedAtom={checkedAtom} />
-      <TextInput textAtom={textAtom} />
-      <button onClick={todoAtom.remove}>X</button>
-    </>
+    <li className={cls}>
+      <AtomCheckBox boolAtom={checkedAtom} className="toggle" />
+      <label>{text}</label>
+      {/* <TextInput textAtom={textAtom} /> */}
+      <button className="destroy" onClick={todoAtom.remove}></button>
+    </li>
   )
 }

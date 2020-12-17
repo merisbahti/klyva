@@ -19,11 +19,9 @@ export const TodoList = ({ todoAppAtom }: TodoListProps) => {
       (filter === 'active' && !checked),
   )
   return (
-    <ul>
+    <ul className="todo-list">
       {visibleTodosAtom.map((todoAtom, index) => (
-        <li key={filter + index}>
-          <TodoItem todoAtom={todoAtom} />
-        </li>
+        <TodoItem key={filter + index} todoAtom={todoAtom} />
       ))}
     </ul>
   )
