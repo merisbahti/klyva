@@ -11,7 +11,6 @@
   "dependencies": {
     "klyva": "^0.6.3",
     "react": "^17.0.1",
-    "react-app-polyfill": "^1.0.0",
     "react-dom": "^17.0.1",
     "todomvc-app-css": "^2.3.0"
   },
