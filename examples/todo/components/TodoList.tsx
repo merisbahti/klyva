@@ -21,12 +21,8 @@ export const TodoList = ({ todoAppAtom }: TodoListProps) => {
   return (
     <ul>
       {visibleTodosAtom.map((todoAtom, index) => (
-        <li key={index}>
-          <TodoItem
-            key={index}
-            todoAtom={todoAtom}
-            onRemove={todoAtom.remove}
-          />
+        <li key={filter + index}>
+          <TodoItem todoAtom={todoAtom} />
         </li>
       ))}
     </ul>
