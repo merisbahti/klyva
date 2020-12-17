@@ -1,14 +1,9 @@
-import * as io from 'io-ts'
-export const FilterTypeIO = io.union([
-  io.literal('active'),
-  io.literal('completed'),
-  io.literal('all'),
-])
-export const TodoTypeIO = io.type({ task: io.string, checked: io.boolean })
-export const TodoAppTypeIO = io.type({
-  filter: FilterTypeIO,
-  todos: io.array(TodoTypeIO),
-})
-export type TodoType = typeof TodoTypeIO._A
-export type FilterType = typeof FilterTypeIO._A
-export type TodoAppType = typeof TodoAppTypeIO._A
+export type TodoType = {
+  task: string
+  checked: boolean
+}
+export type FilterType = 'active' | 'completed' | 'all'
+export type TodoAppType = {
+  filter: FilterType
+  todos: TodoType[]
+}

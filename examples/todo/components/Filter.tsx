@@ -1,24 +1,12 @@
 import * as React from 'react'
 import { FilterType } from '../types'
 import { PrimitiveAtom } from 'klyva/dist/types'
-import { useAtom } from 'klyva'
+import { useSelector } from 'klyva'
 
 type FilterProps = { filterAtom: PrimitiveAtom<FilterType> }
 
 export const Filter = ({ filterAtom }: FilterProps) => {
-  const [filter, setFilter] = useAtom(filterAtom)
-  React.useEffect(() => {
-    window.addEventListener('hashchange', () => {
-      const newHash = window.location.hash
-      if (newHash === '#/active') {
-        setFilter('active')
-      } else if (newHash === '#/completed') {
-        setFilter('completed')
-      } else {
-        setFilter('all')
-      }
-    })
-  }, [setFilter])
+  const filter = useSelector(filterAtom)
   return (
     <ul className="filters">
       <li>

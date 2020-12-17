@@ -5,11 +5,10 @@
   "license": "MIT",
   "scripts": {
     "start": "parcel index.html",
-    "build": "parcel build index.html"
+    "build": "parcel build index.html",
+    "postinstall": "cp node_modules/todomvc-app-css/index.css todomvc.css"
   },
   "dependencies": {
-    "fp-ts": "^2.9.1",
-    "io-ts": "^2.2.13",
     "klyva": "^0.6.3",
     "react": "^17.0.1",
     "react-app-polyfill": "^1.0.0",

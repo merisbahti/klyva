@@ -19,7 +19,7 @@ export const TodoApp = ({ todoAppAtom }: TodoAppProps) => {
   return (
     <section className="todoapp">
       <header className="header">
-        <h1>Todos</h1>
+        <h1>todos</h1>
         <NewTodoInput todosAtom={todosAtom} />
       </header>
       <section className="main">
