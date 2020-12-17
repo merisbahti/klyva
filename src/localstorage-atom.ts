@@ -4,7 +4,9 @@ import { SetState } from './types'
 const localStorageAtom = <T>(
   initialValue: T,
   key: string,
-  verifyItem: (storedValue: unknown) => storedValue is T,
+  verifyItem: (storedValue: unknown) => storedValue is T = (
+    v: unknown,
+  ): v is T => true,
 ) => {
   const storedItem = localStorage.getItem(key)
   const parsedItem = storedItem ? JSON.parse(storedItem) : null
