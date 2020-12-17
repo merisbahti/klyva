@@ -1,6 +1,6 @@
 import * as io from 'io-ts'
 export const FilterTypeIO = io.union([
-  io.literal('uncompleted'),
+  io.literal('active'),
   io.literal('completed'),
   io.literal('all'),
 ])

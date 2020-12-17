@@ -1,4 +1,6 @@
 import * as React from 'react'
+import { useCallback } from 'react'
+import { useEffect } from 'react'
 import * as ReactDOM from 'react-dom'
 import 'todomvc-app-css/index.css'
 import {
@@ -50,72 +52,177 @@ const TodoItem = ({
   )
 }
 
+const RemainingIndicator = ({
+  todosAtom,
+}: {
+  todosAtom: PrimitiveAtom<TodoType[]>
+}) => {
+  const count = useSelector(
+    todosAtom,
+    todos => todos.filter((todo) => !todo.checked).length,
+  )
+  return (
+    <span className="todo-count">
+      <strong>{count}</strong> item{count === 1 ? '' : 's'} left
+    </span>
+  )
+}
+
+const ToggleAllButton = ({
+  todosAtom,
+}: {
+  todosAtom: PrimitiveAtom<TodoType[]>
+}) => {
+  const allDone = useSelector(
+    todosAtom,
+    todos => !todos.some((todo) => !todo.checked),
+  )
+  const handleToggle = useCallback(() => {
+    todosAtom.update(todos =>
+      todos.map(todo => ({
+        ...todo,
+        checked: !allDone,
+      })),
+    )
+  }, [todosAtom, allDone])
+  return (
+    <>
+      <input
+        id="toggle-all"
+        className="toggle-all"
+        type="checkbox"
+        checked={allDone}
+        readOnly
+      />
+      <label onClick={handleToggle} htmlFor="toggle-all">
+        Mark all as complete
+      </label>
+    </>
+  )
+}
+
+const ClearCompletedButton = ({
+  todosAtom,
+}: {
+  todosAtom: PrimitiveAtom<TodoType[]>
+}) => {
+  const handleClear = React.useCallback(() => {
+    todosAtom.update(todos => todos.filter(todo => !todo.checked))
+  }, [todosAtom])
+  return (
+    <button onClick={handleClear} className="clear-completed">
+      Clear completed
+    </button>
+  )
+}
+
+const NewTodoInput = ({
+  todosAtom,
+}: {
+  todosAtom: PrimitiveAtom<TodoType[]>
+}) => {
+  const [newTodo, setNewTodo] = React.useState('')
+  return (
+    <input
+      className="new-todo"
+      value={newTodo}
+      placeholder="What needs to be done?"
+      onKeyUp={e => {
+        if (e.key === 'Enter') {
+          todosAtom.update(todos => [
+            { task: newTodo, checked: false },
+            ...todos,
+          ])
+          setNewTodo('')
+        }
+      }}
+      onChange={event => {
+        setNewTodo(event.target.value)
+      }}
+    />
+  )
+}
+
 const TodoList = ({
   todoListAtom,
 }: {
   todoListAtom: PrimitiveAtom<TodoListAtomType>
 }) => {
   const todosAtom = focusAtom(todoListAtom, optic => optic.prop('todos'))
+  const filterAtom = focusAtom(todoListAtom, optic => optic.prop('filter'))
   const filter = useSelector(todoListAtom, value => value.filter)
-  const todoAtoms = useAtomSlice(
+  const visibleTodosAtom = useAtomSlice(
     todosAtom,
     ({ checked }) =>
       filter === 'all' ||
       (filter === 'completed' && checked) ||
-      (filter === 'uncompleted' && !checked),
+      (filter === 'active' && !checked),
   )
-  const [newTodo, setNewTodo] = React.useState('')
 
   return (
     <>
-      <input
-        value={newTodo}
-        placeholder="New todo"
-        onKeyUp={e => {
-          if (e.key === 'Enter') {
-            todosAtom.update(todos => [
-              { task: newTodo, checked: false },
-              ...todos,
-            ])
-            setNewTodo('')
-          }
-        }}
-        onChange={event => {
-          setNewTodo(event.target.value)
-        }}
-      />
-      <ul>
-        {todoAtoms.map((todoAtom, index) => (
-          <li key={index}>
-            <TodoItem
-              key={index}
-              todoAtom={todoAtom}
-              onRemove={todoAtom.remove}
-            />
-          </li>
-        ))}
-      </ul>
+      <header className="header">
+        <h1>Todos</h1>
+        <NewTodoInput todosAtom={todosAtom} />
+      </header>
+      <section className="main">
+        <ToggleAllButton todosAtom={todosAtom} />
+        <ul>
+          {visibleTodosAtom.map((todoAtom, index) => (
+            <li key={index}>
+              <TodoItem
+                key={index}
+                todoAtom={todoAtom}
+                onRemove={todoAtom.remove}
+              />
+            </li>
+          ))}
+        </ul>
+        <footer className="footer">
+          <RemainingIndicator todosAtom={todosAtom} />
+          <Filter filterAtom={filterAtom} />
+          <ClearCompletedButton todosAtom={todosAtom} />
+        </footer>
+      </section>
     </>
   )
 }
 
 const Filter = ({ filterAtom }: { filterAtom: PrimitiveAtom<FilterType> }) => {
   const [filter, setFilter] = useAtom(filterAtom)
+  useEffect(() => {
+    window.addEventListener('hashchange', () => {
+      const newHash = window.location.hash
+      if (newHash === '#/active') {
+        setFilter('active')
+      } else if (newHash === '#/completed') {
+        setFilter('completed')
+      } else {
+        setFilter('all')
+      }
+    })
+  }, [setFilter])
   return (
-    <>
-      <div onClick={() => setFilter('all')}>
-        <input type="radio" readOnly checked={filter === 'all'} />
-        <label htmlFor="all">All</label>
-      </div>
-      <div onClick={() => setFilter('completed')}>
-        <input type="radio" readOnly checked={filter === 'completed'} />
-        <label>Completed</label>
-      </div>
-      <div onClick={() => setFilter('uncompleted')}>
-        <input type="radio" readOnly checked={filter === 'uncompleted'} />
-        <label htmlFor="uncompleted">Uncompleted</label>
-      </div>
-    </>
+    <ul className="filters">
+      <li>
+        <a href="#/" className={filter === 'all' ? 'selected' : ''}>
+          All
+        </a>
+      </li>
+      <li>
+        <a href="#/active" className={filter === 'active' ? 'selected' : ''}>
+          Active
+        </a>
+      </li>
+      <li>
+        <a
+          href="#/completed"
+          className={filter === 'completed' ? 'selected' : ''}
+        >
+          Completed
+        </a>
+      </li>
+    </ul>
   )
 }
 
@@ -132,11 +239,23 @@ const todoListAtom = localStorageAtom<TodoListAtomType>(
 )
 
 const App = () => {
-  const filterAtom = focusAtom(todoListAtom, optic => optic.prop('filter'))
   return (
     <div>
-      <TodoList todoListAtom={todoListAtom} />
-      <Filter filterAtom={filterAtom} />
+      <section className="todoapp">
+        <TodoList todoListAtom={todoListAtom} />
+      </section>
+      <footer className="info">
+        <p>Double-click to edit a todo</p>
+        <p>
+          Template by <a href="http://sindresorhus.com">Sindre Sorhus</a>
+        </p>
+        <p>
+          Created by <a href="http://blog.krawaller.se">David Waller</a>
+        </p>
+        <p>
+          Part of <a href="http://todomvc.com">TodoMVC</a>
+        </p>
+      </footer>
     </div>
   )
 }
