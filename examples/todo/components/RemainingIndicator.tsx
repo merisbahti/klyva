@@ -1,16 +1,18 @@
 import * as React from 'react'
-import { TodoType } from '../types'
+import { Todo } from '../types'
 import { PrimitiveAtom } from 'klyva/dist/types'
 import { useSelector } from 'klyva'
 
 type RemainingIndicatorProps = {
-  todosAtom: PrimitiveAtom<TodoType[]>
+  todoListAtom: PrimitiveAtom<Todo[]>
 }
 
-export const RemainingIndicator = ({ todosAtom }: RemainingIndicatorProps) => {
+export const RemainingIndicator = ({
+  todoListAtom,
+}: RemainingIndicatorProps) => {
   const count = useSelector(
-    todosAtom,
-    todos => todos.filter((todo) => !todo.checked).length,
+    todoListAtom,
+    todos => todos.filter(todo => !todo.checked).length,
   )
   return (
     <span className="todo-count">

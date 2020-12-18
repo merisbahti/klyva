@@ -1,23 +1,23 @@
 import * as React from 'react'
-import { TodoType } from '../types'
+import { Todo } from '../types'
 import { PrimitiveAtom } from 'klyva/dist/types'
 import { SmartTextInput } from './SmartTextInput'
 
 type NewTodoInputProps = {
-  todosAtom: PrimitiveAtom<TodoType[]>
+  todoListAtom: PrimitiveAtom<Todo[]>
 }
 
-export const NewTodoInput = ({ todosAtom }: NewTodoInputProps) => {
+export const NewTodoInput = ({ todoListAtom }: NewTodoInputProps) => {
   const handleSubmit = React.useCallback(
     (evt: React.KeyboardEvent<HTMLInputElement>) => {
       const elem = (evt.target as unknown) as HTMLInputElement
-      todosAtom.update(todos => [
+      todoListAtom.update(todos => [
         { task: elem.value, checked: false },
         ...todos,
       ])
       elem.value = ''
     },
-    [todosAtom],
+    [todoListAtom],
   )
   return (
     <SmartTextInput

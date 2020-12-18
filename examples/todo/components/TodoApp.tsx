@@ -1,34 +1,32 @@
 import * as React from 'react'
-import { focusAtom } from 'klyva'
 import { PrimitiveAtom } from 'klyva/dist/types'
-import { TodoAppType } from '../types'
+import { Filter, Todo } from '../types'
 import { RemainingIndicator } from './RemainingIndicator'
 import { ToggleAllButton } from './ToggleAllButton'
 import { ClearCompletedButton } from './ClearCompletedButton'
 import { NewTodoInput } from './NewTodoInput'
-import { Filter } from './Filter'
+import { FilterSelector } from './Filter'
 import { TodoList } from './TodoList'
 
 type TodoAppProps = {
-  todoAppAtom: PrimitiveAtom<TodoAppType>
+  todoListAtom: PrimitiveAtom<Todo[]>
+  filterAtom: PrimitiveAtom<Filter>
 }
 
-export const TodoApp = ({ todoAppAtom }: TodoAppProps) => {
-  const todosAtom = focusAtom(todoAppAtom, optic => optic.prop('todos'))
-  const filterAtom = focusAtom(todoAppAtom, optic => optic.prop('filter'))
+export const TodoApp = ({ todoListAtom, filterAtom }: TodoAppProps) => {
   return (
     <section className="todoapp">
       <header className="header">
         <h1>todos</h1>
-        <NewTodoInput todosAtom={todosAtom} />
+        <NewTodoInput todoListAtom={todoListAtom} />
       </header>
       <section className="main">
-        <ToggleAllButton todosAtom={todosAtom} />
-        <TodoList todoAppAtom={todoAppAtom} />
+        <ToggleAllButton todoListAtom={todoListAtom} />
+        <TodoList todoListAtom={todoListAtom} filterAtom={filterAtom} />
         <footer className="footer">
-          <RemainingIndicator todosAtom={todosAtom} />
-          <Filter filterAtom={filterAtom} />
-          <ClearCompletedButton todosAtom={todosAtom} />
+          <RemainingIndicator todoListAtom={todoListAtom} />
+          <FilterSelector filterAtom={filterAtom} />
+          <ClearCompletedButton todoListAtom={todoListAtom} />
         </footer>
       </section>
     </section>

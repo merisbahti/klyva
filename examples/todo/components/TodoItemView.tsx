@@ -1,11 +1,11 @@
 import * as React from 'react'
 import { AtomCheckBox } from './AtomCheckBox'
-import { TodoType } from '../types'
+import { Todo } from '../types'
 import { focusAtom, useSelector } from 'klyva'
 import { RemovableAtom, PrimitiveAtom } from 'klyva/dist/types'
 
 type TodoItemViewProps = {
-  todoAtom: RemovableAtom<TodoType, any>
+  todoAtom: RemovableAtom<Todo, any>
   editingAtom: PrimitiveAtom<boolean>
 }
 

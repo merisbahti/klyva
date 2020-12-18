@@ -1,17 +1,17 @@
 import * as React from 'react'
-import { TodoType } from '../types'
+import { Todo } from '../types'
 import { PrimitiveAtom } from 'klyva/dist/types'
 
 type ClearCompletedButtonProps = {
-  todosAtom: PrimitiveAtom<TodoType[]>
+  todoListAtom: PrimitiveAtom<Todo[]>
 }
 
 export const ClearCompletedButton = ({
-  todosAtom,
+  todoListAtom,
 }: ClearCompletedButtonProps) => {
   const handleClear = React.useCallback(() => {
-    todosAtom.update(todos => todos.filter(todo => !todo.checked))
-  }, [todosAtom])
+    todoListAtom.update(todos => todos.filter(todo => !todo.checked))
+  }, [todoListAtom])
   return (
     <button onClick={handleClear} className="clear-completed">
       Clear completed

@@ -1,9 +1,5 @@
-export type TodoType = {
+export type Todo = {
   task: string
   checked: boolean
 }
-export type FilterType = 'active' | 'completed' | 'all'
-export type TodoAppType = {
-  filter: FilterType
-  todos: TodoType[]
-}
+export type Filter = 'active' | 'completed' | 'all'

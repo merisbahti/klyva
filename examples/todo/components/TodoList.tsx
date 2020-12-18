@@ -1,18 +1,18 @@
 import * as React from 'react'
-import { TodoAppType } from '../types'
-import { focusAtom, useAtomSlice, useSelector } from 'klyva'
+import { Todo, Filter } from '../types'
+import { useAtomSlice, useSelector } from 'klyva'
 import { PrimitiveAtom } from 'klyva/dist/types'
 import { TodoItem } from './TodoItem'
 
 type TodoListProps = {
-  todoAppAtom: PrimitiveAtom<TodoAppType>
+  todoListAtom: PrimitiveAtom<Todo[]>
+  filterAtom: PrimitiveAtom<Filter>
 }
 
-export const TodoList = ({ todoAppAtom }: TodoListProps) => {
-  const todosAtom = focusAtom(todoAppAtom, optic => optic.prop('todos'))
-  const filter = useSelector(todoAppAtom, value => value.filter)
+export const TodoList = ({ todoListAtom, filterAtom }: TodoListProps) => {
+  const filter = useSelector(filterAtom)
   const visibleTodosAtom = useAtomSlice(
-    todosAtom,
+    todoListAtom,
     ({ checked }) =>
       filter === 'all' ||
       (filter === 'completed' && checked) ||

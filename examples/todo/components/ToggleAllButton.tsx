@@ -1,25 +1,25 @@
 import * as React from 'react'
-import { TodoType } from '../types'
+import { Todo } from '../types'
 import { PrimitiveAtom } from 'klyva/dist/types'
 import { useSelector } from 'klyva'
 
 type ToggleAllButtonProps = {
-  todosAtom: PrimitiveAtom<TodoType[]>
+  todoListAtom: PrimitiveAtom<Todo[]>
 }
 
-export const ToggleAllButton = ({ todosAtom }: ToggleAllButtonProps) => {
+export const ToggleAllButton = ({ todoListAtom }: ToggleAllButtonProps) => {
   const allDone = useSelector(
-    todosAtom,
-    todos => !todos.some((todo) => !todo.checked),
+    todoListAtom,
+    todos => !todos.some(todo => !todo.checked),
   )
   const handleToggle = React.useCallback(() => {
-    todosAtom.update(todos =>
+    todoListAtom.update(todos =>
       todos.map(todo => ({
         ...todo,
         checked: !allDone,
       })),
     )
-  }, [todosAtom, allDone])
+  }, [todoListAtom, allDone])
   return (
     <>
       <input
