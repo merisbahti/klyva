@@ -22,7 +22,7 @@ export const makeTodoAppAtom = () => {
     'todos',
     // Dummy verifier of stored value. In prod would likely use generated types and verifiers
     // using something like 'io-ts'
-    (val: unknown): val is TodoAppType => true,
+    (val: unknown): val is TodoAppType => val !== null,
   )
   const filterAtom = focusAtom(todoAppAtom, optic => optic.prop('filter'))
   window.addEventListener('hashchange', () => {
