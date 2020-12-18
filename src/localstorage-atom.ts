@@ -8,8 +8,9 @@ const localStorageAtom = <T>(
     Boolean(v ?? true),
 ) => {
   const storedItem = localStorage.getItem(key)
-  const parsedItem = storedItem ? JSON.parse(storedItem) : null
-  const initialItem = verifyItem(parsedItem) ? parsedItem : initialValue
+  const parsedItem = storedItem !== null ? JSON.parse(storedItem) : null
+  const initialItem =
+    parsedItem !== null && verifyItem(parsedItem) ? parsedItem : initialValue
 
   const baseAtom = atom(initialItem)
   const derivedAtom = atom(
