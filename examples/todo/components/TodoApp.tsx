@@ -5,7 +5,7 @@ import { RemainingIndicator } from './RemainingIndicator'
 import { ToggleAllButton } from './ToggleAllButton'
 import { ClearCompletedButton } from './ClearCompletedButton'
 import { NewTodoInput } from './NewTodoInput'
-import { FilterSelector } from './Filter'
+import { FilterSelector } from './FilterSelector'
 import { TodoList } from './TodoList'
 
 type TodoAppProps = {
