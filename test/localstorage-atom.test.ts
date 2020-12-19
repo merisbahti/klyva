@@ -40,3 +40,48 @@ it('localstorage uses default argument if the item in localstorage failed valida
   expect(localStorage.getItem('myKey')).toBe('11')
   expect(atom.getValue()).toBe(11)
 })
+
+it('works when no stored value and no verifier', async () => {
+  localStorage.removeItem('myOtherKey')
+  const atom = localStorageAtom(27, 'myOtherKey')
+  expect(localStorage.getItem('myOtherKey')).toBe(null)
+  expect(atom.getValue()).toBe(27)
+  atom.update(20)
+  expect(localStorage.getItem('myOtherKey')).toBe('20')
+  expect(atom.getValue()).toBe(20)
+})
+
+it('works when stored value and no verifier', async () => {
+  localStorage.setItem('myOtherKey', '35')
+  const atom = localStorageAtom(27, 'myOtherKey')
+  expect(localStorage.getItem('myOtherKey')).toBe('35')
+  expect(atom.getValue()).toBe(35)
+  atom.update(20)
+  expect(localStorage.getItem('myOtherKey')).toBe('20')
+  expect(atom.getValue()).toBe(20)
+})
+
+it('never calls verifier when no stored value', async () => {
+  localStorage.removeItem('myOtherKey')
+  const atom = localStorageAtom(27, 'myOtherKey', (v): v is number => {
+    throw new Error(String(v))
+  })
+  expect(atom.getValue()).toBe(27)
+})
+
+it('correctly allows null to be stored', async () => {
+  localStorage.removeItem('myOtherKey')
+  localStorage.setItem('myOtherKey', JSON.stringify(null))
+  const atom = localStorageAtom(
+    'foo',
+    'myOtherKey',
+    (v): v is null | 'foo' => v === null || v === 'foo',
+  )
+  expect(atom.getValue()).toBe(null)
+})
+
+it('uses initial value when unable to parse stored value', async () => {
+  localStorage.setItem('myOtherKey', '{INVALID_JSON')
+  const atom = localStorageAtom('foo', 'myOtherKey')
+  expect(atom.getValue()).toBe('foo')
+})
