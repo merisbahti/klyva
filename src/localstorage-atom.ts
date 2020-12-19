@@ -14,7 +14,7 @@ const getInitialItem = <T>(
   }
   try {
     const parsedItem = JSON.parse(storedItem)
-    if (verifier?.(parsedItem)) {
+    if (!verifier || verifier(parsedItem)) {
       return parsedItem
     }
   } catch (err) {}
