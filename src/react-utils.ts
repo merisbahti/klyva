@@ -82,62 +82,72 @@ export const useAtomSlice = <T>(
       : get(arrayAtom).map((_, index) => index)
   })
 
+  const atomsCache = React.useRef<Record<number, PrimitiveRemovableAtom<T>>>({})
+
+  const getAtomFromCache = (index: number) => {
+    const cachedValue = atomsCache.current[index]
+    if (!cachedValue) {
+      atomsCache.current[index] = getAtomAtIndex(arrayAtom, index)
+    }
+    return atomsCache.current[index]
+  }
+
   const keptIndexes = useSelector(keptIndexesAtom, v => v, equalNumberArray)
 
-  const sliced = sliceAtomArray(arrayAtom)
+  return keptIndexes.map(getAtomFromCache)
+}
 
-  return keptIndexes
-    ? sliced.filter((_, index) => keptIndexes.includes(index))
-    : sliced
+const getAtomAtIndex = <Value>(
+  atomOfArray: PrimitiveAtom<Array<Value>>,
+  index: number,
+) => {
+  let cachedValue: Value
+  const sliceIsRemoved = (index: number) =>
+    index >= atomOfArray.getValue().length
+  const newAtom = atom(
+    get => {
+      /** This conceptually signals that the slice at
+       * the index has "completed", and it should not update,
+       * nor return anything other than its cached value.
+       */
+      const newValue = get(atomOfArray)[index]
+      if (sliceIsRemoved(index)) {
+        return cachedValue
+      }
+      cachedValue = newValue
+      return cachedValue
+    },
+    (update: SetState<Value>) => {
+      if (!sliceIsRemoved(index)) {
+        const oldValue = atomOfArray.getValue()[index]
+        const newValue = update instanceof Function ? update(oldValue) : update
+        atomOfArray.update(oldArr => [
+          ...oldArr.slice(0, index),
+          newValue,
+          ...oldArr.slice(index + 1),
+        ])
+      }
+    },
+  )
+  return {
+    ...newAtom,
+    remove: () => {
+      atomOfArray.update(oldArr => [
+        ...oldArr.slice(0, index),
+        ...oldArr.slice(index + 1),
+      ])
+    },
+  }
 }
 
 export const sliceAtomArray = <Value>(
   atomOfArray: PrimitiveAtom<Array<Value>>,
 ): Array<PrimitiveRemovableAtom<Value>> => {
-  const sliceIsRemoved = (index: number) =>
-    index >= atomOfArray.getValue().length
-
-  const getAtomAtIndex = (index: number) => {
-    let cachedValue: Value
-    const newAtom = atom(
-      get => {
-        /** This conceptually signals that the slice at
-         * the index has "completed", and it should not update,
-         * nor return anything other than its cached value.
-         */
-        const newValue = get(atomOfArray)[index]
-        if (sliceIsRemoved(index)) {
-          return cachedValue
-        }
-        cachedValue = newValue
-        return cachedValue
-      },
-      (update: SetState<Value>) => {
-        if (!sliceIsRemoved(index)) {
-          const oldValue = atomOfArray.getValue()[index]
-          const newValue =
-            update instanceof Function ? update(oldValue) : update
-          atomOfArray.update(oldArr => [
-            ...oldArr.slice(0, index),
-            newValue,
-            ...oldArr.slice(index + 1),
-          ])
-        }
-      },
-    )
-    return {
-      ...newAtom,
-      remove: () => {
-        atomOfArray.update(oldArr => [
-          ...oldArr.slice(0, index),
-          ...oldArr.slice(index + 1),
-        ])
-      },
-    }
-  }
   const getArrayAtLength = (length: number) => {
     const emptyArray = Array.from(new Array(length))
-    const newValue = emptyArray.map((_, index) => getAtomAtIndex(index))
+    const newValue = emptyArray.map((_, index) =>
+      getAtomAtIndex(atomOfArray, index),
+    )
     return newValue
   }
   const length = atomOfArray.getValue().length
