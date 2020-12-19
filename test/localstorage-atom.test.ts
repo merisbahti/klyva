@@ -68,3 +68,20 @@ it('never calls verifier when no stored value', async () => {
   })
   expect(atom.getValue()).toBe(27)
 })
+
+it('correctly allows null to be stored', async () => {
+  localStorage.removeItem('myOtherKey')
+  localStorage.setItem('myOtherKey', JSON.stringify(null))
+  const atom = localStorageAtom(
+    'foo',
+    'myOtherKey',
+    (v): v is null | 'foo' => v === null || v === 'foo',
+  )
+  expect(atom.getValue()).toBe(null)
+})
+
+it('uses initial value when unable to parse stored value', async () => {
+  localStorage.setItem('myOtherKey', '{INVALID_JSON')
+  const atom = localStorageAtom('foo', 'myOtherKey')
+  expect(atom.getValue()).toBe('foo')
+})

@@ -1,16 +1,32 @@
 import { atom } from './atom'
 import { SetState } from './types'
 
+type Verifier<T> = (v: unknown) => v is T
+
+const getInitialItem = <T>(
+  defaultValue: T,
+  key: string,
+  verifier?: Verifier<T>,
+) => {
+  const storedItem = localStorage.getItem(key)
+  if (storedItem === null) {
+    return defaultValue
+  }
+  try {
+    const parsedItem = JSON.parse(storedItem)
+    if (verifier?.(parsedItem)) {
+      return parsedItem
+    }
+  } catch (err) {}
+  return defaultValue
+}
+
 const localStorageAtom = <T>(
   initialValue: T,
   key: string,
-  verifyItem: (storedValue: unknown) => storedValue is T = (v): v is T =>
-    Boolean(v ?? true),
+  verifyItem?: Verifier<T>,
 ) => {
-  const storedItem = localStorage.getItem(key)
-  const parsedItem = storedItem !== null ? JSON.parse(storedItem) : null
-  const initialItem =
-    parsedItem !== null && verifyItem(parsedItem) ? parsedItem : initialValue
+  const initialItem = getInitialItem(initialValue, key, verifyItem)
 
   const baseAtom = atom(initialItem)
   const derivedAtom = atom(
