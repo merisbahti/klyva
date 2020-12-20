@@ -18,11 +18,11 @@ export function useAtom<Value>(atom: ReadableAtom<Value>): [Value]
 export function useAtom<Value, Updater = unknown>(
   atom: ReadableAtom<Value> & { update?: (updater: Updater) => void },
 ) {
-  const [cache, setCache] = React.useState(() => atom.getValue())
+  const [cache, setCache] = React.useState(atom.getValue)
   React.useEffect(() => {
-    setCache(atom.getValue())
-    const unsub = atom.subscribe(value => setCache(value))
-    return () => unsub()
+    setCache(atom.getValue)
+    const unsub = atom.subscribe(setCache)
+    return unsub
   }, [atom])
   const updaterMaybe: null | ((updater: Updater) => void) = React.useMemo(
     () =>
