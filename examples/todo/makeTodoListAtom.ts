@@ -10,9 +10,6 @@ export const makeTodoListAtom = () => {
       { task: 'Drink some water', checked: false },
     ],
     'klyva-todomvc',
-    // Dummy verifier of stored value. In prod would likely use generated types and verifiers
-    // using something like 'io-ts'
-    (val: unknown): val is Todo[] => val !== null,
   )
   return todoListAtom
 }
