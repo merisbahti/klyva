@@ -9,6 +9,18 @@ Questions? [Discord](https://discord.gg/5HXQ8Kagu6)
 *Klyva means to cleave in swedish*
 
 # How to
+## Install
+
+### Using npm
+```bash
+npm i klyva
+```
+
+### Using yarn
+```bash
+yarn add klyva
+```
+
 ## Create an atom
 
 A base atom can be constructed by giving the `atom` a value.
