@@ -9,7 +9,7 @@
     "postinstall": "cp node_modules/todomvc-app-css/index.css todomvc.css"
   },
   "dependencies": {
-    "klyva": "^0.6.3",
+    "klyva": "0.7.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "todomvc-app-css": "^2.3.0"
