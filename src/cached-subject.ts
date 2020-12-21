@@ -1,12 +1,12 @@
 import { Callbag, Sink } from 'callbag'
 
-const behaviorSubject = <T>(
+const cachedSubject = <T>(
   initial: T,
 ): Callbag<T, T> & { getValue: () => T } => {
   let sinks: Sink<T>[] = []
   let latest = initial
 
-  const newBehaviorSubject = (type: 0 | 1 | 2, data: any) => {
+  const newCachedSubject = (type: 0 | 1 | 2, data: any) => {
     if (type === 0) {
       const callbag: Sink<T> = data
       sinks.push(callbag)
@@ -19,8 +19,6 @@ const behaviorSubject = <T>(
           }
         }
       })
-
-      data(1, latest)
     } else {
       if (type === 1) {
         latest = data
@@ -46,8 +44,8 @@ const behaviorSubject = <T>(
       }
     }
   }
-  newBehaviorSubject.getValue = () => latest
-  return newBehaviorSubject
+  newCachedSubject.getValue = () => latest
+  return newCachedSubject
 }
 
-export default behaviorSubject
+export default cachedSubject

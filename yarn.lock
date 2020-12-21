@@ -4153,11 +4153,6 @@ call-me-maybe@^1.0.1:
   resolved "https://registry.yarnpkg.com/call-me-maybe/-/call-me-maybe-1.0.1.tgz#26d208ea89e37b5cbde60250a15f031c16a4d66b"
   integrity sha1-JtII6onje1y95gJQoV8DHBak1ms=
 
-callbag-merge-map@^0.0.1:
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/callbag-merge-map/-/callbag-merge-map-0.0.1.tgz#1075264686720a69698ec2cd1cf6be92ccfbc6b5"
-  integrity sha512-+pUUxaWOKQ+p5TbclV/3Gg6xiydDVHpIzWguwS1q8Xpi37ji6qF9NhZWOT4Cl/7tClICQt6pecSRRN0v5lU7Sw==
-
 callbag-merge@^3.2.2:
   version "3.2.2"
   resolved "https://registry.yarnpkg.com/callbag-merge/-/callbag-merge-3.2.2.tgz#87e4a9705dfcea109908296397834d648e8ea435"
@@ -4165,22 +4160,10 @@ callbag-merge@^3.2.2:
   dependencies:
     callbag "^1.2.0"
 
-callbag-pipe@^1.2.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/callbag-pipe/-/callbag-pipe-1.2.0.tgz#7c00f47774da0096a7c5afa8a14f7873b5be1daf"
-  integrity sha512-M+LdHUK0qJkm4CRe+I870ZzD/SnzcpTsfJRzFoB2hOkNXlrVdoj002KMkfdS4pHMfV6egzZFd8j+xJu6C4kwEQ==
-
 callbag-share@^1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/callbag-share/-/callbag-share-1.2.0.tgz#5ed2333ebf4cc952d878348bf11f649894a6b989"
   integrity sha512-Gt+D5lfJ/j3X5/3PiMPL8hHDPBmeQILZl2QYu+YJtSFz6PlNGQSL45aD4e4uoxMvhMZY9NpMHh7KRWia9PZA+g==
-  dependencies:
-    callbag "^1.1.0"
-
-callbag-skip@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/callbag-skip/-/callbag-skip-1.1.0.tgz#02df66e5519e8f5dec8f12284663974d7fe35c80"
-  integrity sha512-KodTVJFA1h1Z7iFvs2ocwtyvb+q38i/FJTabdMTmmPucQV+XpGH8e6BYxmYRznY4FQUTLM9e5Y5HqbUxT7ma1w==
   dependencies:
     callbag "^1.1.0"
 
@@ -4197,11 +4180,6 @@ callbag-take@^1.5.0:
   integrity sha512-8aOxp+gzfVQtDe+tk9PhKbC9QR9Vap4KFA0xccUiXFK9VjIS0fSt/Yi454viPpMhJkhRcx1BsjyF34Cj57W89A==
   dependencies:
     callbag "^1.1.0"
-
-callbag-tap@^1.3.0:
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/callbag-tap/-/callbag-tap-1.3.0.tgz#d35eb002deb35979cf388c3532d95fa9348e2cf2"
-  integrity sha512-K2SarqzmLgl2OuzPQY7sQc9JzJ/n3C9Xkug4bLJfuecnhTTv6+y7O1JJ5ky4yXyYZ1eWkMrztnheQhs62wBPhw==
 
 callbag@^1.1.0, callbag@^1.2.0, callbag@^1.3.0:
   version "1.3.0"
@@ -6164,7 +6142,7 @@ fast-deep-equal@^2.0.1:
   resolved "https://registry.yarnpkg.com/fast-deep-equal/-/fast-deep-equal-2.0.1.tgz#7b05218ddf9667bf7f370bf7fdb2cb15fdd0aa49"
   integrity sha1-ewUhjd+WZ79/Nwv3/bLLFf3Qqkk=
 
-fast-deep-equal@^3.1.1, fast-deep-equal@^3.1.3:
+fast-deep-equal@^3.1.1:
   version "3.1.3"
   resolved "https://registry.yarnpkg.com/fast-deep-equal/-/fast-deep-equal-3.1.3.tgz#3a7d56b559d6cbc3eb512325244e619a65c6c525"
   integrity sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q==

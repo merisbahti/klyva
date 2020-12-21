@@ -187,3 +187,31 @@ test('composite atom works after resubscribe', done => {
 
   done()
 })
+
+test('composite atom works after resubscribe 2', done => {
+  const leftOrRight = atom<'left' | 'right'>('left')
+  const left = atom(-10)
+  const right = atom(10)
+  const derived = atom(get =>
+    get(leftOrRight) === 'left' ? get(left) : get(right),
+  )
+
+  leftOrRight.update('right')
+
+  let derivedUpdates = 0
+  let derivedValue = 0
+
+  derived.subscribe(v => {
+    derivedValue = v
+    derivedUpdates++
+  })
+
+  right.update(v => v + 1)
+
+  expect(derivedUpdates).toBe(1)
+  expect(derivedValue).toBe(11)
+
+  expect(derived.getValue()).toBe(11)
+
+  done()
+})
