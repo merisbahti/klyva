@@ -1,12 +1,12 @@
 import * as React from 'react'
 import { Todo } from '../types'
 import { useSelector, atom } from 'klyva'
-import { RemovableAtom } from 'klyva/dist/types'
+import { PrimitiveRemovableAtom } from 'klyva/dist/types'
 import { TodoItemView } from './TodoItemView'
 import { TodoItemForm } from './TodoItemForm'
 
 type TodoItemProps = {
-  todoAtom: RemovableAtom<Todo, any>
+  todoAtom: PrimitiveRemovableAtom<Todo>
 }
 
 export const TodoItem = ({ todoAtom }: TodoItemProps) => {
