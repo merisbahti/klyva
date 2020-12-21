@@ -11,8 +11,7 @@ type TodoItemViewProps = {
 
 export const TodoItemView = ({ todoAtom, editingAtom }: TodoItemViewProps) => {
   const checkedAtom = focusAtom(todoAtom, optic => optic.prop('checked'))
-  const textAtom = focusAtom(todoAtom, optic => optic.prop('task'))
-  const text = useSelector(textAtom)
+  const text = useSelector(todoAtom, todo => todo.task)
   const handleStartEdit = React.useCallback(() => editingAtom.update(true), [
     editingAtom,
   ])
