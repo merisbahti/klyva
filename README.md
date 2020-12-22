@@ -4,9 +4,7 @@ Scalable state management for React.
 
 Minimal API, with reactive, composable and decomposable state!
 
-Questions? [Discord](https://discord.gg/5HXQ8Kagu6)
-
-*Klyva means to cleave in swedish*
+[10 minute tutorial](https://www.youtube.com/watch?v=xIyI9pYQLcs)
 
 # How to
 ## Install
