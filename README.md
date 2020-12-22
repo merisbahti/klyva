@@ -4,7 +4,7 @@ Scalable state management for React.
 
 Minimal API, with reactive, composable and decomposable state!
 
-[10 minute tutorial](https://www.youtube.com/watch?v=xIyI9pYQLcs)
+[📺 10 minute tutorial](https://www.youtube.com/watch?v=xIyI9pYQLcs)
 
 # How to
 ## Install
