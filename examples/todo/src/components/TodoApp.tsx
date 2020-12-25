@@ -1,12 +1,10 @@
 import * as React from 'react'
 import { PrimitiveAtom } from 'klyva/dist/types'
 import { Filter, Todo } from '../../types'
-import { RemainingIndicator } from './RemainingIndicator'
 import { ToggleAllButton } from './ToggleAllButton'
-import { ClearCompletedButton } from './ClearCompletedButton'
 import { NewTodoInput } from './NewTodoInput'
-import { FilterSelector } from './FilterSelector'
 import { TodoList } from './TodoList'
+import { AppFooter } from './AppFooter'
 
 type TodoAppProps = {
   todoListAtom: PrimitiveAtom<Todo[]>
@@ -23,11 +21,7 @@ export const TodoApp = ({ todoListAtom, filterAtom }: TodoAppProps) => {
       <section className="main">
         <ToggleAllButton todoListAtom={todoListAtom} />
         <TodoList todoListAtom={todoListAtom} filterAtom={filterAtom} />
-        <footer className="footer">
-          <RemainingIndicator todoListAtom={todoListAtom} />
-          <FilterSelector filterAtom={filterAtom} />
-          <ClearCompletedButton todoListAtom={todoListAtom} />
-        </footer>
+        <AppFooter todoListAtom={todoListAtom} filterAtom={filterAtom} />
       </section>
     </section>
   )
