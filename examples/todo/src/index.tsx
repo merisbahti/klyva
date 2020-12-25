@@ -1,9 +1,12 @@
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
-import { StaticFooter } from './StaticFooter'
-import { TodoApp } from './TodoApp/'
-import { FilterAtomContext, makeFilterAtom } from './filterAtom'
-import { makeTodoListAtom, TodoListAtomContext } from './todoListAtom'
+import { StaticFooter, TodoApp } from './ui'
+import {
+  FilterAtomContext,
+  makeFilterAtom,
+  makeTodoListAtom,
+  TodoListAtomContext,
+} from './data'
 
 const Main = () => {
   const todoListAtom = makeTodoListAtom()
