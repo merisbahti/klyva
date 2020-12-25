@@ -1,5 +1,5 @@
 import { atom } from 'klyva'
-import { Filter } from './types'
+import { Filter } from '../types'
 
 const readFilterFromHash = () => {
   const hash = window.location.hash

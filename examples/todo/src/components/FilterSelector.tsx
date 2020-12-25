@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Filter } from '../types'
+import { Filter } from '../../types'
 import { PrimitiveAtom } from 'klyva/dist/types'
 import { useSelector } from 'klyva'
 

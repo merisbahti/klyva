@@ -1,5 +1,5 @@
 import { localStorageAtom } from 'klyva'
-import { Todo } from './types'
+import { Todo } from '../types'
 
 export const makeTodoListAtom = () => {
   // a localStorageAtom automatically reads from and stores to localStorage,

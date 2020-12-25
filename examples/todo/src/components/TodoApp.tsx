@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { PrimitiveAtom } from 'klyva/dist/types'
-import { Filter, Todo } from '../types'
+import { Filter, Todo } from '../../types'
 import { RemainingIndicator } from './RemainingIndicator'
 import { ToggleAllButton } from './ToggleAllButton'
 import { ClearCompletedButton } from './ClearCompletedButton'

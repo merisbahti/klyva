@@ -1,7 +1,7 @@
 import * as React from 'react'
-import { Todo } from '../types'
+import { Todo } from '../../types'
 import { PrimitiveAtom } from 'klyva/dist/types'
-import { SmartTextInput } from './SmartTextInput'
+import { SmartTextInput } from '../common/SmartTextInput'
 
 type NewTodoInputProps = {
   todoListAtom: PrimitiveAtom<Todo[]>

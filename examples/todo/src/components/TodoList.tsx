@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Todo, Filter } from '../types'
+import { Todo, Filter } from '../../types'
 import { useAtomSlice, useSelector } from 'klyva'
 import { PrimitiveAtom } from 'klyva/dist/types'
 import { TodoItem } from './TodoItem'
