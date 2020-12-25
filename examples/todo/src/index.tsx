@@ -2,15 +2,19 @@ import * as React from 'react'
 import * as ReactDOM from 'react-dom'
 import { StaticFooter } from './components/StaticFooter'
 import { TodoApp } from './components/TodoApp'
-import { makeFilterAtom } from './makeFilterAtom'
-import { makeTodoListAtom } from './makeTodoListAtom'
+import { FilterAtomContext, makeFilterAtom } from './filterAtom'
+import { makeTodoListAtom, TodoListAtomContext } from './todoListAtom'
 
 const Main = () => {
   const todoListAtom = makeTodoListAtom()
   const filterAtom = makeFilterAtom()
   return (
     <div>
-      <TodoApp todoListAtom={todoListAtom} filterAtom={filterAtom} />
+      <TodoListAtomContext.Provider value={todoListAtom}>
+        <FilterAtomContext.Provider value={filterAtom}>
+          <TodoApp />
+        </FilterAtomContext.Provider>
+      </TodoListAtomContext.Provider>
       <StaticFooter />
     </div>
   )

@@ -1,15 +1,12 @@
 import * as React from 'react'
-import { Todo, Filter } from '../../types'
 import { useAtomSlice, useSelector } from 'klyva'
-import { PrimitiveAtom } from 'klyva/dist/types'
 import { TodoItem } from './TodoItem'
+import { FilterAtomContext } from '../filterAtom'
+import { TodoListAtomContext } from '../todoListAtom'
 
-type TodoListProps = {
-  todoListAtom: PrimitiveAtom<Todo[]>
-  filterAtom: PrimitiveAtom<Filter>
-}
-
-export const TodoList = ({ todoListAtom, filterAtom }: TodoListProps) => {
+export const TodoList = () => {
+  const filterAtom = React.useContext(FilterAtomContext)
+  const todoListAtom = React.useContext(TodoListAtomContext)
   const filter = useSelector(filterAtom)
   const visibleTodosAtom = useAtomSlice(
     todoListAtom,

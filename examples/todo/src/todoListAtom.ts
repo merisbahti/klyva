@@ -1,4 +1,5 @@
 import { localStorageAtom } from 'klyva'
+import { createContext } from 'react'
 import { Todo } from '../types'
 
 export const makeTodoListAtom = () => {
@@ -13,3 +14,5 @@ export const makeTodoListAtom = () => {
   )
   return todoListAtom
 }
+
+export const TodoListAtomContext = createContext(makeTodoListAtom())

@@ -1,4 +1,5 @@
 import { atom } from 'klyva'
+import { createContext } from 'react'
 import { Filter } from '../types'
 
 const readFilterFromHash = () => {
@@ -19,3 +20,5 @@ export const makeFilterAtom = () => {
   })
   return filterAtom
 }
+
+export const FilterAtomContext = createContext(makeFilterAtom())
