@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { useSelector } from 'klyva'
-import { TodoListAtomContext } from '../todoListAtom'
+import { TodoListAtomContext } from '../../todoListAtom'
 
 export const ToggleAllButton = () => {
   const todoListAtom = React.useContext(TodoListAtomContext)

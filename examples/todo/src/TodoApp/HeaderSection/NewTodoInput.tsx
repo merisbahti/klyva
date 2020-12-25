@@ -1,6 +1,6 @@
 import * as React from 'react'
-import { SmartTextInput } from '../common/SmartTextInput'
-import { TodoListAtomContext } from '../todoListAtom'
+import { SmartTextInput } from '../../common/SmartTextInput'
+import { TodoListAtomContext } from '../../todoListAtom'
 
 export const NewTodoInput = () => {
   const todoListAtom = React.useContext(TodoListAtomContext)

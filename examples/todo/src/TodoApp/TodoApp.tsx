@@ -1,21 +1,12 @@
 import * as React from 'react'
-import { ToggleAllButton } from './ToggleAllButton'
-import { NewTodoInput } from './NewTodoInput'
-import { TodoList } from './TodoList/'
-import { AppFooter } from './AppFooter/'
+import { HeaderSection } from './HeaderSection/'
+import { MainSection } from './MainSection/'
 
 export const TodoApp = () => {
   return (
     <section className="todoapp">
-      <header className="header">
-        <h1>todos</h1>
-        <NewTodoInput />
-      </header>
-      <section className="main">
-        <ToggleAllButton />
-        <TodoList />
-        <AppFooter />
-      </section>
+      <HeaderSection />
+      <MainSection />
     </section>
   )
 }

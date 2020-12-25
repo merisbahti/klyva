@@ -1,8 +1,8 @@
 import * as React from 'react'
-import { Todo } from '../../../../types'
+import { Todo } from '../../../../../types'
 import { focusAtom, useSelector } from 'klyva'
 import { PrimitiveRemovableAtom, PrimitiveAtom } from 'klyva/dist/types'
-import { SmartTextInput } from '../../../common/SmartTextInput'
+import { SmartTextInput } from '../../../../common/SmartTextInput'
 
 type TodoItemFormProps = {
   todoAtom: PrimitiveRemovableAtom<Todo>
