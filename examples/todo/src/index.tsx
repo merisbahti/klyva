@@ -1,7 +1,7 @@
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
-import { StaticFooter } from './components/StaticFooter'
-import { TodoApp } from './components/TodoApp'
+import { StaticFooter } from './StaticFooter'
+import { TodoApp } from './TodoApp/'
 import { FilterAtomContext, makeFilterAtom } from './filterAtom'
 import { makeTodoListAtom, TodoListAtomContext } from './todoListAtom'
 

@@ -1,6 +1,6 @@
 import * as React from 'react'
-import { AtomCheckBox } from '../common/AtomCheckBox'
-import { Todo } from '../../types'
+import { AtomCheckBox } from '../../../common/AtomCheckBox'
+import { Todo } from '../../../../types'
 import { focusAtom, useSelector } from 'klyva'
 import { PrimitiveRemovableAtom, PrimitiveAtom } from 'klyva/dist/types'
 

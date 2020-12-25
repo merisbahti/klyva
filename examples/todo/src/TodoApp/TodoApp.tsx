@@ -1,8 +1,8 @@
 import * as React from 'react'
 import { ToggleAllButton } from './ToggleAllButton'
 import { NewTodoInput } from './NewTodoInput'
-import { TodoList } from './TodoList'
-import { AppFooter } from './AppFooter'
+import { TodoList } from './TodoList/'
+import { AppFooter } from './AppFooter/'
 
 export const TodoApp = () => {
   return (

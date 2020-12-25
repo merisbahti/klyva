@@ -1,8 +1,8 @@
 import * as React from 'react'
 import { useAtomSlice, useSelector } from 'klyva'
-import { TodoItem } from './TodoItem'
-import { FilterAtomContext } from '../filterAtom'
-import { TodoListAtomContext } from '../todoListAtom'
+import { TodoItem } from './TodoItem/'
+import { FilterAtomContext } from '../../filterAtom'
+import { TodoListAtomContext } from '../../todoListAtom'
 
 export const TodoList = () => {
   const filterAtom = React.useContext(FilterAtomContext)
