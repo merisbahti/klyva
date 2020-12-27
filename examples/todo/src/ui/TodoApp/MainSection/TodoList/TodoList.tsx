@@ -6,7 +6,7 @@ import { useFilterValue, useTodoListAtom } from '../../../../bridge'
 export const TodoList = () => {
   const filter = useFilterValue()
   const todoListAtom = useTodoListAtom()
-  const visibleTodosAtom = useAtomSlice(
+  const visibleTodoAtoms = useAtomSlice(
     todoListAtom,
     ({ checked }) =>
       filter === 'all' ||
@@ -15,7 +15,7 @@ export const TodoList = () => {
   )
   return (
     <ul className="todo-list">
-      {visibleTodosAtom.map((todoAtom, index) => (
+      {visibleTodoAtoms.map((todoAtom, index) => (
         <TodoItem key={filter + index} todoAtom={todoAtom} />
       ))}
     </ul>
