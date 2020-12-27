@@ -1,4 +1,4 @@
-import { useSelector } from 'klyva'
+import { useAtomSlice, useSelector } from 'klyva'
 import { useContext } from 'react'
 import { FilterAtomContext, TodoListAtomContext } from './contexts'
 
@@ -16,4 +16,16 @@ export const useFilterAtom = () => {
 
 export const useFilterValue = () => {
   return useSelector(useFilterAtom())
+}
+
+export const useVisibleTodoAtoms = () => {
+  const todoListAtom = useTodoListAtom()
+  const filter = useFilterValue()
+  return useAtomSlice(
+    todoListAtom,
+    ({ checked }) =>
+      filter === 'all' ||
+      (filter === 'completed' && checked) ||
+      (filter === 'active' && !checked),
+  )
 }
