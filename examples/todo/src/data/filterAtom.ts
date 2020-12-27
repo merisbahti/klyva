@@ -17,7 +17,17 @@ export const makeFilterAtom = () => {
   const filterAtom = atom<Filter>(readFilterFromHash())
   // Update filter whenever hash chances
   window.addEventListener('hashchange', () => {
-    filterAtom.update(readFilterFromHash())
+    const newHash = readFilterFromHash()
+    if (newHash !== filterAtom.getValue()) {
+      filterAtom.update(readFilterFromHash())
+    }
+  })
+
+  filterAtom.subscribe(val => {
+    const currentHash = readFilterFromHash()
+    if (val !== currentHash) {
+      window.location.hash = val
+    }
   })
   return filterAtom
 }
