@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { useSelector } from 'klyva'
-import { FilterAtomContext } from '../../../../data'
+import { FilterAtomContext } from '../../../data'
 
 export const FilterSelector = () => {
   const filterAtom = React.useContext(FilterAtomContext)

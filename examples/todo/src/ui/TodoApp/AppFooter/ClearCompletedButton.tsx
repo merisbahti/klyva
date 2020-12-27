@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { TodoListAtomContext } from '../../../../data'
+import { TodoListAtomContext } from '../../../data'
 
 export const ClearCompletedButton = () => {
   const todoListAtom = React.useContext(TodoListAtomContext)

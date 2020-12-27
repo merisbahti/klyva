@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { useSelector } from 'klyva'
-import { TodoListAtomContext } from '../../../../data'
+import { TodoListAtomContext } from '../../../data'
 
 export const RemainingIndicator = () => {
   const todoListAtom = React.useContext(TodoListAtomContext)
