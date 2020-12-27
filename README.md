@@ -7,17 +7,6 @@ Minimal API, with reactive, composable and decomposable state!
 [📺 10 minute tutorial](https://www.youtube.com/watch?v=xIyI9pYQLcs)
 
 # How to
-## Install
-
-### Using npm
-```bash
-npm i klyva
-```
-
-### Using yarn
-```bash
-yarn add klyva
-```
 
 ## Create an atom
 
@@ -140,3 +129,16 @@ Curious? See [codesandbox](https://codesandbox.io/s/adoring-waterfall-2ot5y?file
 * No `key` needed for atom
 * More performant: Atoms are _minimally_ expensive to create, and you can create them almost for free in react components.
 * Usage outside of react components is supported, so you can listen to changes and update atoms from outside of a react context.
+
+## Install
+
+### Using npm
+```bash
+npm i klyva
+```
+
+### Using yarn
+```bash
+yarn add klyva
+```
+
