@@ -1,8 +1,10 @@
 import { atom } from 'klyva'
+import { PrimitiveAtom } from 'klyva/dist/types'
 import { createContext } from 'react'
 import { Filter } from '../../types'
 
-const readFilterFromHash = () => {
+// Small helper to map the current hash to a valid filter, falling back to 'all' as default
+export const readFilterFromHash = () => {
   const hash = window.location.hash
   return hash === '#/active'
     ? 'active'
@@ -11,14 +13,23 @@ const readFilterFromHash = () => {
     : 'all'
 }
 
+// Create the atom to be used in the TodoMVC app
 export const makeFilterAtom = () => {
+  const filterAtom = atom<Filter>('all')
+  syncFilterAtomWithHash(filterAtom)
+  return filterAtom
+}
+
+export const syncFilterAtomWithHash = (filterAtom: PrimitiveAtom<Filter>) => {
+  const currentHash = readFilterFromHash()
   // Get initial filter from current window hash
-  const filterAtom = atom<Filter>(readFilterFromHash())
+  if (filterAtom.getValue() !== currentHash) {
+    filterAtom.update(currentHash)
+  }
   // Update filter whenever hash chances
   window.addEventListener('hashchange', () => {
     filterAtom.update(readFilterFromHash())
   })
-  return filterAtom
 }
 
-export const FilterAtomContext = createContext(makeFilterAtom())
+export const FilterAtomContext = createContext(atom<Filter>('all'))
