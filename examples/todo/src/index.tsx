@@ -1,7 +1,7 @@
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
 import { StaticFooter, TodoApp } from './ui'
-import { DataProvider } from './data'
+import { DataProvider } from './bridge'
 
 const Main = () => (
   <>

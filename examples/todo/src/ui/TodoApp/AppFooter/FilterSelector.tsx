@@ -1,10 +1,8 @@
 import * as React from 'react'
-import { useSelector } from 'klyva'
-import { FilterAtomContext } from '../../../data'
+import { useFilterValue } from '../../../bridge'
 
 export const FilterSelector = () => {
-  const filterAtom = React.useContext(FilterAtomContext)
-  const filter = useSelector(filterAtom)
+  const filter = useFilterValue()
   return (
     <ul className="filters">
       <li>

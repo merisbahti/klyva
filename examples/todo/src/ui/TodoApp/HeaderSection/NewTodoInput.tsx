@@ -1,9 +1,9 @@
 import * as React from 'react'
 import { SmartTextInput } from '../../common'
-import { TodoListAtomContext } from '../../../data'
+import { useTodoListAtom } from '../../../bridge'
 
 export const NewTodoInput = () => {
-  const todoListAtom = React.useContext(TodoListAtomContext)
+  const todoListAtom = useTodoListAtom()
   const handleSubmit = React.useCallback(
     (evt: React.KeyboardEvent<HTMLInputElement>) => {
       const elem = (evt.target as unknown) as HTMLInputElement

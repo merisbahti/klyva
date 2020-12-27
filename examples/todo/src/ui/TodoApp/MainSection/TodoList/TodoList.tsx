@@ -1,12 +1,11 @@
 import * as React from 'react'
-import { useAtomSlice, useSelector } from 'klyva'
+import { useAtomSlice } from 'klyva'
 import { TodoItem } from './TodoItem'
-import { FilterAtomContext, TodoListAtomContext } from '../../../../data'
+import { useFilterValue, useTodoListAtom } from '../../../../bridge'
 
 export const TodoList = () => {
-  const filterAtom = React.useContext(FilterAtomContext)
-  const todoListAtom = React.useContext(TodoListAtomContext)
-  const filter = useSelector(filterAtom)
+  const filter = useFilterValue()
+  const todoListAtom = useTodoListAtom()
   const visibleTodosAtom = useAtomSlice(
     todoListAtom,
     ({ checked }) =>

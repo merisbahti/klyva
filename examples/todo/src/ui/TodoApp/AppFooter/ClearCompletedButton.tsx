@@ -1,8 +1,8 @@
 import * as React from 'react'
-import { TodoListAtomContext } from '../../../data'
+import { useTodoListAtom } from '../../../bridge'
 
 export const ClearCompletedButton = () => {
-  const todoListAtom = React.useContext(TodoListAtomContext)
+  const todoListAtom = useTodoListAtom()
   const handleClear = React.useCallback(() => {
     todoListAtom.update(todos => todos.filter(todo => !todo.checked))
   }, [todoListAtom])

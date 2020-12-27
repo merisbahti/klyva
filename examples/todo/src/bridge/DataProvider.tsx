@@ -1,8 +1,8 @@
 import * as React from 'react'
 import { PrimitiveAtom } from 'klyva/dist/types'
 import { Filter, Todo } from '../../types'
-import { FilterAtomContext, makeFilterAtom } from './filterAtom'
-import { makeTodoListAtom, TodoListAtomContext } from './todoListAtom'
+import { makeTodoListAtom, makeFilterAtom } from '../data'
+import { FilterAtomContext, TodoListAtomContext } from './contexts'
 
 /*
 This is a convencience compontent that provides all the needed data context.

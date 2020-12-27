@@ -1,9 +1,9 @@
 import * as React from 'react'
 import { useSelector } from 'klyva'
-import { TodoListAtomContext } from '../../../data'
+import { useTodoListAtom } from '../../../bridge'
 
 export const ToggleAllButton = () => {
-  const todoListAtom = React.useContext(TodoListAtomContext)
+  const todoListAtom = useTodoListAtom()
   const allDone = useSelector(
     todoListAtom,
     todos => !todos.some(todo => !todo.checked),

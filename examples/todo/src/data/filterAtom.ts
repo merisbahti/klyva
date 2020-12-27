@@ -1,6 +1,5 @@
 import { atom } from 'klyva'
 import { PrimitiveAtom } from 'klyva/dist/types'
-import { createContext } from 'react'
 import { Filter } from '../../types'
 
 // Small helper to map the current hash to a valid filter, falling back to 'all' as default
@@ -31,5 +30,3 @@ export const syncFilterAtomWithHash = (filterAtom: PrimitiveAtom<Filter>) => {
     filterAtom.update(readFilterFromHash())
   })
 }
-
-export const FilterAtomContext = createContext(atom<Filter>('all'))
