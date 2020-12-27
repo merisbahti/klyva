@@ -26,7 +26,7 @@ export const makeFilterAtom = () => {
   filterAtom.subscribe(val => {
     const currentHash = readFilterFromHash()
     if (val !== currentHash) {
-      window.location.hash = val
+      window.location.hash = `/${val}`
     }
   })
   return filterAtom
