@@ -15,14 +15,14 @@ export const readFilterFromHash = () => {
 export const makeFilterAtom = () => {
   // Get initial filter from current window hash
   const filterAtom = atom<Filter>(readFilterFromHash())
-  // Update filter whenever hash chances
+  // Update filter whenever hash changes
   window.addEventListener('hashchange', () => {
     const newHash = readFilterFromHash()
     if (newHash !== filterAtom.getValue()) {
       filterAtom.update(readFilterFromHash())
     }
   })
-
+  // Update hash whenever filter changes
   filterAtom.subscribe(val => {
     const currentHash = readFilterFromHash()
     if (val !== currentHash) {
