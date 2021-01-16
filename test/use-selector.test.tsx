@@ -1,12 +1,12 @@
 import React from 'react'
 import * as rtl from '@testing-library/react'
 import { atom } from '../src'
-import { PrimitiveAtom } from '../src/types'
+import { Atom } from '../src/types'
 import { useAtom, useSelector } from '../src/react-utils'
 
 it('selection on an atom works', async () => {
   const anAtom = atom({ a: 5 })
-  const Counter = ({ myAtom }: { myAtom: PrimitiveAtom<{ a: number }> }) => {
+  const Counter = ({ myAtom }: { myAtom: Atom<{ a: number }> }) => {
     const [myAtomValue] = useAtom(myAtom)
     const selectedA = useSelector(myAtom, value => value.a)
     return (
@@ -40,7 +40,7 @@ it('selection on a derived atom works', async () => {
   const anAtom = atom({ a: 5 })
   const derivedAtom = atom(get => get(anAtom).a + 1)
 
-  const Counter = ({ myAtom }: { myAtom: PrimitiveAtom<{ a: number }> }) => {
+  const Counter = ({ myAtom }: { myAtom: Atom<{ a: number }> }) => {
     const [myAtomValue] = useAtom(myAtom)
     const [myDerivedAtomValue] = useAtom(derivedAtom)
     const selectedA = useSelector(derivedAtom, source => source + 2)

@@ -1,8 +1,14 @@
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
 import 'todomvc-app-css/index.css'
-import { atom, focusAtom, useAtom, useAtomSlice } from '../../src/index'
-import { PrimitiveAtom } from '../../src/types'
+import {
+  atom,
+  focusAtom,
+  useAtom,
+  useAtomSlice,
+  useSelector,
+} from '../../src/index'
+import { Atom } from '../../src/types'
 
 const OriginalAtom = atom<Record<string, Record<string, string>>>({
   form1: { task: 'Eat some food', checked: 'yeah' },
@@ -83,7 +89,7 @@ const Form = ({
   formAtom,
   onRemove,
 }: {
-  formAtom: PrimitiveAtom<[string, Record<string, string>]>
+  formAtom: Atom<[string, Record<string, string>]>
   onRemove: () => void
 }) => {
   const entriesAtom = focusAtom(formAtom, optic =>
@@ -91,16 +97,16 @@ const Form = ({
       from => Object.entries(from),
       to => Object.fromEntries(to),
     ),
-  ) as PrimitiveAtom<[string, string][]>
+  ) as Atom<[string, string][]>
   const fieldAtoms = useAtomSlice(entriesAtom)
   const addField = () =>
     entriesAtom.update(oldValue => [
       ...oldValue,
       ['Something new' + Math.random(), 'New too'],
     ])
-  const fieldNameAtom = focusAtom(formAtom, optic =>
-    optic.index(0),
-  ) as PrimitiveAtom<string>
+  const fieldNameAtom = focusAtom(formAtom, optic => optic.index(0)) as Atom<
+    string
+  >
   const [fieldName, setFieldName] = useAtom(fieldNameAtom)
 
   return (
@@ -132,10 +138,12 @@ const Field = ({
   field,
   onRemove,
 }: {
-  field: PrimitiveAtom<[string, string]>
+  field: Atom<[string, string]>
   onRemove: () => void
 }) => {
-  const [[name, value], setField] = useAtom(field)
+  const name = useSelector(field, value => value[0])
+  const value = useSelector(field, value => value[1])
+  const setField = field.update
 
   return (
     <li>

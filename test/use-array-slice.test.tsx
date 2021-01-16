@@ -1,12 +1,12 @@
 import React from 'react'
 import * as rtl from '@testing-library/react'
 import { atom } from '../src'
-import { PrimitiveAtom } from '../src/types'
+import { Atom } from '../src/types'
 import { useAtom, useAtomSlice, useSelector } from '../src/react-utils'
 
 it('useArraySlice removal works', async () => {
   const anAtom = atom(['foo', 'bar', 'baz'])
-  const Counter = ({ myAtom }: { myAtom: PrimitiveAtom<string[]> }) => {
+  const Counter = ({ myAtom }: { myAtom: Atom<string[]> }) => {
     const atoms = useAtomSlice(myAtom)
     return (
       <div>
@@ -44,7 +44,7 @@ it('useArraySlice removal works', async () => {
 
 it('useArraySlice, filter, removal works', async () => {
   const anAtom = atom(['foo', 'bar', 'baz'])
-  const Counter = ({ myAtom }: { myAtom: PrimitiveAtom<string[]> }) => {
+  const Counter = ({ myAtom }: { myAtom: Atom<string[]> }) => {
     const atoms = useAtomSlice(myAtom, value => value.includes('a'))
     return (
       <div>
@@ -90,11 +90,7 @@ const useUpdateCount = () => {
 
 it('useArraySlice, updating a sibling atom does not update other siblings', async () => {
   const anAtom = atom([{ count: 0 }, { count: 0 }])
-  const CounterList = ({
-    myAtom,
-  }: {
-    myAtom: PrimitiveAtom<{ count: number }[]>
-  }) => {
+  const CounterList = ({ myAtom }: { myAtom: Atom<{ count: number }[]> }) => {
     const atoms = useAtomSlice(myAtom)
     return (
       <div>
@@ -110,7 +106,7 @@ it('useArraySlice, updating a sibling atom does not update other siblings', asyn
     id,
   }: {
     id: number
-    countAtom: PrimitiveAtom<{ count: number }>
+    countAtom: Atom<{ count: number }>
   }) => {
     const [count, setCount] = useAtom(countAtom)
     const updates = useUpdateCount()

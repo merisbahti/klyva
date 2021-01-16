@@ -1,7 +1,13 @@
 import cbSubscribe from 'callbag-subscribe'
 import cbShare from 'callbag-share'
 import cbMerge from 'callbag-merge'
-import { Atom, ReadableAtom, DerivedAtomReader, SetState } from './types'
+import {
+  Atom,
+  ReadableAtom,
+  DerivedAtomReader,
+  Updater,
+  CustomAtom,
+} from './types'
 import { atomToSource } from './atom-to-source'
 import equal from './equal'
 import cachedSubject from './cached-subject'
@@ -10,7 +16,7 @@ import take from 'callbag-take'
 export function atom<Value, Update>(
   value: DerivedAtomReader<Value>,
   write: (update: Update) => void,
-): Atom<Value, Update>
+): CustomAtom<Value, Update>
 
 // for some reason we're not allowed to make variadic functions
 // eslint-disable-next-line no-redeclare
@@ -19,7 +25,7 @@ export function atom<Value>(
 ): ReadableAtom<Value>
 
 // eslint-disable-next-line no-redeclare
-export function atom<Value>(value: Value): Atom<Value, SetState<Value>>
+export function atom<Value>(value: Value): Atom<Value>
 
 // eslint-disable-next-line no-redeclare
 export function atom<Value, Update = unknown>(
@@ -39,7 +45,7 @@ export function atom<Value, Update = unknown>(
     const unsub = cbSubscribe(listener)(obs)
     return () => unsub()
   }
-  const next = (next: SetState<Value>) => {
+  const next = (next: Updater<Value>) => {
     const nextValue = next instanceof Function ? next(getValue()) : next
     // Instead of distinctUntilChanged(equal), we do the check here so
     // that the latest value from the stream (obs) and subject.getValue()
@@ -153,7 +159,7 @@ const atomConstructor = <Value, Updater>(
   update?: (updater: Updater) => void,
 ) => {
   if (update) {
-    const atom: Atom<Value, Updater> = {
+    const atom: CustomAtom<Value, Updater> = {
       subscribe,
       update,
       getValue,

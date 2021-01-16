@@ -1,5 +1,5 @@
 import { atom } from '../src/atom'
-import { SetState } from '../src/types'
+import { Updater } from '../src/types'
 
 test('simple derivation with 1 atom works', done => {
   const atomA = atom(10)
@@ -98,7 +98,7 @@ test('composite atoms work', done => {
       b: get(atomB),
       sum: get(atomA) + get(atomB),
     }),
-    (update: SetState<{ a: number; b: number }>) => {
+    (update: Updater<{ a: number; b: number }>) => {
       const { a, b } =
         update instanceof Function
           ? update({ a: atomA.getValue(), b: atomB.getValue() })

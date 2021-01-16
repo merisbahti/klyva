@@ -1,7 +1,7 @@
 import { atom } from '../src'
 import focusAtom from '../src/focus-atom'
 import { sliceAtomArray } from '../src/react-utils'
-import { SetState } from '../src/types'
+import { Updater } from '../src/types'
 
 test('sliced work', done => {
   const arrayAtom = atom([1, 2, 3])
@@ -55,7 +55,7 @@ test('deep slices work', done => {
 
   const formAtoms = sliceAtomArray(formsAtom)
   const [form0Atom] = formAtoms
-  const entriesFocus = atom<[string, string][], SetState<[string, string][]>>(
+  const entriesFocus = atom<[string, string][], Updater<[string, string][]>>(
     get => Object.entries(get(form0Atom)),
     update => {
       const nextValue =

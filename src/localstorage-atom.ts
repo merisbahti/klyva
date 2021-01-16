@@ -1,5 +1,5 @@
 import { atom } from './atom'
-import { SetState } from './types'
+import { Updater } from './types'
 
 type Verifier<T> = (v: unknown) => v is T
 
@@ -31,7 +31,7 @@ const localStorageAtom = <T>(
   const baseAtom = atom(initialItem)
   const derivedAtom = atom(
     get => get(baseAtom),
-    (producer: SetState<T>) => {
+    (producer: Updater<T>) => {
       const newValue =
         producer instanceof Function ? producer(baseAtom.getValue()) : producer
       baseAtom.update(newValue)

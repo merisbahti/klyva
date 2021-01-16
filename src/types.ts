@@ -1,25 +1,25 @@
-export type SetState<S> = S | ((newValue: S) => S)
+export type Updater<S> = S | ((newValue: S) => S)
 
 export type ReadableAtom<Value> = {
   subscribe: (listener: (value: Value) => void) => () => void
   getValue: () => Value
 }
 
-export type Atom<Value, Updater> = ReadableAtom<Value> & {
+export type CustomAtom<Value, Updater> = ReadableAtom<Value> & {
   update: (updater: Updater) => void
 }
 
-export type RemovableAtom<Value, Updater> = Atom<Value, Updater> & {
+export type Atom<Value> = ReadableAtom<Value> & {
+  update: (updater: Updater<Value>) => void
+}
+
+export type RemovableAtom<Value> = Atom<Value> & {
   remove: () => void
 }
 
-export type PrimitiveRemovableAtom<Value> = RemovableAtom<
-  Value,
-  SetState<Value>
->
-
-export type PrimitiveAtom<Value> = Atom<Value, SetState<Value>>
-export type PrismAtom<Value> = Atom<Value | undefined, SetState<Value>>
+export type PrismAtom<Value> = ReadableAtom<Value | undefined> & {
+  update: (updater: Updater<Value>) => void
+}
 
 export type AtomGetter = <Value>(atom: ReadableAtom<Value>) => Value
 export type DerivedAtomReader<S> = (read: AtomGetter) => S
