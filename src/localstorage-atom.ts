@@ -1,5 +1,5 @@
 import { atom } from './atom'
-import { Updater } from './types'
+import { Updater } from './'
 
 type Verifier<T> = (v: unknown) => v is T
 

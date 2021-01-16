@@ -12,7 +12,7 @@ import {
   set,
 } from 'optics-ts'
 import { atom } from './atom'
-import { Atom, PrismAtom, ReadableAtom, Updater } from './types'
+import { Atom, PrismAtom, ReadableAtom, Updater } from './'
 
 function focusAtom<Value, FocusedValue>(
   atom: Atom<Value>,

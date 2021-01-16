@@ -2,13 +2,13 @@ import * as React from 'react'
 import * as ReactDOM from 'react-dom'
 import 'todomvc-app-css/index.css'
 import {
+  Atom,
   atom,
   focusAtom,
   useAtom,
   useAtomSlice,
   useSelector,
 } from '../../src/index'
-import { Atom } from '../../src/types'
 
 const OriginalAtom = atom<Record<string, Record<string, string>>>({
   form1: { task: 'Eat some food', checked: 'yeah' },

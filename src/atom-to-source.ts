@@ -1,4 +1,4 @@
-import { ReadableAtom } from './types'
+import { ReadableAtom } from './'
 import * as cb from 'callbag'
 
 export const atomToSource = <T>(atom: ReadableAtom<T>): cb.Source<T> => {

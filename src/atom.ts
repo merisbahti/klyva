@@ -1,13 +1,7 @@
 import cbSubscribe from 'callbag-subscribe'
 import cbShare from 'callbag-share'
 import cbMerge from 'callbag-merge'
-import {
-  Atom,
-  ReadableAtom,
-  DerivedAtomReader,
-  Updater,
-  CustomAtom,
-} from './types'
+import { Atom, ReadableAtom, DerivedAtomReader, Updater, CustomAtom } from './'
 import { atomToSource } from './atom-to-source'
 import equal from './equal'
 import cachedSubject from './cached-subject'

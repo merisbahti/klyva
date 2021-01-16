@@ -1,7 +1,7 @@
 import React from 'react'
 import { unstable_batchedUpdates } from 'react-dom'
 import { atom } from './atom'
-import { Atom, CustomAtom, ReadableAtom, RemovableAtom, Updater } from './types'
+import { Atom, CustomAtom, ReadableAtom, RemovableAtom, Updater } from './'
 
 export function useAtom<Value>(
   atom: Atom<Value>,
