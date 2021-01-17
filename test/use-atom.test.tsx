@@ -1,13 +1,13 @@
 import React from 'react'
 import * as rtl from '@testing-library/react'
 import { atom } from '../src'
-import { PrimitiveAtom } from '../src/types'
+import { Atom } from '../src/types'
 import { useAtom, useAtomSlice, useSelector } from '../src/react-utils'
 import focusAtom from '../src/focus-atom'
 
 it('focus on an atom works', async () => {
   const anAtom = atom({ a: 5 })
-  const Counter = ({ myAtom }: { myAtom: PrimitiveAtom<{ a: number }> }) => {
+  const Counter = ({ myAtom }: { myAtom: Atom<{ a: number }> }) => {
     const [myAtomValue] = useAtom(myAtom)
     const focusedA = React.useMemo(
       () => focusAtom(myAtom, optic => optic.prop('a')),
@@ -52,7 +52,7 @@ it('focus on a derived atom works', async () => {
   const anAtom = atom({ a: 5 })
   const derivedAtom = atom(get => get(anAtom).a + 1)
 
-  const Counter = ({ myAtom }: { myAtom: PrimitiveAtom<{ a: number }> }) => {
+  const Counter = ({ myAtom }: { myAtom: Atom<{ a: number }> }) => {
     const [myAtomValue] = useAtom(myAtom)
     const [myDerivedAtomValue] = useAtom(derivedAtom)
     const focusedA = React.useMemo(
@@ -106,7 +106,7 @@ it('removal works without throwing', async () => {
     index,
   }: {
     index: number
-    stringAtom: PrimitiveAtom<string>
+    stringAtom: Atom<string>
     remove: () => void
   }) => {
     const [str] = useAtom(stringAtom)
@@ -124,7 +124,7 @@ it('removal works without throwing', async () => {
     index,
   }: {
     index: number
-    arrAtom: PrimitiveAtom<string[]>
+    arrAtom: Atom<string[]>
     remove: () => void
   }) => {
     const atoms = useAtomSlice(arrAtom)

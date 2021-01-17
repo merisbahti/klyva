@@ -110,7 +110,7 @@ const CounterList = () => {
   )
 }
 
-const Counter = ({counterAtom, onRemove}: {counterAtom: PrimitiveAtom<number>, onRemove: () => void}) => {
+const Counter = ({counterAtom, onRemove}: {counterAtom: Atom<number>, onRemove: () => void}) => {
   const [count, setCount] = useAtom(counterAtom)
   return (
     <li>

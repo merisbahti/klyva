@@ -12,31 +12,31 @@ import {
   set,
 } from 'optics-ts'
 import { atom } from './atom'
-import { Atom, ReadableAtom, SetState } from './types'
+import { Atom, PrismAtom, ReadableAtom, Updater } from './'
 
 function focusAtom<Value, FocusedValue>(
-  atom: Atom<Value, SetState<Value>>,
+  atom: Atom<Value>,
   opticCallback: (
     optic: Equivalence<Value, any, Value>,
   ) =>
     | Equivalence<Value, any, FocusedValue>
     | Iso<Value, any, FocusedValue>
     | Lens<Value, any, FocusedValue>,
-): Atom<FocusedValue, SetState<FocusedValue>>
+): Atom<FocusedValue>
 
 // remove when tsdx is fixed
 // eslint-disable-next-line no-redeclare
 function focusAtom<Value, FocusedValue>(
-  atom: Atom<Value, SetState<Value>>,
+  atom: Atom<Value>,
   opticCallback: (
     optic: Equivalence<Value, any, Value>,
   ) => Prism<Value, any, FocusedValue>,
-): Atom<FocusedValue | undefined, SetState<FocusedValue>>
+): PrismAtom<FocusedValue>
 
 // remove when tsdx is fixed
 // eslint-disable-next-line no-redeclare
 function focusAtom<Value, FocusedValue>(
-  atom: Atom<Value, SetState<Value>>,
+  atom: Atom<Value>,
   opticCallback: (
     optic: Equivalence<Value, any, Value>,
   ) => AffineFold<Value, FocusedValue>,
@@ -45,7 +45,7 @@ function focusAtom<Value, FocusedValue>(
 // remove when tsdx is fixed
 // eslint-disable-next-line no-redeclare
 function focusAtom<Value, FocusedValue>(
-  atom: Atom<Value, SetState<Value>>,
+  atom: Atom<Value>,
   opticCallback: (
     optic: Equivalence<Value, any, Value>,
   ) => Getter<Value, FocusedValue>,
@@ -54,7 +54,7 @@ function focusAtom<Value, FocusedValue>(
 // remove when tsdx is fixed
 // eslint-disable-next-line no-redeclare
 function focusAtom<Value, FocusedValue>(
-  baseAtom: Atom<Value, SetState<Value>>,
+  baseAtom: Atom<Value>,
   opticCallback: (
     optic: Equivalence<Value, any, Value>,
   ) =>
@@ -72,7 +72,7 @@ function focusAtom<Value, FocusedValue>(
     case 'Lens':
       return atom(
         getAtomValue => get(focus)(getAtomValue(baseAtom)),
-        (update: SetState<FocusedValue>) => {
+        (update: Updater<FocusedValue>) => {
           const nextValue = (update instanceof Function
             ? modify(focus)(update)
             : set(focus)(update))(baseAtom.getValue())
@@ -86,7 +86,7 @@ function focusAtom<Value, FocusedValue>(
     case 'Prism':
       return atom(
         getAtomValue => preview(focus)(getAtomValue(baseAtom)),
-        (update: SetState<FocusedValue>) => {
+        (update: Updater<FocusedValue>) => {
           const nextValue = (update instanceof Function
             ? modify(focus)(update)
             : set(focus)(update))(baseAtom.getValue())

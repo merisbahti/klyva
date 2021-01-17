@@ -1,16 +1,14 @@
 import React from 'react'
 import { unstable_batchedUpdates } from 'react-dom'
 import { atom } from './atom'
-import {
-  Atom,
-  PrimitiveAtom,
-  PrimitiveRemovableAtom,
-  ReadableAtom,
-  SetState,
-} from './types'
+import { Atom, CustomAtom, ReadableAtom, RemovableAtom, Updater } from './'
 
+export function useAtom<Value>(
+  atom: Atom<Value>,
+): [Value, (updater: Updater<Value>) => void]
+// eslint-disable-next-line no-redeclare
 export function useAtom<Value, Updater>(
-  atom: Atom<Value, Updater>,
+  atom: CustomAtom<Value, Updater>,
 ): [Value, (updater: Updater) => void]
 // eslint-disable-next-line no-redeclare
 export function useAtom<Value>(atom: ReadableAtom<Value>): [Value]
@@ -71,9 +69,9 @@ export const useSelector: UseSelector = (
 const equalNumberArray = (l: number[], r: number[]) =>
   l.length === r.length && !l.some((lVal, lIndex) => lVal !== r[lIndex])
 export const useAtomSlice = <T>(
-  arrayAtom: PrimitiveAtom<Array<T>>,
+  arrayAtom: Atom<Array<T>>,
   filterBy?: (value: T) => boolean,
-): Array<PrimitiveRemovableAtom<T>> => {
+): Array<RemovableAtom<T>> => {
   const keptIndexesAtom = atom(get => {
     return filterBy
       ? get(arrayAtom).flatMap((value, index) => {
@@ -82,7 +80,7 @@ export const useAtomSlice = <T>(
       : get(arrayAtom).map((_, index) => index)
   })
 
-  const atomsCache = React.useRef<Record<number, PrimitiveRemovableAtom<T>>>({})
+  const atomsCache = React.useRef<Record<number, RemovableAtom<T>>>({})
 
   const getAtomFromCache = (index: number) => {
     const cachedValue = atomsCache.current[index]
@@ -98,7 +96,7 @@ export const useAtomSlice = <T>(
 }
 
 const getAtomAtIndex = <Value>(
-  atomOfArray: PrimitiveAtom<Array<Value>>,
+  atomOfArray: Atom<Array<Value>>,
   index: number,
 ) => {
   let cachedValue: Value
@@ -117,7 +115,7 @@ const getAtomAtIndex = <Value>(
       cachedValue = newValue
       return cachedValue
     },
-    (update: SetState<Value>) => {
+    (update: Updater<Value>) => {
       if (!sliceIsRemoved(index)) {
         const oldValue = atomOfArray.getValue()[index]
         const newValue = update instanceof Function ? update(oldValue) : update
@@ -141,8 +139,8 @@ const getAtomAtIndex = <Value>(
 }
 
 export const sliceAtomArray = <Value>(
-  atomOfArray: PrimitiveAtom<Array<Value>>,
-): Array<PrimitiveRemovableAtom<Value>> => {
+  atomOfArray: Atom<Array<Value>>,
+): Array<RemovableAtom<Value>> => {
   const getArrayAtLength = (length: number) => {
     const emptyArray = Array.from(new Array(length))
     const newValue = emptyArray.map((_, index) =>
