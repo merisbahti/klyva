@@ -2,6 +2,7 @@ import React from 'react'
 import { unstable_batchedUpdates } from 'react-dom'
 import { atom } from './atom'
 import { Atom, CustomAtom, ReadableAtom, RemovableAtom, Updater } from './'
+import equal from './equal'
 
 export function useAtom<Value>(
   atom: Atom<Value>,
@@ -18,7 +19,13 @@ export function useAtom<Value, Updater = unknown>(
 ) {
   const [cache, setCache] = React.useState(atom.getValue)
   React.useEffect(() => {
-    setCache(atom.getValue)
+    setCache(oldCache => {
+      const currValue = atom.getValue()
+      if (equal(currValue, oldCache)) {
+        return oldCache
+      }
+      return currValue
+    })
     const unsub = atom.subscribe(setCache)
     return unsub
   }, [atom])

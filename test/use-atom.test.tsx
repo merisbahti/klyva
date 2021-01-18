@@ -286,3 +286,38 @@ it('if atom changes reference, it updates its value', async () => {
   rtl.fireEvent.click(getByText('Toggle atom'))
   await findByText('value: 1')
 })
+
+it('endless react loop', async done => {
+  const baseAtom = atom({ a: 5, b: 10 })
+
+  const App = () => {
+    const [derivedState] = useAtom(
+      atom(get => {
+        const values = get(baseAtom)
+        return { type: 'success', value: values.a + values.b }
+      }),
+    )
+    return (
+      <>
+        <button
+          onClick={() =>
+            baseAtom.update(oldValue => ({
+              a: oldValue.a + 1,
+              b: oldValue.b + 1,
+            }))
+          }
+        >
+          inc
+        </button>
+        <pre>{JSON.stringify(derivedState)}</pre>
+      </>
+    )
+  }
+
+  const { getByText, findByText } = rtl.render(<App />)
+
+  await findByText('{"type":"success","value":15}')
+  rtl.fireEvent.click(getByText('inc'))
+  await findByText('{"type":"success","value":17}')
+  done()
+}, 1000)
