@@ -93,20 +93,18 @@ const Form = ({
   onRemove: () => void
 }) => {
   const entriesAtom = focusAtom(formAtom, optic =>
-    optic.index(1).iso(
+    optic.nth(1).iso(
       from => Object.entries(from),
       to => Object.fromEntries(to),
     ),
-  ) as Atom<[string, string][]>
+  )
   const fieldAtoms = useAtomSlice(entriesAtom)
   const addField = () =>
     entriesAtom.update(oldValue => [
       ...oldValue,
       ['Something new' + Math.random(), 'New too'],
     ])
-  const fieldNameAtom = focusAtom(formAtom, optic => optic.index(0)) as Atom<
-    string
-  >
+  const fieldNameAtom = focusAtom(formAtom, optic => optic.nth(0))
   const [fieldName, setFieldName] = useAtom(fieldNameAtom)
 
   return (
