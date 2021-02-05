@@ -4,6 +4,7 @@ import { atom } from '../src'
 import { Atom } from '../src/types'
 import { useAtom, useAtomSlice, useSelector } from '../src/react-utils'
 import focusAtom from '../src/focus-atom'
+import { act } from 'react-dom/test-utils'
 
 it('focus on an atom works', async () => {
   const anAtom = atom({ a: 5 })
@@ -321,3 +322,27 @@ it('endless react loop', async done => {
   await findByText('{"type":"success","value":17}')
   done()
 }, 1000)
+
+it('able to store a derived function in react', async () => {
+  const countAtom = atom(0)
+  const fnAtom = atom(get => {
+    const value = get(countAtom)
+    return () => value + 5
+  })
+  const Counter = () => {
+    const [fnAtomValue] = useAtom(fnAtom)
+    return (
+      <div>
+        <div>fnAtomValue: {fnAtomValue()}</div>
+      </div>
+    )
+  }
+
+  const { findByText } = rtl.render(<Counter />)
+
+  await findByText('fnAtomValue: 5')
+
+  act(() => countAtom.update(c => c + 1))
+
+  await findByText('fnAtomValue: 6')
+})
