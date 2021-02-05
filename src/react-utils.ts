@@ -26,7 +26,7 @@ export function useAtom<Value, Updater = unknown>(
       }
       return currValue
     })
-    const unsub = atom.subscribe(setCache)
+    const unsub = atom.subscribe(value => setCache(() => value))
     return unsub
   }, [atom])
   const updaterMaybe: null | ((updater: Updater) => void) = React.useMemo(
