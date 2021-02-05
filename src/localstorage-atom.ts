@@ -1,5 +1,5 @@
 import { atom } from './atom'
-import { Updater } from './'
+import { Atom, Updater } from './'
 
 type Verifier<T> = (v: unknown) => v is T
 
@@ -25,7 +25,7 @@ const localStorageAtom = <T>(
   initialValue: T,
   key: string,
   verifyItem?: Verifier<T>,
-) => {
+): Atom<T> => {
   const initialItem = getInitialItem(initialValue, key, verifyItem)
 
   const baseAtom = atom(initialItem)
