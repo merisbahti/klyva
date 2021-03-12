@@ -1,7 +1,7 @@
 import React from 'react'
 import * as rtl from '@testing-library/react'
 import { atom } from '../src'
-import { Atom } from '../src/types'
+import { Atom, RemovableAtom } from '../src/types'
 import { useAtom, useAtomSlice, useSelector } from '../src/react-utils'
 
 it('useArraySlice removal works', async () => {
@@ -131,4 +131,47 @@ it('useArraySlice, updating a sibling atom does not update other siblings', asyn
   rtl.fireEvent.click(getByText('id: 1, count: 0, updates: 0'))
   await findByText('id: 0, count: 1, updates: 1')
   await findByText('id: 1, count: 1, updates: 1')
+})
+
+it('useArraySlice, filter with predicate works, removal works', async () => {
+  const anAtom = atom(['a', 1, 'b', 2])
+  const Component = ({ myAtom }: { myAtom: typeof anAtom }) => {
+    // assert that type has been narrowed by the filter predicate
+    const atoms: Array<RemovableAtom<number>> = useAtomSlice(
+      myAtom,
+      (value): value is number => typeof value === 'number',
+    )
+    return (
+      <div>
+        <LengthObserver />
+        {atoms.map(atom => (
+          <button key={atom.getValue()} onClick={() => atom.remove()}>
+            {atom.getValue()}
+          </button>
+        ))}
+      </div>
+    )
+  }
+
+  const LengthObserver = () => {
+    return <div>length: {useSelector(anAtom, arr => arr.length)}</div>
+  }
+
+  const { getByText, findByText, queryByText } = rtl.render(
+    <Component myAtom={anAtom} />,
+  )
+
+  await findByText('length: 4')
+  await findByText('1')
+  await findByText('2')
+
+  rtl.fireEvent.click(getByText('1'))
+  await findByText('length: 3')
+  expect(queryByText('1')).toBeNull()
+  await findByText('2')
+
+  rtl.fireEvent.click(getByText('2'))
+  await findByText('length: 2')
+  expect(queryByText('1')).toBeNull()
+  expect(queryByText('2')).toBeNull()
 })
