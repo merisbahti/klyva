@@ -7,13 +7,10 @@ import equal from './equal'
 export function useAtom<Value>(
   atom: Atom<Value>,
 ): [Value, (updater: Updater<Value>) => void]
-// eslint-disable-next-line no-redeclare
 export function useAtom<Value, Updater>(
   atom: CustomAtom<Value, Updater>,
 ): [Value, (updater: Updater) => void]
-// eslint-disable-next-line no-redeclare
 export function useAtom<Value>(atom: ReadableAtom<Value>): [Value]
-// eslint-disable-next-line no-redeclare
 export function useAtom<Value, Updater = unknown>(
   atom: ReadableAtom<Value> & { update?: (updater: Updater) => void },
 ) {

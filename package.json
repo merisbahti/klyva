@@ -94,6 +94,10 @@
       "unused-imports"
     ],
     "rules": {
+      "no-redeclare": "off",
+      "@typescript-eslint/no-redeclare": [
+        "error"
+      ],
       "@typescript-eslint/no-unused-vars": "off",
       "unused-imports/no-unused-imports-ts": "error",
       "unused-imports/no-unused-vars-ts": [
