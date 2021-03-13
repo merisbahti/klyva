@@ -72,10 +72,18 @@ export const useSelector: UseSelector = (
 
 const equalNumberArray = (l: number[], r: number[]) =>
   l.length === r.length && !l.some((lVal, lIndex) => lVal !== r[lIndex])
-export const useAtomSlice = <T>(
+export function useAtomSlice<T, S extends T>(
+  arrayAtom: Atom<Array<T>>,
+  filterBy?: (value: T) => value is S,
+): Array<RemovableAtom<S>>
+export function useAtomSlice<T>(
   arrayAtom: Atom<Array<T>>,
   filterBy?: (value: T) => boolean,
-): Array<RemovableAtom<T>> => {
+): Array<RemovableAtom<T>>
+export function useAtomSlice<T>(
+  arrayAtom: Atom<Array<T>>,
+  filterBy?: (value: T) => boolean,
+) {
   const keptIndexesAtom = atom(get => {
     return filterBy
       ? get(arrayAtom).flatMap((value, index) => {
