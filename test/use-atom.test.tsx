@@ -226,8 +226,8 @@ it('updates are batched (useEffect)', async () => {
   const Counter = () => {
     const [, setCount] = useAtom(countAtom)
     const [myAtomValue] = useAtom(derivedAtom)
-    useSelector(p1atom)
-    useSelector(p2atom)
+    useAtom(p1atom)
+    useAtom(p2atom)
     const updates = useUpdateCount()
     React.useEffect(() => {
       const timeout = setTimeout(() => {
