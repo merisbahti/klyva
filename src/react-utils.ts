@@ -2,7 +2,6 @@ import React from 'react'
 import { unstable_batchedUpdates } from 'react-dom'
 import { atom } from './atom'
 import { Atom, CustomAtom, ReadableAtom, RemovableAtom, Updater } from './'
-import equal from './equal'
 
 export function useAtom<Value>(
   atom: Atom<Value>,
@@ -14,16 +13,9 @@ export function useAtom<Value>(atom: ReadableAtom<Value>): [Value]
 export function useAtom<Value, Updater = unknown>(
   atom: ReadableAtom<Value> & { update?: (updater: Updater) => void },
 ) {
-  const [cache, setCache] = React.useState(atom.getValue)
+  const [, forceUpdate] = React.useReducer(() => [], [])
   React.useEffect(() => {
-    setCache(oldCache => {
-      const currValue = atom.getValue()
-      if (equal(currValue, oldCache)) {
-        return oldCache
-      }
-      return currValue
-    })
-    const unsub = atom.subscribe(value => setCache(() => value))
+    const unsub = atom.subscribe(forceUpdate)
     return unsub
   }, [atom])
   const updaterMaybe: null | ((updater: Updater) => void) = React.useMemo(
@@ -37,7 +29,8 @@ export function useAtom<Value, Updater = unknown>(
         : null,
     [atom],
   )
-  return [cache, ...(updaterMaybe ? [updaterMaybe] : [])]
+  console.log('fart')
+  return [atom.getValue(), ...(updaterMaybe ? [updaterMaybe] : [])]
 }
 
 type UseSelector = {
