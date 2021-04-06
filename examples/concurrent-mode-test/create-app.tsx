@@ -11,10 +11,16 @@ export const syncBlock = () => {
   skipCount += 1
   if (skipCount % 10 === 0) {
     // just one tenth, auto click the increment button
-    const count = document.getElementById('autoIncrementCount')?.value
+    const autoIncrementCountButton = document.getElementById(
+      'autoIncrementCount',
+    ) as HTMLButtonElement | null
+    if (!autoIncrementCountButton) {
+      throw new Error(`Couldn't find autoIncrementButton`)
+    }
+    const count = Number(autoIncrementCountButton.value)
     if (count > 0) {
-      document.getElementById('autoIncrementCount').value = count - 1
-      document.getElementById('remoteIncrement').click()
+      autoIncrementCountButton.value = String(count - 1)
+      document.getElementById('remoteIncrement')?.click()
       return
     }
   }
@@ -27,7 +33,6 @@ export const syncBlock = () => {
 export const useRegisterIncrementDispatcher = listener => {
   useEffect(() => {
     const ele = document.getElementById('remoteIncrement')
-    console.log(ele)
     if (ele) {
       ele.addEventListener('click', listener)
       return () => {
@@ -76,10 +81,14 @@ export const ids = [...Array(50)].map((_, i) => i)
 // and if not, change the title
 export const useCheckTearing = () => {
   useEffect(() => {
-    const counts = ids.map(i =>
-      Number(document.querySelector(`.count:nth-of-type(${i + 1})`).innerHTML),
-    )
-    counts.push(Number(document.getElementById('mainCount').innerHTML))
+    const counts = ids.map(i => {
+      const selection = document.querySelector(`.count:nth-of-type(${i + 1})`)
+      if (!selection) throw new Error('No selection!')
+      return Number(selection.innerHTML)
+    })
+    const mainCount = document.getElementById('mainCount')
+    if (!mainCount) throw new Error('Couldnt find mainCount')
+    counts.push(Number(mainCount.innerHTML))
     if (!counts.every(c => c === counts[0])) {
       console.error('count mismatch', counts)
       document.title += ' TEARED'
