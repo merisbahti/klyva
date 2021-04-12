@@ -1,7 +1,14 @@
-import React from 'react'
+import React, { useRef } from 'react'
 import { unstable_batchedUpdates } from 'react-dom'
 import { atom } from './atom'
-import { Atom, CustomAtom, ReadableAtom, RemovableAtom, Updater } from './'
+import {
+  Atom,
+  CustomAtom,
+  PrismAtom,
+  ReadableAtom,
+  RemovableAtom,
+  Updater,
+} from './'
 import equal from './equal'
 
 export function useAtom<Value>(
@@ -154,4 +161,41 @@ export const sliceAtomArray = <Value>(
   }
   const length = atomOfArray.getValue().length
   return getArrayAtLength(length)
+}
+
+export const useDeprismify = <T>(prismAtom: PrismAtom<T>): Atom<T> | null => {
+  const latestAtomValueRef = useRef<T>()
+  const isDefined = useSelector(prismAtom, v => v !== undefined)
+  const returnValue: Atom<T> | null = React.useMemo(
+    () =>
+      isDefined
+        ? atom(
+            get => {
+              const value = get(prismAtom)
+              if (value !== undefined) {
+                latestAtomValueRef.current = value
+                return value
+              }
+              if (latestAtomValueRef.current !== undefined)
+                return latestAtomValueRef.current
+              throw new Error('Deprismification failed')
+            },
+            updater => {
+              prismAtom.update(currentValue => {
+                if (currentValue !== undefined) {
+                  const newValue =
+                    updater instanceof Function
+                      ? updater(currentValue)
+                      : updater
+                  return newValue
+                }
+                return currentValue
+              })
+            },
+          )
+        : null,
+    [isDefined, prismAtom],
+  )
+
+  return returnValue
 }

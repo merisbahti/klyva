@@ -8,6 +8,7 @@ import {
   useAtom,
   useAtomSlice,
   useSelector,
+  useDeprismify,
 } from '../../../src'
 import './styles.css'
 
@@ -17,20 +18,79 @@ type NodesAtom = Atom<typeof initialState>
 const CurrentItemSideBar = ({
   nodesAtom,
   selectedIndexAtom,
+
+  backgroundColorAtom,
 }: {
-  nodesAtom: NodesAtom
+  nodesAtom: Atom<typeof initialState>
   selectedIndexAtom: Atom<number | null>
+  backgroundColorAtom: Atom<string>
 }) => {
-  const nodeAtoms = useAtomSlice(nodesAtom)
+  const selectedIndex = useSelector(selectedIndexAtom)
+  const selectedAtom = useDeprismify(
+    focusAtom(nodesAtom, o =>
+      o.at(selectedIndex !== null ? selectedIndex : -1),
+    ),
+  )
+  const [backgroundColor, setBackgroundColor] = useAtom(backgroundColorAtom)
+
+  return (
+    <div
+      style={{
+        width: '300px',
+        padding: '8px',
+        backgroundColor: '#cacaca',
+        borderLeft: '2px solid #9c9c9c',
+      }}
+    >
+      <h2>Document:</h2>
+      <div>
+        Background color:{' '}
+        <input
+          type="color"
+          value={backgroundColor}
+          onChange={e => setBackgroundColor(e.target.value)}
+        />
+      </div>
+      {selectedAtom ? (
+        <NodeSettings nodeAtom={selectedAtom} />
+      ) : (
+        'Select an item.'
+      )}
+    </div>
+  )
+}
+
+const NodeSettings = ({
+  nodeAtom,
+}: {
+  nodeAtom: Atom<typeof initialState[number]>
+}) => {
+  const [name, setName] = useAtom(focusAtom(nodeAtom, o => o.prop('name')))
+  const [x, setX] = useAtom(focusAtom(nodeAtom, o => o.prop('x')))
+  const [y, setY] = useAtom(focusAtom(nodeAtom, o => o.prop('y')))
   return (
     <div style={{ width: '100' }}>
-      {nodeAtoms.map((nodeAtom, index) => (
-        <NodeListItem
-          key={index}
-          nodeAtom={nodeAtom}
-          isSelectedAtom={createIsSelectedAtom(selectedIndexAtom, index)}
+      <div>
+        <input
+          type="text"
+          value={name}
+          onChange={e => setName(e.target.value)}
         />
-      ))}
+      </div>
+      <div>
+        <input
+          type="number"
+          value={x}
+          onChange={e => setX(Number(e.target.value))}
+        />
+      </div>
+      <div>
+        <input
+          type="number"
+          value={y}
+          onChange={e => setY(Number(e.target.value))}
+        />
+      </div>
     </div>
   )
 }
@@ -44,7 +104,24 @@ const NodeList = ({
 }) => {
   const nodeAtoms = useAtomSlice(nodesAtom)
   return (
-    <div style={{ width: '100', background: '#bcbcbc' }}>
+    <div
+      style={{
+        minWidth: '200px',
+        maxWidth: '200px',
+        backgroundColor: '#cacaca',
+        borderRight: '2px solid #9c9c9c',
+      }}
+    >
+      <button
+        onClick={() =>
+          nodesAtom.update(oldValue => [
+            ...oldValue,
+            { x: 0, y: 0, name: 'New value', backgroundColor: '#fafafa' },
+          ])
+        }
+      >
+        +
+      </button>
       {nodeAtoms.map((nodeAtom, index) => (
         <NodeListItem
           key={index}
@@ -66,37 +143,48 @@ const NodeListItem = ({
   const { x, y, name } = useSelector(
     focusAtom(nodeAtom, o => o.pick(['x', 'y', 'name'])),
   )
-  const isSelected = useSelector(isSelectedAtom)
+  const [isSelected, setIsSelected] = useAtom(isSelectedAtom)
   return (
-    <li style={{ backgroundColor: isSelected ? '#89CFF0' : undefined }}>
+    <div
+      onClick={() => setIsSelected(v => !v)}
+      style={{
+        backgroundColor: isSelected ? '#89CFF0' : undefined,
+        cursor: 'pointer',
+      }}
+    >
       <div>
         <b>{name}</b>
       </div>
       <div>
         (x = {x}, y = {y})
       </div>
-    </li>
+    </div>
   )
 }
 
 const Canvas = ({
   nodesAtom,
   selectedIndexAtom,
+  backgroundColorAtom,
 }: {
   nodesAtom: NodesAtom
   selectedIndexAtom: Atom<number | null>
+  backgroundColorAtom: Atom<string>
 }) => {
   const nodeAtoms = useAtomSlice(nodesAtom)
+  const backgroundColor = useSelector(backgroundColorAtom)
   return (
-    <>
-      {nodeAtoms.map((x, index) => (
-        <Node
-          key={index}
-          nodeAtom={x}
-          isSelectedAtom={createIsSelectedAtom(selectedIndexAtom, index)}
-        />
-      ))}
-    </>
+    <div style={{ backgroundColor, width: '100%' }}>
+      <div style={{ position: 'relative', width: 0, height: 0 }}>
+        {nodeAtoms.map((x, index) => (
+          <Node
+            key={index}
+            nodeAtom={x}
+            isSelectedAtom={createIsSelectedAtom(selectedIndexAtom, index)}
+          />
+        ))}
+      </div>
+    </div>
   )
 }
 
@@ -108,15 +196,15 @@ const Node = ({
   isSelectedAtom: Atom<boolean>
 }) => {
   const [xy, setXY] = useAtom(focusAtom(nodeAtom, o => o.pick(['x', 'y'])))
-  const backgroundColor = useSelector(
-    focusAtom(nodeAtom, o => o.prop('backgroundColor')),
-  )
+  const name = useSelector(nodeAtom, value => value.name)
   const [selected, setSelected] = useAtom(isSelectedAtom)
   const [isMoving, setIsMoving] = React.useState(false)
   return (
     <div
-      onClick={() => setSelected(v => !v)}
-      onMouseDown={() => setIsMoving(true)}
+      onMouseDown={() => {
+        setIsMoving(true)
+        setSelected(true)
+      }}
       onMouseUp={() => setIsMoving(false)}
       onMouseLeave={() => setIsMoving(false)}
       onMouseMove={e => {
@@ -128,26 +216,50 @@ const Node = ({
         }
       }}
       style={{
-        position: 'relative',
-        height: 300,
-        width: 300,
+        position: 'absolute',
+        height: 200,
+        width: 200,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        verticalAlign: 'center',
+        textAlign: 'center',
         left: xy.x,
         top: xy.y,
-        backgroundColor: backgroundColor,
-        border: selected ? '2px dashed #89CFF0' : undefined,
+        backgroundColor: '#dcdcdc',
+        border: selected ? '4px dashed #89CFF0' : undefined,
         boxSizing: 'border-box',
       }}
-    ></div>
+    >
+      <span>{name}</span>
+    </div>
   )
 }
 
 const App = () => {
   const [nodesAtom] = React.useState(() => atom(initialState))
+  const [backgroundColorAtom] = React.useState(() => atom('#fff'))
   const [selectedIndexAtom] = React.useState(() => atom<number | null>(null))
   return (
-    <div style={{ display: 'flex' }}>
+    <div
+      style={{
+        display: 'flex',
+        height: '100%',
+        width: '100%',
+        justifyContent: 'space-between',
+      }}
+    >
       <NodeList nodesAtom={nodesAtom} selectedIndexAtom={selectedIndexAtom} />
-      <Canvas nodesAtom={nodesAtom} selectedIndexAtom={selectedIndexAtom} />
+      <Canvas
+        nodesAtom={nodesAtom}
+        selectedIndexAtom={selectedIndexAtom}
+        backgroundColorAtom={backgroundColorAtom}
+      />
+      <CurrentItemSideBar
+        backgroundColorAtom={backgroundColorAtom}
+        nodesAtom={nodesAtom}
+        selectedIndexAtom={selectedIndexAtom}
+      />
     </div>
   )
 }
