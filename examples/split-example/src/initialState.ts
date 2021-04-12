@@ -1,11 +1,9 @@
-import { number } from 'io-ts'
-
 const initialState = [
   {
     name: "Not in paris but that's OK",
-    x: number,
-    y: number,
-    backgroundColor: '#fff',
+    x: 0,
+    y: 0,
+    backgroundColor: '#acacac',
   },
 ]
 
