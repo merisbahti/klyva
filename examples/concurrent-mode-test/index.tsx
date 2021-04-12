@@ -1,6 +1,6 @@
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
-import { atom, useAtom } from 'klyva'
+import { atom, useAtom } from '../../src'
 import {
   createApp,
   doubleAction,
@@ -18,8 +18,6 @@ const useIncrement = () => () =>
 
 const useDouble = () => () =>
   stateAtom.update(value => reducer(value, doubleAction))
-
-stateAtom.subscribe(console.log)
 
 const App = createApp(useCount, useIncrement, useDouble)
 

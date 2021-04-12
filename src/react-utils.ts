@@ -14,8 +14,9 @@ export function useAtom<Value, Updater = unknown>(
   atom: ReadableAtom<Value> & { update?: (updater: Updater) => void },
 ) {
   const [, forceUpdate] = React.useReducer(() => [], [])
+  const [value, setValue] = React.useState(atom.getValue)
   React.useEffect(() => {
-    const unsub = atom.subscribe(forceUpdate)
+    const unsub = atom.subscribe(setValue)
     return unsub
   }, [atom])
   const updaterMaybe: null | ((updater: Updater) => void) = React.useMemo(
@@ -29,7 +30,6 @@ export function useAtom<Value, Updater = unknown>(
         : null,
     [atom],
   )
-  console.log('fart')
   return [atom.getValue(), ...(updaterMaybe ? [updaterMaybe] : [])]
 }
 
