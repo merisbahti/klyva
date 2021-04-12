@@ -1,48 +1,31 @@
 import * as React from 'react'
 import initialState from './initialState'
-import {
-  Atom,
-  focusAtom,
-  useAtom,
-  useAtomSlice,
-  useSelector,
-} from '../../../src'
+import { Atom, focusAtom, useAtom, useSelector } from '../../../src'
 import './styles.css'
 import '@blueprintjs/icons/lib/css/blueprint-icons.css'
 import '@blueprintjs/core/lib/css/blueprint.css'
 import 'normalize.css/normalize.css'
-import createIsSelectedAtom from './create-is-selected-atom'
 
 type NodeAtom = Atom<typeof initialState[number]>
-type NodesAtom = Atom<typeof initialState>
 
 const Canvas = ({
-  nodesAtom,
-  selectedIndexAtom,
   backgroundColorAtom,
+  children,
 }: {
-  nodesAtom: NodesAtom
-  selectedIndexAtom: Atom<number | null>
   backgroundColorAtom: Atom<string>
+  children: React.ReactNode
 }) => {
-  const nodeAtoms = useAtomSlice(nodesAtom)
   const backgroundColor = useSelector(backgroundColorAtom)
   return (
     <div style={{ backgroundColor, width: '100%' }}>
       <div style={{ position: 'relative', width: 0, height: 0 }}>
-        {nodeAtoms.map((x, index) => (
-          <Node
-            key={index}
-            nodeAtom={x}
-            isSelectedAtom={createIsSelectedAtom(selectedIndexAtom, index)}
-          />
-        ))}
+        {children}
       </div>
     </div>
   )
 }
 
-const Node = ({
+export const Node = ({
   nodeAtom,
   isSelectedAtom,
 }: {

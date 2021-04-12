@@ -1,17 +1,12 @@
 import * as React from 'react'
 import initialState from './initialState'
-import {
-  Atom,
-  focusAtom,
-  useAtom,
-  useSelector,
-  useDeprismify,
-} from '../../../src'
+import { Atom, focusAtom, useSelector, useDeprismify } from '../../../src'
 import './styles.css'
 import '@blueprintjs/icons/lib/css/blueprint-icons.css'
 import '@blueprintjs/core/lib/css/blueprint.css'
 import 'normalize.css/normalize.css'
 import NodeSettings from './node-settings'
+import AtomInput from './atom-input'
 
 const Settings = ({
   nodesAtom,
@@ -29,18 +24,11 @@ const Settings = ({
       o.at(selectedIndex !== null ? selectedIndex : -1),
     ),
   )
-  const [backgroundColor, setBackgroundColor] = useAtom(backgroundColorAtom)
-
   return (
     <>
       <h2>Document:</h2>
       <div>
-        Background color:{' '}
-        <input
-          type="color"
-          value={backgroundColor}
-          onChange={e => setBackgroundColor(e.target.value)}
-        />
+        Background color: <AtomInput type="color" atom={backgroundColorAtom} />
       </div>
 
       <h2>Selection:</h2>
