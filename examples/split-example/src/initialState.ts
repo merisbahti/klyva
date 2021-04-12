@@ -1,7 +1,7 @@
 const initialState = [
   {
     name: "Not in paris but that's OK",
-    x: 0,
+    x: 10,
     y: 0,
   },
 ]
