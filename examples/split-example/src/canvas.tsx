@@ -1,6 +1,6 @@
 import * as React from 'react'
 import initialState from './initialState'
-import { Atom, focusAtom, useAtom, useSelector } from '../../../src'
+import { Atom, useAtom, useSelector } from '../../../src'
 import './styles.css'
 import '@blueprintjs/icons/lib/css/blueprint-icons.css'
 import '@blueprintjs/core/lib/css/blueprint.css'
@@ -32,8 +32,7 @@ export const Node = ({
   nodeAtom: NodeAtom
   isSelectedAtom: Atom<boolean>
 }) => {
-  const [xy, setXY] = useAtom(focusAtom(nodeAtom, o => o.pick(['x', 'y'])))
-  const name = useSelector(nodeAtom, value => value.name)
+  const [{ name, x, y }, setNode] = useAtom(nodeAtom)
   const [selected, setSelected] = useAtom(isSelectedAtom)
   const [isMoving, setIsMoving] = React.useState(false)
   return (
@@ -46,13 +45,15 @@ export const Node = ({
       onMouseLeave={() => setIsMoving(false)}
       onMouseMove={e => {
         if (isMoving) {
-          setXY(oldXY => ({
+          setNode(oldXY => ({
+            ...oldXY,
             x: Math.max(0, oldXY.x + e.movementX),
             y: Math.max(0, oldXY.y + e.movementY),
           }))
         }
       }}
       style={{
+        zIndex: isMoving ? 10 : 0,
         position: 'absolute',
         height: 200,
         width: 200,
@@ -61,8 +62,8 @@ export const Node = ({
         alignItems: 'center',
         verticalAlign: 'center',
         textAlign: 'center',
-        left: xy.x,
-        top: xy.y,
+        left: x,
+        top: y,
         backgroundColor: '#dcdcdc',
         border: selected ? '4px dashed #89CFF0' : undefined,
         boxSizing: 'border-box',
