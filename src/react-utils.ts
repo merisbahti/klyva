@@ -92,19 +92,9 @@ export function useAtomSlice<T>(
       : get(arrayAtom).map((_, index) => index)
   })
 
-  const atomsCache = React.useRef<Record<number, RemovableAtom<T>>>({})
-
-  const getAtomFromCache = (index: number) => {
-    const cachedValue = atomsCache.current[index]
-    if (!cachedValue) {
-      atomsCache.current[index] = getAtomAtIndex(arrayAtom, index)
-    }
-    return atomsCache.current[index]
-  }
-
   const keptIndexes = useSelector(keptIndexesAtom, v => v, equalNumberArray)
 
-  return keptIndexes.map(getAtomFromCache)
+  return keptIndexes.map(index => getAtomAtIndex(arrayAtom, index))
 }
 
 const getAtomAtIndex = <Value>(
