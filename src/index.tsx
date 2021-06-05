@@ -3,3 +3,4 @@ export * from './react-utils'
 export { default as focusAtom } from './focus-atom'
 export { default as localStorageAtom } from './localstorage-atom'
 export * from './types'
+console.log('ass 2')
