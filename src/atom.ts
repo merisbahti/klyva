@@ -7,6 +7,41 @@ import equal from './equal'
 import cachedSubject from './cached-subject'
 import take from 'callbag-take'
 
+type DevToolsType = {
+  connect: (options: {
+    name: string
+  }) => {
+    subscribe: () => () => {}
+    send: (action: unknown, state: unknown) => void
+  }
+}
+const devTools = ((window as any)
+  .__REDUX_DEVTOOLS_EXTENSION__ as unknown) as DevToolsType
+
+const devToolsInstance = devTools.connect({ name: 'David suxx' })
+
+const subscribedValues: Record<string, unknown> = {}
+
+const initializeAtom = (atomName: string, newValue: unknown) => {
+  if (Object.keys(subscribedValues).includes(atomName)) {
+    return
+  }
+  subscribedValues[atomName] = newValue
+  devToolsInstance.send({ type: `INITIALIZE ${atomName}` }, subscribedValues)
+}
+
+const updateValue = (atomName: string, newValue: unknown) => {
+  subscribedValues[atomName] = newValue
+  devToolsInstance.send({ type: `UPDATE ${atomName}` }, subscribedValues)
+}
+
+const removeValue = (atomName: string) => {
+  delete subscribedValues[atomName]
+  devToolsInstance.send({ type: `REMOVE ${atomName}` }, subscribedValues)
+}
+
+let atomCounter = 0
+
 export function atom<Value, Update>(
   value: DerivedAtomReader<Value>,
   write: (update: Update) => void,
@@ -20,18 +55,33 @@ export function atom<Value, Update = unknown>(
   read: Value | DerivedAtomReader<Value>,
   write?: (update: Update) => void,
 ) {
+  const myName = `atom${atomCounter++}`
   if (read instanceof Function) {
     return derivedAtom(read, write)
   }
 
   const subject = cachedSubject(read)
   const getValue = subject.getValue
+  let refCount = 0
 
   const obs = cbShare(subject)
 
   const subscribe: Subscribe<Value> = listener => {
+    let unsubscribed = false
+    refCount++
+    initializeAtom(myName, getValue())
     const unsub = cbSubscribe(listener)(obs)
-    return () => unsub()
+    return () => {
+      if (!unsubscribed) {
+        refCount--
+      }
+      unsubscribed = true
+      unsub()
+      console.log(refCount)
+      if (refCount === 0) {
+        removeValue(myName)
+      }
+    }
   }
   const next = (next: Updater<Value>) => {
     const nextValue = next instanceof Function ? next(getValue()) : next
@@ -40,6 +90,8 @@ export function atom<Value, Update = unknown>(
     // are the same reference
     if (!equal(nextValue, getValue())) {
       subject(1, nextValue)
+      updateValue(myName, getValue())
+      // update self in values??
     }
   }
 
