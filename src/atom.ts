@@ -7,11 +7,14 @@ import { atomToSource } from './atom-to-source'
 import equal from './equal'
 import cachedSubject from './cached-subject'
 
+/**
+ * The main atom constructor. Will return Atom, ReadableAtom or CustomAtom
+ * depending on how it is called.
+ */
 export function atom<Value, Update>(
   value: DerivedAtomReader<Value>,
   write: (update: Update) => void,
 ): CustomAtom<Value, Update>
-
 export function atom<Value>(
   value: DerivedAtomReader<Value>,
 ): ReadableAtom<Value>
@@ -29,6 +32,9 @@ export function atom<Value, Update = unknown>(
   return basicAtom(read)
 }
 
+/**
+ * Creates a basic read- and writable atom
+ */
 const basicAtom = <Value>(value: Value): Atom<Value> => {
   const subject = cachedSubject(value)
   const getValue = subject.getValue
@@ -52,6 +58,9 @@ const basicAtom = <Value>(value: Value): Atom<Value> => {
   return { getValue, update, subscribe }
 }
 
+/**
+ * Creates a read-only atom derived from other atoms and/or other outside sources
+ */
 const derivedAtom = <Value>(
   read: DerivedAtomReader<Value>,
 ): ReadableAtom<Value> => {
@@ -144,6 +153,9 @@ const derivedAtom = <Value>(
   return { subscribe, getValue }
 }
 
+/**
+ * Creates an updatable atom derived from other atoms and/or other outside sources
+ */
 export const customAtom = <Value, Update>(
   read: DerivedAtomReader<Value>,
   write: (update: Update) => void,
