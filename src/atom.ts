@@ -29,13 +29,13 @@ export function atom<Value, Update = unknown>(
     }
     return derivedAtom(read)
   }
-  return basicAtom(read)
+  return baseAtom(read)
 }
 
 /**
- * Creates a basic read- and writable atom
+ * Creates a basic read- and writable atom around the given value
  */
-const basicAtom = <Value>(value: Value): Atom<Value> => {
+const baseAtom = <Value>(value: Value): Atom<Value> => {
   const subject = cachedSubject(value)
   const getValue = subject.getValue
 
