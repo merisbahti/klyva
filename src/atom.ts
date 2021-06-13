@@ -1,17 +1,20 @@
 import cbSubscribe from 'callbag-subscribe'
 import cbShare from 'callbag-share'
 import cbMerge from 'callbag-merge'
+import cbTake from 'callbag-take'
 import { Atom, ReadableAtom, DerivedAtomReader, Updater, CustomAtom } from './'
 import { atomToSource } from './atom-to-source'
 import equal from './equal'
 import cachedSubject from './cached-subject'
-import take from 'callbag-take'
 
+/**
+ * The main atom constructor. Will return Atom, ReadableAtom or CustomAtom
+ * depending on how it is called.
+ */
 export function atom<Value, Update>(
   value: DerivedAtomReader<Value>,
   write: (update: Update) => void,
 ): CustomAtom<Value, Update>
-
 export function atom<Value>(
   value: DerivedAtomReader<Value>,
 ): ReadableAtom<Value>
@@ -21,10 +24,19 @@ export function atom<Value, Update = unknown>(
   write?: (update: Update) => void,
 ) {
   if (read instanceof Function) {
-    return derivedAtom(read, write)
+    if (write) {
+      return customAtom(read, write)
+    }
+    return derivedAtom(read)
   }
+  return baseAtom(read)
+}
 
-  const subject = cachedSubject(read)
+/**
+ * Creates a basic read- and writable atom around the given value
+ */
+const baseAtom = <Value>(value: Value): Atom<Value> => {
+  const subject = cachedSubject(value)
   const getValue = subject.getValue
 
   const obs = cbShare(subject)
@@ -33,7 +45,7 @@ export function atom<Value, Update = unknown>(
     const unsub = cbSubscribe(listener)(obs)
     return () => unsub()
   }
-  const next = (next: Updater<Value>) => {
+  const update = (next: Updater<Value>) => {
     const nextValue = next instanceof Function ? next(getValue()) : next
     // Instead of distinctUntilChanged(equal), we do the check here so
     // that the latest value from the stream (obs) and subject.getValue()
@@ -43,12 +55,14 @@ export function atom<Value, Update = unknown>(
     }
   }
 
-  return atomConstructor(subscribe, getValue, next)
+  return { getValue, update, subscribe }
 }
 
-const derivedAtom = <Value, Update>(
+/**
+ * Creates a read-only atom derived from other atoms and/or other outside sources
+ */
+const derivedAtom = <Value>(
   read: DerivedAtomReader<Value>,
-  write?: (update: Update) => void,
 ): ReadableAtom<Value> => {
   const getter = (
     onDependency: (dep: {
@@ -82,7 +96,7 @@ const derivedAtom = <Value, Update>(
     // but we want to ignore the first value!
     const sources = Array.from(dependencies).map(atomToSource)
     // Out of all dependants, if just one changes, we want to complete the stream
-    const dependencyObserver = take(1)(cbMerge(...sources))
+    const dependencyObserver = cbTake(1)(cbMerge(...sources))
 
     return { computedValue, dependencyObserver } as const
   }
@@ -136,29 +150,19 @@ const derivedAtom = <Value, Update>(
       valueSubscription()
     }
   }
-
-  return atomConstructor(subscribe, getValue, write)
+  return { subscribe, getValue }
 }
 
-// Make this a better construcor, if update is set, it should be a RW atom, but if not, it should always return a ReadOnly atom
-const atomConstructor = <Value, Updater>(
-  subscribe: Subscribe<Value>,
-  getValue: () => Value,
-  update?: (updater: Updater) => void,
-) => {
-  if (update) {
-    const atom: CustomAtom<Value, Updater> = {
-      subscribe,
-      update,
-      getValue,
-    }
-    return atom
-  } else {
-    const readOnlyAtom: ReadableAtom<Value> = {
-      subscribe: subscribe,
-      getValue,
-    }
-    return readOnlyAtom
+/**
+ * Creates an updatable atom derived from other atoms and/or other outside sources
+ */
+export const customAtom = <Value, Update>(
+  read: DerivedAtomReader<Value>,
+  write: (update: Update) => void,
+): CustomAtom<Value, Update> => {
+  return {
+    ...derivedAtom(read),
+    update: write,
   }
 }
 
