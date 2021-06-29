@@ -153,3 +153,10 @@ export const sliceAtomArray = <Value>(
   const length = atomOfArray.getValue().length
   return getArrayAtLength(length)
 }
+
+export const useCreateAtom = <Value>(makeInitialValue: () => Value) => {
+  const [createdAtom] = React.useState<Atom<Value>>(() =>
+    atom(makeInitialValue()),
+  )
+  return createdAtom
+}
