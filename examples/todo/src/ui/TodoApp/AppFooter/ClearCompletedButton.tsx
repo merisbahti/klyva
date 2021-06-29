@@ -1,14 +1,8 @@
 import * as React from 'react'
-import { Todo } from '../types'
-import { PrimitiveAtom } from 'klyva/dist/types'
+import { useTodoListAtom } from '../../../bridge'
 
-type ClearCompletedButtonProps = {
-  todoListAtom: PrimitiveAtom<Todo[]>
-}
-
-export const ClearCompletedButton = ({
-  todoListAtom,
-}: ClearCompletedButtonProps) => {
+export const ClearCompletedButton = () => {
+  const todoListAtom = useTodoListAtom()
   const handleClear = React.useCallback(() => {
     todoListAtom.update(todos => todos.filter(todo => !todo.checked))
   }, [todoListAtom])

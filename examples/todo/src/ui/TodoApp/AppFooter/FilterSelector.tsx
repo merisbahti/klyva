@@ -1,12 +1,8 @@
 import * as React from 'react'
-import { Filter } from '../types'
-import { PrimitiveAtom } from 'klyva/dist/types'
-import { useSelector } from 'klyva'
+import { useFilterValue } from '../../../bridge'
 
-type FilterSelectorProps = { filterAtom: PrimitiveAtom<Filter> }
-
-export const FilterSelector = ({ filterAtom }: FilterSelectorProps) => {
-  const filter = useSelector(filterAtom)
+export const FilterSelector = () => {
+  const filter = useFilterValue()
   return (
     <ul className="filters">
       <li>

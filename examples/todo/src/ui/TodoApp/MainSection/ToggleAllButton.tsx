@@ -1,13 +1,9 @@
 import * as React from 'react'
-import { Todo } from '../types'
-import { PrimitiveAtom } from 'klyva/dist/types'
 import { useSelector } from 'klyva'
+import { useTodoListAtom } from '../../../bridge'
 
-type ToggleAllButtonProps = {
-  todoListAtom: PrimitiveAtom<Todo[]>
-}
-
-export const ToggleAllButton = ({ todoListAtom }: ToggleAllButtonProps) => {
+export const ToggleAllButton = () => {
+  const todoListAtom = useTodoListAtom()
   const allDone = useSelector(
     todoListAtom,
     todos => !todos.some(todo => !todo.checked),
