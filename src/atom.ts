@@ -156,7 +156,7 @@ const derivedAtom = <Value>(
 /**
  * Creates an updatable atom derived from other atoms and/or other outside sources
  */
-export const customAtom = <Value, Update>(
+const customAtom = <Value, Update>(
   read: DerivedAtomReader<Value>,
   write: (update: Update) => void,
 ): CustomAtom<Value, Update> => {
