@@ -1,6 +1,6 @@
 import { Callbag, Sink } from 'callbag'
 
-const cachedSubject = <T>(
+export const cachedSubject = <T>(
   initial: T,
 ): Callbag<T, T> & { getValue: () => T } => {
   let sinks: Sink<T>[] = []
@@ -47,5 +47,3 @@ const cachedSubject = <T>(
   newCachedSubject.getValue = () => latest
   return newCachedSubject
 }
-
-export default cachedSubject
