@@ -1,6 +1,6 @@
 import fastDeepEqual from 'fast-deep-equal'
 import { atom } from './atom'
-import { Atom, Updater } from './types'
+import { Atom, RemovableAtom, Updater } from './types'
 
 /*
 These are implementation detail utilities, not meant to be exported from the Klyva package.
@@ -18,7 +18,7 @@ export const equalNumberArray = (l: number[], r: number[]) =>
 export const getAtomAtIndex = <Value>(
   atomOfArray: Atom<Array<Value>>,
   index: number,
-) => {
+): RemovableAtom<Value> => {
   let cachedValue: Value
   const sliceIsRemoved = (index: number) =>
     index >= atomOfArray.getValue().length
@@ -61,7 +61,7 @@ export const getAtomAtIndex = <Value>(
 export const getAtomAtKey = <O extends object, K extends keyof O>(
   atomOfObject: Atom<O>,
   key: K,
-) => {
+): RemovableAtom<O[K]> => {
   let cachedValue: O[K]
   const keyIsRemoved = (key: K) => !atomOfObject.getValue().hasOwnProperty(key)
   const newAtom = atom(
