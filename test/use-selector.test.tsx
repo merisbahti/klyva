@@ -1,8 +1,6 @@
 import React from 'react'
 import * as rtl from '@testing-library/react'
-import { atom } from '../src'
-import { Atom } from '../src/types'
-import { useAtom, useSelector } from '../src/react-utils'
+import { atom, Atom, useAtom, useSelector } from '../src'
 
 it('selection on an atom works', async () => {
   const anAtom = atom({ a: 5 })

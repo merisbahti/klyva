@@ -1,6 +1,4 @@
-import { atom, focusAtom } from '../src'
-import { sliceAtomArray } from '../src/slice-atom-array'
-import { Updater } from '../src/types'
+import { atom, focusAtom, sliceAtomArray, Updater } from '../src'
 
 test('sliced work', done => {
   const arrayAtom = atom([1, 2, 3])
