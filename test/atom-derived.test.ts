@@ -1,5 +1,4 @@
-import { atom } from '../src/atom'
-import { Updater } from '../src/types'
+import { atom, Updater } from '../src'
 
 test('simple derivation with 1 atom works', done => {
   const atomA = atom(10)

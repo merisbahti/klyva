@@ -1,7 +1,5 @@
-export { atom } from './atom'
+export { atom, localStorageAtom, focusAtom } from './atom-constructors'
 export * from './react-utils'
-export { default as focusAtom } from './focus-atom'
-export { default as localStorageAtom } from './localstorage-atom'
 export * from './types'
 export * from './slice-atom-object'
 export * from './slice-atom-array'

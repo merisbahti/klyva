@@ -1,5 +1,4 @@
-import { atom } from '../src/atom'
-import focusAtom from '../src/focus-atom'
+import { atom, focusAtom } from '../src'
 
 test('getter optics work as expected', () => {
   const value = 10

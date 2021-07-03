@@ -1,5 +1,5 @@
 import subscribe from 'callbag-subscribe'
-import { atom } from '../src/atom'
+import { atom } from '../src/atom-constructors'
 import { atomToSource } from '../src/atom-to-source'
 
 test('atomtosource', () => {

@@ -1,5 +1,5 @@
 import fastDeepEqual from 'fast-deep-equal'
-import { atom } from './atom'
+import { atom } from './atom-constructors'
 import { Atom, RemovableAtom, Updater } from './types'
 
 /*

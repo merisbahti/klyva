@@ -12,9 +12,9 @@ import {
   set,
 } from 'optics-ts'
 import { atom } from './atom'
-import { Atom, PrismAtom, ReadableAtom, Updater } from './'
+import { Atom, PrismAtom, ReadableAtom, Updater } from '../types'
 
-function focusAtom<Value, FocusedValue>(
+export function focusAtom<Value, FocusedValue>(
   atom: Atom<Value>,
   opticCallback: (
     optic: Equivalence<Value, any, Value>,
@@ -23,26 +23,25 @@ function focusAtom<Value, FocusedValue>(
     | Iso<Value, any, FocusedValue>
     | Lens<Value, any, FocusedValue>,
 ): Atom<FocusedValue>
-
-function focusAtom<Value, FocusedValue>(
+export function focusAtom<Value, FocusedValue>(
   atom: Atom<Value>,
   opticCallback: (
     optic: Equivalence<Value, any, Value>,
   ) => Prism<Value, any, FocusedValue>,
 ): PrismAtom<FocusedValue>
-function focusAtom<Value, FocusedValue>(
+export function focusAtom<Value, FocusedValue>(
   atom: Atom<Value>,
   opticCallback: (
     optic: Equivalence<Value, any, Value>,
   ) => AffineFold<Value, FocusedValue>,
 ): ReadableAtom<FocusedValue | undefined>
-function focusAtom<Value, FocusedValue>(
+export function focusAtom<Value, FocusedValue>(
   atom: Atom<Value>,
   opticCallback: (
     optic: Equivalence<Value, any, Value>,
   ) => Getter<Value, FocusedValue>,
 ): ReadableAtom<FocusedValue>
-function focusAtom<Value, FocusedValue>(
+export function focusAtom<Value, FocusedValue>(
   baseAtom: Atom<Value>,
   opticCallback: (
     optic: Equivalence<Value, any, Value>,
@@ -84,5 +83,3 @@ function focusAtom<Value, FocusedValue>(
       )
   }
 }
-
-export default focusAtom

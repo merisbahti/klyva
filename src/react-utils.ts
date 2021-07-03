@@ -1,6 +1,6 @@
 import React from 'react'
 import { unstable_batchedUpdates } from 'react-dom'
-import { atom } from './atom'
+import { atom } from './atom-constructors'
 import { Atom, CustomAtom, ReadableAtom, RemovableAtom, Updater } from './'
 import {
   equal,

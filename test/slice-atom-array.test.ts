@@ -1,5 +1,4 @@
-import { atom } from '../src'
-import focusAtom from '../src/focus-atom'
+import { atom, focusAtom } from '../src'
 import { sliceAtomArray } from '../src/slice-atom-array'
 import { Updater } from '../src/types'
 

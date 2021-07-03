@@ -1,7 +1,7 @@
 // This file ensures that we get correctly typed return value from atom creator
 
 import { Atom, CustomAtom, ReadableAtom, Updater } from '../src'
-import { atom } from '../src/atom'
+import { atom } from '../src/atom-constructors'
 
 // When just passing in a value we get a regular Atom
 const a1: Atom<number> = atom(7)

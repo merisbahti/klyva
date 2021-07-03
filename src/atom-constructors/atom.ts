@@ -2,10 +2,10 @@ import cbSubscribe from 'callbag-subscribe'
 import cbShare from 'callbag-share'
 import cbMerge from 'callbag-merge'
 import cbTake from 'callbag-take'
-import { Atom, ReadableAtom, DerivedAtomReader, Updater, CustomAtom } from './'
-import { atomToSource } from './atom-to-source'
-import { equal } from './inner-utils'
-import cachedSubject from './cached-subject'
+import { Atom, ReadableAtom, DerivedAtomReader, Updater, CustomAtom } from '..'
+import { atomToSource } from '../atom-to-source'
+import { equal } from '../inner-utils'
+import cachedSubject from '../cached-subject'
 
 /**
  * The main atom constructor. Will return Atom, ReadableAtom or CustomAtom

@@ -1,5 +1,5 @@
-import { atom } from './atom'
-import { Atom, Updater } from './'
+import { atom } from '.'
+import { Atom, Updater } from '..'
 
 type Verifier<T> = (v: unknown) => v is T
 
@@ -21,7 +21,7 @@ const getInitialItem = <T>(
   return defaultValue
 }
 
-const localStorageAtom = <T>(
+export const localStorageAtom = <T>(
   initialValue: T,
   key: string,
   verifyItem?: Verifier<T>,
@@ -40,5 +40,3 @@ const localStorageAtom = <T>(
   )
   return derivedAtom
 }
-
-export default localStorageAtom
