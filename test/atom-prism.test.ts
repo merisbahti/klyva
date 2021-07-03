@@ -1,5 +1,4 @@
-import { atom } from '../src/atom'
-import focusAtom from '../src/focus-atom'
+import { atom, focusAtom } from '../src'
 
 test('prisms work', done => {
   const baseAtom = atom([1, 2, 3])

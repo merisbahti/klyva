@@ -1,5 +1,5 @@
-import { getAtomAtIndex } from './inner-utils'
-import { Atom, RemovableAtom } from './types'
+import { getAtomAtIndex } from '../inner-utils'
+import { Atom, RemovableAtom } from '../types'
 
 export const sliceAtomArray = <Value>(
   atomOfArray: Atom<Array<Value>>,

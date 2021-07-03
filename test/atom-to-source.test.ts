@@ -1,6 +1,6 @@
 import subscribe from 'callbag-subscribe'
-import { atom } from '../src/atom'
-import { atomToSource } from '../src/atom-to-source'
+import { atom } from '../src'
+import { atomToSource } from '../src/inner-utils'
 
 test('atomtosource', () => {
   const numberAtom = atom(0)

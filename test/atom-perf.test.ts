@@ -1,5 +1,4 @@
-import { atom } from '../src/atom'
-import focusAtom from '../src/focus-atom'
+import { atom, focusAtom } from '../src'
 
 test('two sibling atoms wont be updated when the other one is', () => {
   const value = { a: 0, b: 10 }

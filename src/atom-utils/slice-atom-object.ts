@@ -1,5 +1,5 @@
-import { getAtomAtKey } from './inner-utils'
-import { Atom, RemovableAtom } from './types'
+import { getAtomAtKey } from '../inner-utils'
+import { Atom, RemovableAtom } from '../types'
 
 export const sliceAtomObject = <O extends object>(
   atomOfObject: Atom<O>,

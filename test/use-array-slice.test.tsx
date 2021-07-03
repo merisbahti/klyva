@@ -1,8 +1,13 @@
 import React from 'react'
 import * as rtl from '@testing-library/react'
-import { atom } from '../src'
-import { Atom, RemovableAtom } from '../src/types'
-import { useAtom, useAtomSlice, useSelector } from '../src/react-utils'
+import {
+  atom,
+  Atom,
+  RemovableAtom,
+  useAtom,
+  useAtomSlice,
+  useSelector,
+} from '../src'
 
 it('useArraySlice removal works', async () => {
   const anAtom = atom(['foo', 'bar', 'baz'])

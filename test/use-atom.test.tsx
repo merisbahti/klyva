@@ -1,10 +1,14 @@
 import React from 'react'
 import * as rtl from '@testing-library/react'
-import { atom } from '../src'
-import { Atom } from '../src/types'
-import { useAtom, useAtomSlice, useSelector } from '../src/react-utils'
-import focusAtom from '../src/focus-atom'
 import { act } from 'react-dom/test-utils'
+import {
+  atom,
+  focusAtom,
+  Atom,
+  useAtom,
+  useAtomSlice,
+  useSelector,
+} from '../src'
 
 it('focus on an atom works', async () => {
   const anAtom = atom({ a: 5 })

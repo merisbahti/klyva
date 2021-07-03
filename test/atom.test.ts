@@ -1,5 +1,4 @@
-import { atom } from '../src/atom'
-import focusAtom from '../src/focus-atom'
+import { atom, focusAtom } from '../src'
 
 test('the atom emits 1, 2, and 3', done => {
   const myAtom = atom(0)
