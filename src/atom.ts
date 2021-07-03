@@ -4,7 +4,7 @@ import cbMerge from 'callbag-merge'
 import cbTake from 'callbag-take'
 import { Atom, ReadableAtom, DerivedAtomReader, Updater, CustomAtom } from './'
 import { atomToSource } from './atom-to-source'
-import equal from './equal'
+import { equal } from './inner-utils'
 import cachedSubject from './cached-subject'
 
 /**
@@ -156,7 +156,7 @@ const derivedAtom = <Value>(
 /**
  * Creates an updatable atom derived from other atoms and/or other outside sources
  */
-export const customAtom = <Value, Update>(
+const customAtom = <Value, Update>(
   read: DerivedAtomReader<Value>,
   write: (update: Update) => void,
 ): CustomAtom<Value, Update> => {
