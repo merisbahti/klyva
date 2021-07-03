@@ -4,7 +4,7 @@ import cbMerge from 'callbag-merge'
 import cbTake from 'callbag-take'
 import { Atom, ReadableAtom, DerivedAtomReader, Updater, CustomAtom } from './'
 import { atomToSource } from './atom-to-source'
-import equal from './equal'
+import { equal } from './inner-utils'
 import cachedSubject from './cached-subject'
 
 /**

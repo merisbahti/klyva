@@ -2,7 +2,12 @@ import React from 'react'
 import { unstable_batchedUpdates } from 'react-dom'
 import { atom } from './atom'
 import { Atom, CustomAtom, ReadableAtom, RemovableAtom, Updater } from './'
-import equal from './equal'
+import {
+  equal,
+  identity,
+  equalNumberArray,
+  getAtomAtIndex,
+} from './inner-utils'
 
 export function useAtom<Value>(
   atom: Atom<Value>,
@@ -49,7 +54,6 @@ type UseSelector = {
   <S>(sourceAtom: ReadableAtom<S>): S
 }
 
-const identity = (id: any) => id
 export const useSelector: UseSelector = (
   sourceAtom: any,
   selector: any = identity,
@@ -70,8 +74,6 @@ export const useSelector: UseSelector = (
   return useAtom(selectorAtom)[0]
 }
 
-const equalNumberArray = (l: number[], r: number[]) =>
-  l.length === r.length && !l.some((lVal, lIndex) => lVal !== r[lIndex])
 export function useAtomSlice<T, S extends T>(
   arrayAtom: Atom<Array<T>>,
   filterBy?: (value: T) => value is S,
@@ -95,63 +97,6 @@ export function useAtomSlice<T>(
   const keptIndexes = useSelector(keptIndexesAtom, v => v, equalNumberArray)
 
   return keptIndexes.map(index => getAtomAtIndex(arrayAtom, index))
-}
-
-const getAtomAtIndex = <Value>(
-  atomOfArray: Atom<Array<Value>>,
-  index: number,
-) => {
-  let cachedValue: Value
-  const sliceIsRemoved = (index: number) =>
-    index >= atomOfArray.getValue().length
-  const newAtom = atom(
-    get => {
-      /** This conceptually signals that the slice at
-       * the index has "completed", and it should not update,
-       * nor return anything other than its cached value.
-       */
-      const newValue = get(atomOfArray)[index]
-      if (sliceIsRemoved(index)) {
-        return cachedValue
-      }
-      cachedValue = newValue
-      return cachedValue
-    },
-    (update: Updater<Value>) => {
-      if (!sliceIsRemoved(index)) {
-        const oldValue = atomOfArray.getValue()[index]
-        const newValue = update instanceof Function ? update(oldValue) : update
-        atomOfArray.update(oldArr => [
-          ...oldArr.slice(0, index),
-          newValue,
-          ...oldArr.slice(index + 1),
-        ])
-      }
-    },
-  )
-  return {
-    ...newAtom,
-    remove: () => {
-      atomOfArray.update(oldArr => [
-        ...oldArr.slice(0, index),
-        ...oldArr.slice(index + 1),
-      ])
-    },
-  }
-}
-
-export const sliceAtomArray = <Value>(
-  atomOfArray: Atom<Array<Value>>,
-): Array<RemovableAtom<Value>> => {
-  const getArrayAtLength = (length: number) => {
-    const emptyArray = Array.from(new Array(length))
-    const newValue = emptyArray.map((_, index) =>
-      getAtomAtIndex(atomOfArray, index),
-    )
-    return newValue
-  }
-  const length = atomOfArray.getValue().length
-  return getArrayAtLength(length)
 }
 
 export const useCreateAtom = <Value>(makeInitialValue: () => Value) => {
