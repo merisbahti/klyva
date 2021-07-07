@@ -4,6 +4,7 @@ import cbMerge from 'callbag-merge'
 import cbTake from 'callbag-take'
 import { Atom, ReadableAtom, DerivedAtomReader, Updater, CustomAtom } from '..'
 import { equal, atomToSource, cachedSubject } from '../inner-utils'
+import { setAtomMeta } from '../atom-utils/meta'
 
 /**
  * The main atom constructor. Will return Atom, ReadableAtom or CustomAtom
@@ -12,28 +13,31 @@ import { equal, atomToSource, cachedSubject } from '../inner-utils'
 export function atom<Value, Update>(
   value: DerivedAtomReader<Value>,
   write: (update: Update) => void,
+  name?: string,
 ): CustomAtom<Value, Update>
 export function atom<Value>(
   value: DerivedAtomReader<Value>,
+  name?: string,
 ): ReadableAtom<Value>
-export function atom<Value>(value: Value): Atom<Value>
+export function atom<Value>(value: Value, name?: string): Atom<Value>
 export function atom<Value, Update = unknown>(
   read: Value | DerivedAtomReader<Value>,
-  write?: (update: Update) => void,
+  write?: string | ((update: Update) => void),
+  name?: string,
 ) {
   if (read instanceof Function) {
-    if (write) {
-      return customAtom(read, write)
+    if (write instanceof Function) {
+      return customAtom(read, write, name)
     }
-    return derivedAtom(read)
+    return derivedAtom(read, name)
   }
-  return baseAtom(read)
+  return baseAtom(read, name)
 }
 
 /**
  * Creates a basic read- and writable atom around the given value
  */
-const baseAtom = <Value>(value: Value): Atom<Value> => {
+const baseAtom = <Value>(value: Value, name?: string): Atom<Value> => {
   const subject = cachedSubject(value)
   const getValue = subject.getValue
 
@@ -53,7 +57,7 @@ const baseAtom = <Value>(value: Value): Atom<Value> => {
     }
   }
 
-  return { getValue, update, subscribe }
+  return setAtomMeta({ getValue, update, subscribe }, name)
 }
 
 /**
@@ -61,6 +65,7 @@ const baseAtom = <Value>(value: Value): Atom<Value> => {
  */
 const derivedAtom = <Value>(
   read: DerivedAtomReader<Value>,
+  name?: string,
 ): ReadableAtom<Value> => {
   const getter = (
     onDependency: (dep: {
@@ -148,7 +153,7 @@ const derivedAtom = <Value>(
       valueSubscription()
     }
   }
-  return { subscribe, getValue }
+  return setAtomMeta({ subscribe, getValue }, name ?? 'derivedAtom')
 }
 
 /**
@@ -157,9 +162,10 @@ const derivedAtom = <Value>(
 const customAtom = <Value, Update>(
   read: DerivedAtomReader<Value>,
   write: (update: Update) => void,
+  name?: string,
 ): CustomAtom<Value, Update> => {
   return {
-    ...derivedAtom(read),
+    ...derivedAtom(read, name ?? 'customAtom'),
     update: write,
   }
 }

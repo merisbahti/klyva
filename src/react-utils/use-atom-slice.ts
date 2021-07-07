@@ -2,6 +2,7 @@ import { useSelector } from './use-selector'
 import { atom } from '../atom-constructors'
 import { equalNumberArray, getAtomAtIndex } from '../inner-utils'
 import { Atom, RemovableAtom } from '../types'
+import { getAtomName } from '../atom-utils/meta'
 
 export function useAtomSlice<T, S extends T>(
   arrayAtom: Atom<Array<T>>,
@@ -21,7 +22,7 @@ export function useAtomSlice<T>(
           return filterBy(value) ? [index] : []
         })
       : get(arrayAtom).map((_, index) => index)
-  })
+  }, `${getAtomName(arrayAtom)}_keptIndexes`)
 
   const keptIndexes = useSelector(keptIndexesAtom, v => v, equalNumberArray)
 

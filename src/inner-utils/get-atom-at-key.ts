@@ -1,4 +1,5 @@
 import { atom } from '../atom-constructors'
+import { getAtomName } from '../atom-utils/meta'
 import { Atom, RemovableAtom, Updater } from '../types'
 
 export const getAtomAtKey = <O extends object, K extends keyof O>(
@@ -24,6 +25,7 @@ export const getAtomAtKey = <O extends object, K extends keyof O>(
         }))
       }
     },
+    `${getAtomName(atomOfObject)}_key_${key}`,
   )
   return {
     ...newAtom,

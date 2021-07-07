@@ -1,8 +1,16 @@
+import { meta } from './symbols'
+
 export type Updater<S> = S | ((newValue: S) => S)
+
+export type AtomMeta = {
+  id: string
+  name: string
+}
 
 export type ReadableAtom<Value> = {
   subscribe: (listener: (value: Value) => void) => () => void
   getValue: () => Value
+  [meta]?: AtomMeta
 }
 
 export type CustomAtom<Value, Updater> = ReadableAtom<Value> & {

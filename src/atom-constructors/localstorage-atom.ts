@@ -25,6 +25,7 @@ export const localStorageAtom = <T>(
   initialValue: T,
   key: string,
   verifyItem?: Verifier<T>,
+  name?: string,
 ): Atom<T> => {
   const initialItem = getInitialItem(initialValue, key, verifyItem)
 
@@ -37,6 +38,7 @@ export const localStorageAtom = <T>(
       baseAtom.update(newValue)
       localStorage.setItem(key, JSON.stringify(newValue))
     },
+    name ?? `localStorageAtom_${key}`,
   )
   return derivedAtom
 }

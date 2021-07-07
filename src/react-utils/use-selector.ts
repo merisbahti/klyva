@@ -3,6 +3,7 @@ import { atom } from '../atom-constructors'
 import { ReadableAtom } from '../types'
 import { identity } from '../inner-utils'
 import { useAtom } from './use-atom'
+import { getAtomName } from '../atom-utils/meta'
 
 type UseSelector = {
   <S, A>(
@@ -28,7 +29,7 @@ export const useSelector: UseSelector = (
       latestValueRef.current = newSlice
     }
     return latestValueRef.current
-  })
+  }, `${getAtomName(sourceAtom)}_selector`)
 
   return useAtom(selectorAtom)[0]
 }

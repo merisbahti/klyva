@@ -1,4 +1,5 @@
 import { atom } from '../atom-constructors'
+import { getAtomName } from '../atom-utils/meta'
 import { Atom, RemovableAtom, Updater } from '../types'
 
 export const getAtomAtIndex = <Value>(
@@ -32,6 +33,7 @@ export const getAtomAtIndex = <Value>(
         ])
       }
     },
+    `${getAtomName(atomOfArray)}_idx_${index}`,
   )
   return {
     ...newAtom,
