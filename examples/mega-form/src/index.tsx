@@ -6,7 +6,7 @@ import {
   focusAtom,
   useAtom,
   useAtomSlice,
-} from '../../../src/index'
+} from '../../../dist/index'
 import initialState from './initialState'
 import './styles.css'
 
