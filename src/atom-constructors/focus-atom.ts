@@ -59,7 +59,7 @@ export function focusAtom<Value, FocusedValue>(
     case 'Equivalence':
     case 'Lens':
       return atom(
-        (getAtomValue) => get(focus)(getAtomValue(baseAtom)),
+        getAtomValue => get(focus)(getAtomValue(baseAtom)),
         (update: Updater<FocusedValue>) => {
           const nextValue = (
             update instanceof Function
@@ -70,12 +70,12 @@ export function focusAtom<Value, FocusedValue>(
         },
       )
     case 'Getter':
-      return atom((getAtomValue) => get(focus)(getAtomValue(baseAtom)))
+      return atom(getAtomValue => get(focus)(getAtomValue(baseAtom)))
     case 'AffineFold':
-      return atom((getAtomValue) => preview(focus)(getAtomValue(baseAtom)))
+      return atom(getAtomValue => preview(focus)(getAtomValue(baseAtom)))
     case 'Prism':
       return atom(
-        (getAtomValue) => preview(focus)(getAtomValue(baseAtom)),
+        getAtomValue => preview(focus)(getAtomValue(baseAtom)),
         (update: Updater<FocusedValue>) => {
           const nextValue = (
             update instanceof Function
