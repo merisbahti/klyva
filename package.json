@@ -1,5 +1,5 @@
 {
-  "version": "0.8.6",
+  "version": "0.9.9-beta-3",
   "license": "MIT",
   "main": "./dist/index.js",
   "module": "./dist/klyva.es.js",
