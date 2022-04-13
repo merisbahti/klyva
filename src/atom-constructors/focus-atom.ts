@@ -61,9 +61,11 @@ export function focusAtom<Value, FocusedValue>(
       return atom(
         getAtomValue => get(focus)(getAtomValue(baseAtom)),
         (update: Updater<FocusedValue>) => {
-          const nextValue = (update instanceof Function
-            ? modify(focus)(update)
-            : set(focus)(update))(baseAtom.getValue())
+          const nextValue = (
+            update instanceof Function
+              ? modify(focus)(update)
+              : set(focus)(update)
+          )(baseAtom.getValue())
           baseAtom.update(nextValue)
         },
       )
@@ -75,9 +77,11 @@ export function focusAtom<Value, FocusedValue>(
       return atom(
         getAtomValue => preview(focus)(getAtomValue(baseAtom)),
         (update: Updater<FocusedValue>) => {
-          const nextValue = (update instanceof Function
-            ? modify(focus)(update)
-            : set(focus)(update))(baseAtom.getValue())
+          const nextValue = (
+            update instanceof Function
+              ? modify(focus)(update)
+              : set(focus)(update)
+          )(baseAtom.getValue())
           baseAtom.update(nextValue)
         },
       )

@@ -8,5 +8,5 @@ export const sliceAtomObject = <O extends object>(
   return keys.reduce((memo, key) => {
     memo[key] = getAtomAtKey(atomOfObject, key)
     return memo
-  }, ({} as unknown) as { [x in keyof O]: RemovableAtom<O[x]> })
+  }, {} as unknown as { [x in keyof O]: RemovableAtom<O[x]> })
 }

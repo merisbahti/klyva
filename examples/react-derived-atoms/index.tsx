@@ -1,6 +1,6 @@
 import * as React from 'react'
-import * as ReactDOM from 'react-dom'
 import 'todomvc-app-css/index.css'
+import * as ReactDOMClient from 'react-dom/client'
 import { atom, useAtom } from '../../src/index'
 
 const count = atom(0)
@@ -26,4 +26,7 @@ const App = () => {
   )
 }
 
-ReactDOM.render(<App />, document.getElementById('root'))
+const root = document.getElementById('root')
+if (root) {
+  ReactDOMClient.createRoot(root).render(<App />)
+}

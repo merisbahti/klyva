@@ -292,7 +292,7 @@ it('if atom changes reference, it updates its value', async () => {
   await findByText('value: 1')
 })
 
-it('endless react loop', async done => {
+it('endless react loop', async () => {
   const baseAtom = atom({ a: 5, b: 10 })
 
   const App = () => {
@@ -324,7 +324,6 @@ it('endless react loop', async done => {
   await findByText('{"type":"success","value":15}')
   rtl.fireEvent.click(getByText('inc'))
   await findByText('{"type":"success","value":17}')
-  done()
 }, 1000)
 
 it('able to store a derived function in react', async () => {

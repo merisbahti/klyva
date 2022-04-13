@@ -9,14 +9,14 @@
     "postinstall": "cp node_modules/todomvc-app-css/index.css todomvc.css"
   },
   "dependencies": {
-    "klyva": "0.7.0",
-    "react": "^17.0.1",
-    "react-dom": "^17.0.1",
+    "klyva": "0.9.9-beta-4",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
     "todomvc-app-css": "^2.3.0"
   },
   "devDependencies": {
-    "@types/react": "^16.9.11",
-    "@types/react-dom": "^16.8.4",
+    "@types/react": "^18.0.3",
+    "@types/react-dom": "^18.0.0",
     "parcel": "^1.12.3",
     "typescript": "^3.4.5"
   }

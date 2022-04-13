@@ -10,6 +10,7 @@
     "noUnusedParameters": false,
     "removeComments": true,
     "strictNullChecks": true,
+    "noEmit": true,
     "preserveConstEnums": true,
     "sourceMap": true,
     "lib": ["es2015", "es2016", "dom", "es2019"],

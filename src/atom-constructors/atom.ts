@@ -62,16 +62,18 @@ const baseAtom = <Value>(value: Value): Atom<Value> => {
 const derivedAtom = <Value>(
   read: DerivedAtomReader<Value>,
 ): ReadableAtom<Value> => {
-  const getter = (
-    onDependency: (dep: {
-      atom: ReadableAtom<unknown>
-      value: unknown
-    }) => void,
-  ) => <A>(atom: ReadableAtom<A>) => {
-    const value = atom.getValue()
-    onDependency({ atom, value })
-    return value
-  }
+  const getter =
+    (
+      onDependency: (dep: {
+        atom: ReadableAtom<unknown>
+        value: unknown
+      }) => void,
+    ) =>
+    <A>(atom: ReadableAtom<A>) => {
+      const value = atom.getValue()
+      onDependency({ atom, value })
+      return value
+    }
 
   const dependencies: Array<ReadableAtom<unknown>> = []
   const dependencyValueCache: Array<unknown> = []
