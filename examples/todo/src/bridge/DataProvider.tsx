@@ -1,5 +1,5 @@
+import { Atom } from 'klyva'
 import * as React from 'react'
-import { PrimitiveAtom } from 'klyva/dist/types'
 import { Filter, Todo } from '../../types'
 import { makeTodoListAtom, makeFilterAtom } from '../data'
 import { FilterAtomContext, TodoListAtomContext } from './contexts'
@@ -11,8 +11,9 @@ you can also pass in custom atoms which is convenient in testing scenario.
 */
 
 type DataProps = {
-  filterAtom?: PrimitiveAtom<Filter>
-  todoListAtom?: PrimitiveAtom<Todo[]>
+  filterAtom?: Atom<Filter>
+  todoListAtom?: Atom<Todo[]>
+  children: React.ReactNode
 }
 
 export const DataProvider: React.FunctionComponent<DataProps> = props => {
