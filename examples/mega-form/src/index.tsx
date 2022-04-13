@@ -19,21 +19,15 @@ const Field = ({
   fieldAtom: Atom<{ name: string; value: string }>
   removeField: () => void
 }) => {
-  const [name, setName] = useAtom(focusAtom(fieldAtom, (o) => o.prop('name')))
-  const [value, setValue] = useAtom(
-    focusAtom(fieldAtom, (o) => o.prop('value')),
-  )
+  const [name, setName] = useAtom(focusAtom(fieldAtom, o => o.prop('name')))
+  const [value, setValue] = useAtom(focusAtom(fieldAtom, o => o.prop('value')))
   return (
     <div>
-      <input
-        type="text"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-      />
+      <input type="text" value={name} onChange={e => setName(e.target.value)} />
       <input
         type="text"
         value={value}
-        onChange={(e) => setValue(e.target.value)}
+        onChange={e => setValue(e.target.value)}
       />
       <button onClick={removeField}>X</button>
     </div>
@@ -49,14 +43,14 @@ const Form = ({
   nameAtom: Atom<string>
   remove: () => void
 }) => {
-  const objectsAtom = focusAtom(formAtom, (o) =>
+  const objectsAtom = focusAtom(formAtom, o =>
     o.iso(
-      (bigObject) =>
+      bigObject =>
         Object.entries(bigObject).map(([name, value]) => ({
           name,
           value,
         })),
-      (arrayOfObjects) =>
+      arrayOfObjects =>
         Object.fromEntries(
           arrayOfObjects.map(({ name, value }) => [name, value]),
         ),
@@ -66,7 +60,7 @@ const Form = ({
   const [name, setName] = useAtom(nameAtom)
 
   const addField = () =>
-    objectsAtom.update((oldValue) => [
+    objectsAtom.update(oldValue => [
       ...oldValue,
       { name: `new field ${Math.floor(Math.random() * 1000)}`, value: '' },
     ])
@@ -74,12 +68,12 @@ const Form = ({
   return (
     <div>
       <div>
-        <input value={name} onChange={(e) => setName(e.target.value)} />
+        <input value={name} onChange={e => setName(e.target.value)} />
         <button onClick={remove}>Remove form</button>
       </div>
 
       <ul>
-        {fieldAtoms.map((fieldAtom) => (
+        {fieldAtoms.map(fieldAtom => (
           <li key={fieldAtom.getValue().name}>
             <Field fieldAtom={fieldAtom} removeField={fieldAtom.remove} />
           </li>
@@ -95,27 +89,27 @@ const FormList = ({
 }: {
   formListAtom: Atom<Record<string, Record<string, string>>>
 }) => {
-  const entriesAtom = focusAtom(formListAtom, (o) =>
+  const entriesAtom = focusAtom(formListAtom, o =>
     o.iso(
-      (obj) => Object.entries(obj),
-      (array) => Object.fromEntries(array),
+      obj => Object.entries(obj),
+      array => Object.fromEntries(array),
     ),
   )
   const formAtoms = useAtomSlice(entriesAtom)
 
   const addForm = () =>
-    entriesAtom.update((oldValue) => [
+    entriesAtom.update(oldValue => [
       ...oldValue,
       [`new form ${Math.floor(Math.random() * 1000)}`, {}],
     ])
 
   return (
     <ul>
-      {formAtoms.map((formEntryAtom) => (
+      {formAtoms.map(formEntryAtom => (
         <li key={formEntryAtom.getValue()[0]}>
           <Form
-            nameAtom={focusAtom(formEntryAtom, (o) => o.nth(0))}
-            formAtom={focusAtom(formEntryAtom, (o) => o.nth(1))}
+            nameAtom={focusAtom(formEntryAtom, o => o.nth(0))}
+            formAtom={focusAtom(formEntryAtom, o => o.nth(1))}
             remove={formEntryAtom.remove}
           />
         </li>
