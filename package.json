@@ -1,5 +1,5 @@
 {
-  "version": "0.9.9-beta-3",
+  "version": "0.9.9-beta-4",
   "license": "MIT",
   "main": "./dist/index.js",
   "module": "./dist/klyva.es.js",
@@ -25,8 +25,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "ts-jest --passWithNoTests --env jest-environment-jsdom test",
-    "test:watch": "ts-jest --passWithNoTests --env jest-environment-jsdom --watch test",
+    "test": "jest --passWithNoTests --env jest-environment-jsdom test",
+    "test:watch": "jest --passWithNoTests --env jest-environment-jsdom --watch test",
     "lint": "eslint src test"
   },
   "peerDependencies": {
