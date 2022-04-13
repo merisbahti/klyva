@@ -5,6 +5,7 @@ import {
   focusAtom,
   useAtom,
   useAtomSlice,
+  useSelector,
 } from '../../../dist/index'
 import { createRoot } from 'react-dom/client'
 import initialState from './initialState'
@@ -73,8 +74,8 @@ const Form = ({
       </div>
 
       <ul>
-        {fieldAtoms.map(fieldAtom => (
-          <li key={fieldAtom.getValue().name}>
+        {fieldAtoms.map((fieldAtom, i) => (
+          <li key={i}>
             <Field fieldAtom={fieldAtom} removeField={fieldAtom.remove} />
           </li>
         ))}
@@ -105,8 +106,8 @@ const FormList = ({
 
   return (
     <ul>
-      {formAtoms.map(formEntryAtom => (
-        <li key={formEntryAtom.getValue()[0]}>
+      {formAtoms.map((formEntryAtom, i) => (
+        <li key={i}>
           <Form
             nameAtom={focusAtom(formEntryAtom, o => o.nth(0))}
             formAtom={focusAtom(formEntryAtom, o => o.nth(1))}
@@ -120,7 +121,7 @@ const FormList = ({
 }
 
 const App = () => {
-  //const allState = useSelector(formListAtom, v => JSON.stringify(v, null, 2))
+  const allState = useSelector(formListAtom, v => JSON.stringify(v, null, 2))
   return (
     <>
       <FormList formListAtom={formListAtom} />
