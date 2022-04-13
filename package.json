@@ -2,10 +2,10 @@
   "version": "0.9.9-beta-4",
   "license": "MIT",
   "main": "./dist/index.js",
-  "module": "./dist/klyva.es.js",
+  "module": "./dist/index.es.js",
   "exports": {
     ".": {
-      "import": "./dist/klyva.es.js",
+      "import": "./dist/index.es.js",
       "require": "./dist/index.js"
     }
   },
