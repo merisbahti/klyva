@@ -1,12 +1,12 @@
 {
   "version": "0.8.6",
   "license": "MIT",
-  "main": "./dist/klyva.umd.js",
+  "main": "./dist/index.js",
   "module": "./dist/klyva.es.js",
   "exports": {
     ".": {
       "import": "./dist/klyva.es.js",
-      "require": "./dist/klyva.umd.js"
+      "require": "./dist/index.js"
     }
   },
   "typings": "dist/index.d.ts",
