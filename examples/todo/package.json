@@ -15,7 +15,7 @@
     "todomvc-app-css": "^2.3.0"
   },
   "devDependencies": {
-    "@types/react": "^16.9.11",
+    "@types/react": "^18.0.3",
     "@types/react-dom": "^18.0.0",
     "parcel": "^1.12.3",
     "typescript": "^3.4.5"

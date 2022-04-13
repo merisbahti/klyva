@@ -1282,10 +1282,10 @@
     "@types/prop-types" "*"
     csstype "^3.0.2"
 
-"@types/react@^18.0.0":
-  version "18.0.0"
-  resolved "https://registry.yarnpkg.com/@types/react/-/react-18.0.0.tgz#4be8aa3a2d04afc3ac2cc1ca43d39b0bd412890c"
-  integrity sha512-7+K7zEQYu7NzOwQGLR91KwWXXDzmTFODRVizJyIALf6RfLv2GDpqpknX64pvRVILXCpXi7O/pua8NGk44dLvJw==
+"@types/react@^18.0.3":
+  version "18.0.3"
+  resolved "https://registry.yarnpkg.com/@types/react/-/react-18.0.3.tgz#baefa397561372015b9f8ba5bc83bc3f84ae8fcb"
+  integrity sha512-P8QUaMW4k+kH9aKNPl9b3XWcKMSSALYprLL8xpAMJOLUn3Pl6B+6nKC4F7dsk9oJPwkiRx+qlwhG/Zc1LxFVuQ==
   dependencies:
     "@types/prop-types" "*"
     "@types/scheduler" "*"
@@ -5078,10 +5078,10 @@ opencollective-postinstall@^2.0.2:
   resolved "https://registry.yarnpkg.com/opencollective-postinstall/-/opencollective-postinstall-2.0.3.tgz#7a0fff978f6dbfa4d006238fbac98ed4198c3259"
   integrity sha512-8AV/sCtuzUeTo8gQK5qDZzARrulB3egtLzFgteqB2tcT4Mw7B8Kt7JcDHmltjz6FOAHsvTevk70gZEbhM4ZS9Q==
 
-optics-ts@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/optics-ts/-/optics-ts-2.0.0.tgz#0b77900d8ff90a52ab1364963927a9c3d8512042"
-  integrity sha512-4Nzbn4IYGNA6kpR6n/QS0gkMqi349o8DEsl2nrDEeLpAVz1tgzhaCus0drRl8ewe52RPWYqwIMemfzk/O924+Q==
+optics-ts@^2.2.0:
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/optics-ts/-/optics-ts-2.3.0.tgz#5478da5a2ec46550093dfadd15d6bd87d957e925"
+  integrity sha512-iu6//uEMAKsowlq7hd8pNTc43KOjxMPW60BBA8DIt0q311iiOaWPilMHGOyCDvQ7llRutwlCkGX6e4HnUD0ARg==
 
 optionator@^0.8.1, optionator@^0.8.3:
   version "0.8.3"
@@ -6715,10 +6715,10 @@ type@^2.0.0:
   resolved "https://registry.yarnpkg.com/type/-/type-2.1.0.tgz#9bdc22c648cf8cf86dd23d32336a41cfb6475e3f"
   integrity sha512-G9absDWvhAWCV2gmF1zKud3OyC61nZDwWvBL2DApaVFogI07CprggiQAOOjvp2NRjYWFzPyu7vwtDrQFq8jeSA==
 
-typescript@^3.7.3, typescript@^4.0.3, typescript@^4.0.5:
-  version "4.0.5"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.0.5.tgz#ae9dddfd1069f1cb5beb3ef3b2170dd7c1332389"
-  integrity sha512-ywmr/VrTVCmNTJ6iV2LwIrfG1P+lv6luD8sUJs+2eI9NLGigaN+nUQc13iHqisq7bra9lnmUSYqbJvegraBOPQ==
+typescript@^3.7.3, typescript@^4.0.3, typescript@^4.6.3:
+  version "4.6.3"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.6.3.tgz#eefeafa6afdd31d725584c67a0eaba80f6fc6c6c"
+  integrity sha512-yNIatDa5iaofVozS/uQJEl3JRWLKKGJKh6Yaiv0GLGSuhpFJe7P3SbHZ8/yjAHRQwKRoA6YZqlfjXWmVzoVSMw==
 
 unicode-canonical-property-names-ecmascript@^1.0.4:
   version "1.0.4"

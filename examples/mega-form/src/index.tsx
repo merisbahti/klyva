@@ -1,5 +1,4 @@
 import * as React from 'react'
-import * as ReactDOM from 'react-dom'
 import {
   Atom,
   atom,
@@ -8,6 +7,7 @@ import {
   useAtomSlice,
 } from '../../../dist/index'
 import initialState from './initialState'
+import * as ReactDOMClient from 'react-dom/client'
 import './styles.css'
 
 const formListAtom = atom<Record<string, Record<string, string>>>(initialState)
@@ -74,7 +74,7 @@ const Form = ({
 
       <ul>
         {fieldAtoms.map(fieldAtom => (
-          <li>
+          <li key={fieldAtom.getValue().name}>
             <Field fieldAtom={fieldAtom} removeField={fieldAtom.remove} />
           </li>
         ))}
@@ -106,7 +106,7 @@ const FormList = ({
   return (
     <ul>
       {formAtoms.map(formEntryAtom => (
-        <li>
+        <li key={formEntryAtom.getValue()[0]}>
           <Form
             nameAtom={focusAtom(formEntryAtom, o => o.nth(0))}
             formAtom={focusAtom(formEntryAtom, o => o.nth(1))}
@@ -128,4 +128,7 @@ const App = () => {
   )
 }
 
-ReactDOM.render(<App />, document.getElementById('root'))
+const root = document.getElementById('root')
+if (root) {
+  ReactDOMClient.createRoot(root).render(<App />)
+}
