@@ -5,9 +5,9 @@ import {
   focusAtom,
   useAtom,
   useAtomSlice,
-} from '../../../dist/index.es'
+} from '../../../dist/index'
+import { createRoot } from 'react-dom/client'
 import initialState from './initialState'
-import * as ReactDOM from 'react-dom'
 import './styles.css'
 
 const formListAtom = atom<Record<string, Record<string, string>>>(initialState)
@@ -130,5 +130,5 @@ const App = () => {
 
 const root = document.getElementById('root')
 if (root) {
-  ReactDOM.render(<App />, root)
+  createRoot(root).render(<App />)
 }

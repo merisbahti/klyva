@@ -6,7 +6,7 @@ export const NewTodoInput = () => {
   const todoListAtom = useTodoListAtom()
   const handleSubmit = React.useCallback(
     (evt: React.KeyboardEvent<HTMLInputElement>) => {
-      const elem = (evt.target as unknown) as HTMLInputElement
+      const elem = evt.target as unknown as HTMLInputElement
       todoListAtom.update(todos => [
         { task: elem.value, checked: false },
         ...todos,
