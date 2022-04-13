@@ -1,5 +1,5 @@
 {
-  "version": "0.9.9-beta-4",
+  "version": "0.9.9-beta-6",
   "license": "MIT",
   "main": "./dist/index.js",
   "module": "./dist/index.es.js",
