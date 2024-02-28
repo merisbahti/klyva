@@ -1,5 +1,5 @@
 {
-  "version": "0.9.0-sean-banan",
+  "version": "0.9.0-sean-banan-2",
   "license": "MIT",
   "main": "./dist/index.js",
   "module": "./dist/index.es.js",
