@@ -7,7 +7,7 @@ import {
   useAtomSlice,
   useSelector,
 } from '../../../dist/index'
-import { createRoot } from 'react-dom/client'
+import * as ReactDOM from 'react-dom'
 import initialState from './initialState'
 import './styles.css'
 
@@ -131,5 +131,5 @@ const App = () => {
 
 const root = document.getElementById('root')
 if (root) {
-  createRoot(root).render(<App />)
+  ReactDOM.render(<App />, root)
 }

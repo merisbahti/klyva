@@ -4,9 +4,9 @@ import {
   atom,
   focusAtom,
   RemovableAtom,
-  useAtom,
   useAtomSlice,
-} from '../../src/index'
+  useAtom,
+} from '../../dist'
 
 const myAtom = atom('hello')
 
