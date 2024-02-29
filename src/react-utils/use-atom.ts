@@ -1,6 +1,5 @@
-import { useSyncExternalStore } from 'react'
-
 import { Atom, CustomAtom, ReadableAtom, Updater } from '../types'
+import { useSyncExternalStore } from 'use-sync-external-store/shim'
 
 export function useAtom<Value>(
   atom: Atom<Value>,
